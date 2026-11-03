@@ -32,7 +32,7 @@ gclient.json
 .env
 .env.production
 .grove/
-AGENTS.md
+# BrowserRAD collaboration instructions are intentionally versioned.
 **/resources/binaries/
 
 packages/browseros/build/tools/
@@ -42,3 +42,7 @@ packages/browseros/build/extensions/
 .devtools/
 .omc/
 .llm/
+.local-analysis/
+.browserrad/
+.browserrad-dev/
+tools/browserrad/results/

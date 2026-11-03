@@ -22,7 +22,7 @@ const (
 	ProductBrowserClaw = "browserclaw"
 
 	BrowserOSBinaryPath   = "/Applications/BrowserOS.app/Contents/MacOS/BrowserOS"
-	BrowserClawBinaryPath = "/Applications/BrowserOS neo.app/Contents/MacOS/BrowserOS neo"
+	BrowserClawBinaryPath = "/Applications/BrowserRAD.app/Contents/MacOS/BrowserRAD"
 )
 
 type BinaryResolution struct {
@@ -49,7 +49,8 @@ func ResolveBinary(product string, exists func(string) bool) BinaryResolution {
 		resolution.Path = BrowserClawBinaryPath
 		return resolution
 	}
-	resolution.Fallback = true
+	resolution.Path = BrowserClawBinaryPath
+	resolution.Fallback = false
 	return resolution
 }
 

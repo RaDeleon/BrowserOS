@@ -48,12 +48,12 @@ describe('takeover bar', () => {
     expect((root.querySelector('.nt-root') as HTMLElement).hidden).toBe(true)
   })
 
-  it('leads with BrowserOS neo branding and shows the request', () => {
+  it('leads with BrowserRAD branding and shows the request', () => {
     bar = createTakeoverBar(root, { onHandBack: () => {} })
     bar.update(context())
 
     expect((root.querySelector('.nt-root') as HTMLElement).hidden).toBe(false)
-    expect(root.querySelector('.nt-brand')?.textContent).toBe('BrowserOS neo')
+    expect(root.querySelector('.nt-brand')?.textContent).toBe('BrowserRAD')
     expect(root.querySelector('.nt-dog svg')).not.toBeNull()
     expect(root.querySelector('.nt-agent')?.textContent).toBe('CLAUDE-CODE')
     expect(root.querySelector('.nt-site')?.textContent).toContain('netflix.com')

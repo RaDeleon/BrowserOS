@@ -126,6 +126,11 @@
               return { status: 'arrived' };
             }
             if (!ensurePlayer(target)) return { status: 'skipped', reason: 'unsupported' };
+            if (command.instant) {
+              player.place(target);
+              remember();
+              return { status: 'arrived' };
+            }
             const arrival = player.moveTo(target, {
               params: { style: 'signature_arc', timing: 'fixed', glideDurationMs: command.travelMs },
               reducedMotion: typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,

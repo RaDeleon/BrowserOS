@@ -20,8 +20,8 @@ index 8c5817204161d..64d5477a5e1dc 100644
 +  EXPECT_EQ("Chrome Safe Storage", KeychainPassword::GetServiceName());
 +  EXPECT_EQ("Chrome", KeychainPassword::GetAccountName());
 +#elif BUILDFLAG(BROWSEROS_PRODUCT_BROWSERCLAW)
-+  EXPECT_EQ("BrowserClaw Safe Storage", KeychainPassword::GetServiceName());
-+  EXPECT_EQ("BrowserClaw", KeychainPassword::GetAccountName());
++  EXPECT_EQ("BrowserRAD Safe Storage", KeychainPassword::GetServiceName());
++  EXPECT_EQ("BrowserRAD", KeychainPassword::GetAccountName());
 +#else
 +  EXPECT_EQ("BrowserOS Safe Storage", KeychainPassword::GetServiceName());
 +  EXPECT_EQ("BrowserOS", KeychainPassword::GetAccountName());

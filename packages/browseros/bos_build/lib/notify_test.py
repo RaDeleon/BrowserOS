@@ -291,8 +291,8 @@ class SlackRunSubscriberTest(unittest.TestCase):
 
         sub(RunStarted(run="build", steps=("compile",)))
 
-        self.assertIn("BrowserOS neo", fake.messages[0]["title"])
-        self.assertIn("BrowserOS neo Build", fake.messages[0]["footer"])
+        self.assertIn("BrowserRAD", fake.messages[0]["title"])
+        self.assertIn("BrowserRAD Build", fake.messages[0]["footer"])
 
 
 if __name__ == "__main__":

@@ -485,6 +485,7 @@ async fn run_effects(context: ToolEffectContext<'_>, effects: &[NamedToolEffect]
 
 async fn run_observers(context: ToolObserverContext<'_>, observers: &[NamedToolObserver]) {
     for observer in observers {
+        let observer_started = Instant::now();
         if let Err(error) = (observer.run)(ToolObserverContext {
             call: context.call,
             result: context.result,
@@ -501,6 +502,12 @@ async fn run_observers(context: ToolObserverContext<'_>, observers: &[NamedToolO
                 "cockpit tool dispatch observer failed"
             );
         }
+        tracing::debug!(
+            dispatch_id = %context.call.dispatch_id,
+            observer = observer.name,
+            duration_ms = observer_started.elapsed().as_secs_f64() * 1000.0,
+            "browserrad observer phase"
+        );
     }
 }
 
@@ -545,7 +552,13 @@ async fn execute_with_cancellation(call: &ToolCall) -> DispatchExecution {
                 _ => Vec::new(),
             };
             let ctx = ToolCtx::new(BrowserToolOptions {
-                browser: view.clone().with_pointer(Pointer::default()),
+                browser: view
+                    .clone()
+                    .with_pointer(if call.state.config.behavior.instant_pointer {
+                        Pointer::instant()
+                    } else {
+                        Pointer::default()
+                    }),
                 target: Some(call.target_store.clone()),
                 defaults: BrowserToolDefaults {
                     default_window_id: None,

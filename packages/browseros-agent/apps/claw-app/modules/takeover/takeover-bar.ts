@@ -5,7 +5,7 @@
  *
  * The in-page takeover bar: a shadow-DOM control the human uses to hand control
  * back to a parked agent without leaving the blocked page. Built with plain DOM
- * (no framework) so the content script stays small. Leads with BrowserOS neo
+ * (no framework) so the content script stays small. Leads with BrowserRAD
  * branding (the dog mark and Signal Blue) because it rides a third-party page
  * where provenance matters; the needs-you urgency is the secondary amber accent.
  */
@@ -98,7 +98,7 @@ export function createTakeoverBar(
   const dog = el('span', 'nt-dog')
   dog.innerHTML = NEO_MARK_SVG
   const brand = el('span', 'nt-brand')
-  brand.textContent = 'BrowserOS neo'
+  brand.textContent = 'BrowserRAD'
   const spacer = el('span', 'nt-spacer')
   const pill = el('span', 'nt-pill')
   pill.append('Awaiting user input ')
@@ -134,7 +134,7 @@ export function createTakeoverBar(
   // Minimized pill.
   const pillBtn = el('button', 'nt-pill-btn')
   pillBtn.type = 'button'
-  pillBtn.setAttribute('aria-label', 'Expand BrowserOS neo takeover controls')
+  pillBtn.setAttribute('aria-label', 'Expand BrowserRAD takeover controls')
   const chip = el('span', 'nt-chip')
   chip.innerHTML = NEO_MARK_SVG
   const pillAgent = el('span')

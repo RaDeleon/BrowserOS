@@ -5,7 +5,7 @@
  */
 
 import {
-  BROWSEROS_MCP_SERVER_NAME,
+  BROWSERRAD_MCP_SERVER_NAME,
   MCP_PATH,
 } from '@browseros/shared/constants/urls'
 import {
@@ -36,5 +36,5 @@ export async function resolveCanonicalMcpEndpointUrl(): Promise<string> {
 
 export function buildCanonicalMcpCliCommand(): string {
   const url = buildCanonicalMcpEndpointUrl()
-  return `claude mcp add ${BROWSEROS_MCP_SERVER_NAME} ${url} --transport http --scope user`
+  return `claude mcp add ${BROWSERRAD_MCP_SERVER_NAME} ${url} --transport http --scope user`
 }

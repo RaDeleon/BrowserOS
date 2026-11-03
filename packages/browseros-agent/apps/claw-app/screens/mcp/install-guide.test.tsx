@@ -56,10 +56,10 @@ describe('install-guide data', () => {
 
   it('pins the direct .mcpb release asset and keeps the picker step in sync', () => {
     expect(EXTENSION_DOWNLOAD_URL).toBe(
-      'https://github.com/browseros-ai/browserclaw-claude-desktop/releases/download/v0.5.0/browseros-neo-0.5.0.mcpb',
+      'https://github.com/browseros-ai/browserclaw-claude-desktop/releases/download/v0.5.0/browserrad-0.5.0.mcpb',
     )
     expect(EXTENSION_DOWNLOAD_URL.endsWith('.mcpb')).toBe(true)
-    expect(MCPB_FILENAME).toBe('browseros-neo-0.5.0.mcpb')
+    expect(MCPB_FILENAME).toBe('browserrad-0.5.0.mcpb')
     expect(
       INSTALL_STEPS.find((step) => step.id === 'choose-file')?.body,
     ).toContain(MCPB_FILENAME)

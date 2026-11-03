@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-02",
+  "kind": "JS prototype on stock Neo; not native BrowserRAD",
+  "samples": [
+    {
+      "elapsedMs": 13,
+      "iteration": 0,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 0,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 1,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 12,
+      "iteration": 1,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 11,
+      "iteration": 2,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 2,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 4,
+      "iteration": 3,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 11,
+      "iteration": 3,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 12,
+      "iteration": 4,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 4,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 4,
+      "iteration": 5,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 11,
+      "iteration": 5,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 11,
+      "iteration": 6,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 6,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 7,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 11,
+      "iteration": 7,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 11,
+      "iteration": 8,
+      "mode": "separate",
+      "verified": true
+    },
+    {
+      "elapsedMs": 8,
+      "iteration": 8,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 3,
+      "iteration": 9,
+      "mode": "shared",
+      "verified": true
+    },
+    {
+      "elapsedMs": 12,
+      "iteration": 9,
+      "mode": "separate",
+      "verified": true
+    }
+  ],
+  "interpretation": "Small warmed fixture mechanism test; not an end-to-end BrowserRAD benchmark. Modes alternate order. No client token or total-cost data.",
+  "clientTokens": null,
+  "totalCost": null
+}

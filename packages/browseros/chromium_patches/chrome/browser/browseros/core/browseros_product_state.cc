@@ -25,11 +25,11 @@ index 0000000000000000000000000000000000000000..2e72060f85302d065b2baa91d620fa12
 +
 +constexpr base::cstring_view kBrowserOSDirectoryEnvironment = "BROWSEROS_DIR";
 +constexpr base::cstring_view kBrowserClawDirectoryEnvironment =
-+    "BROWSERCLAW_DIR";
++    "BROWSERRAD_DIR";
 +constexpr base::FilePath::StringViewType kBrowserOSDirectoryName =
 +    FILE_PATH_LITERAL(".browseros");
 +constexpr base::FilePath::StringViewType kBrowserClawDirectoryName =
-+    FILE_PATH_LITERAL(".browserclaw");
++    FILE_PATH_LITERAL(".browserrad");
 +
 +base::cstring_view GetDirectoryEnvironmentName(Product product) {
 +  return product == Product::kBrowserClaw ? kBrowserClawDirectoryEnvironment

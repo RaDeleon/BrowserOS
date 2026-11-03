@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from bos_build.release.extensions.build import build_extension_crx
+from bos_build.release.extensions.build import build_extension_crx, validate_manifest_update_url
 from bos_build.release.extensions.specs import spec_by_name
 
 
@@ -79,7 +79,6 @@ class ExtensionBuildTest(unittest.TestCase):
                 json.dumps(
                     {
                         "version": "0.1.7",
-                        "update_url": "https://cdn.browseros.com/extensions/update-manifest.xml",
                     }
                 )
             )
@@ -109,6 +108,13 @@ class ExtensionBuildTest(unittest.TestCase):
                 json.loads((dist / "manifest.json").read_text())["version"],
                 "0.1.8.0",
             )
+
+    def test_browserrad_preview_rejects_any_extension_update_feed(self) -> None:
+        spec = spec_by_name("browserclaw")
+        validate_manifest_update_url(spec, {}, Path("fixture"))
+        for url in ("https://cdn.browseros.com/extensions/update-manifest.xml", "https://other.example/feed"):
+            with self.subTest(url=url), self.assertRaisesRegex(RuntimeError, "omit update_url"):
+                validate_manifest_update_url(spec, {"update_url": url}, Path("fixture"))
 
     def test_refuses_version_drift_before_build(self) -> None:
         spec = spec_by_name("agent")

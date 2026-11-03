@@ -1,0 +1,5 @@
+import {readFileSync} from 'node:fs'
+const runtime=readFileSync(new URL('../../packages/browseros-agent/crates/browseros-mcp/src/tools/rad-runtime.js',import.meta.url),'utf8')
+const workload="globalThis.__browserosFeatures={browserrad:true};\nconst p=await browser.open('http://127.0.0.1:8769/');\nconst rad=__browserradMethods(p);\nconst queries=['Project name','Save project','Inventory'];\nconst samples=[];\nfor(let i=0;i<10;i++){\n const modes=i%2===0?['separate','shared']:['shared','separate'];\n for(const mode of modes){\n  const start=Date.now();\n  let verified;\n  if(mode==='separate'){const results=[];for(const q of queries) results.push(await p.grep(q));verified=results.every((text,j)=>text.includes(queries[j]));}\n  else {const r=await rad.evidence({queries});verified=!r.partial&&r.results.every(r=>r.count===1&&r.lines.length===1);}\n  samples.push({iteration:i,mode,elapsedMs:Date.now()-start,verified});\n }\n}\nawait p.close();\nreturn {kind:'JS prototype on stock Neo; not native BrowserRAD',samples};"
+// Produces a run-tool input; it does not connect to a browser or launch anything.
+console.log(JSON.stringify({code:runtime+'\n'+workload},null,2))

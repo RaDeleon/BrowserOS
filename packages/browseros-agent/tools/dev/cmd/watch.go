@@ -43,7 +43,7 @@ const (
 func init() {
 	watchCmd.Flags().BoolVar(&watchNew, "new", false, "Use random available ports in 9000-9999 and create a fresh user-data directory")
 	watchCmd.Flags().BoolVar(&watchManual, "manual", false, "Build agent statically instead of WXT HMR mode")
-	watchCmd.Flags().BoolVar(&watchClaw, "claw", false, "Run the BrowserOS neo UI and standalone server")
+	watchCmd.Flags().BoolVar(&watchClaw, "claw", false, "Run the BrowserRAD UI and standalone server")
 	rootCmd.AddCommand(watchCmd)
 }
 
@@ -165,7 +165,7 @@ func runWatch(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if watchClaw {
-		proc.LogMsgf(proc.TagInfo, "Claw state: %s", envValue(env, "BROWSERCLAW_DIR"))
+		proc.LogMsgf(proc.TagInfo, "Claw state: %s", envValue(env, "BROWSERRAD_DIR"))
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -215,7 +215,7 @@ func watchMode() (string, error) {
 		return "", fmt.Errorf("--manual cannot be combined with --claw")
 	}
 	if watchClaw {
-		return "BrowserOS neo", nil
+		return "BrowserRAD", nil
 	}
 	if watchManual {
 		return "BrowserOS manual", nil
@@ -265,14 +265,14 @@ func buildWatchEnvWithBinaryResolution(p proc.Ports, userDataDir string, claw bo
 }
 
 // resolveWatchProductStateDir picks the product state root, honoring an env override.
-// BrowserOS neo state defaults to a directory inside the browser profile: it describes that
+// BrowserRAD state defaults to a directory inside the browser profile: it describes that
 // profile's tabs, sessions and target bindings, so it is per checkout for watch, fresh for
 // --new, guarded by the same run lock, and removed with the profile by dev:cleanup. A shared
 // root would let two dev servers open one database and close each other's live sessions.
 func resolveWatchProductStateDir(claw bool, userDataDir string) (string, string, error) {
 	key := "BROWSEROS_DIR"
 	if claw {
-		key = "BROWSERCLAW_DIR"
+		key = "BROWSERRAD_DIR"
 	}
 	if override := strings.TrimSpace(os.Getenv(key)); override != "" {
 		absolute, err := filepath.Abs(expandTilde(override))
@@ -321,7 +321,7 @@ func watchProduct(claw bool) string {
 	return browser.ProductBrowserOS
 }
 
-// buildClawWatchEnv bridges shared dev ports into the standalone BrowserOS neo apps.
+// buildClawWatchEnv bridges shared dev ports into the standalone BrowserRAD apps.
 func buildClawWatchEnv(env []string, p proc.Ports) []string {
 	apiURL := fmt.Sprintf("http://127.0.0.1:%d", p.Server)
 	return append(env,
@@ -332,7 +332,7 @@ func buildClawWatchEnv(env []string, p proc.Ports) []string {
 
 func logClawBrowserBinary(resolution browser.BinaryResolution) {
 	if resolution.Fallback {
-		proc.LogMsgf(proc.TagInfo, "BrowserOS neo app not found at %s; using %s", browser.BrowserClawBinaryPath, resolution.Path)
+		proc.LogMsgf(proc.TagInfo, "BrowserRAD app not found at %s; using %s", browser.BrowserClawBinaryPath, resolution.Path)
 		return
 	}
 	proc.LogMsgf(proc.TagInfo, "Browser app: %s", resolution.Path)

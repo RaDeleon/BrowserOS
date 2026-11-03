@@ -5,7 +5,7 @@
  */
 
 export const EXTENSION_DOWNLOAD_URL =
-  'https://github.com/browseros-ai/browserclaw-claude-desktop/releases/download/v0.5.0/browseros-neo-0.5.0.mcpb'
+  'https://github.com/browseros-ai/browserclaw-claude-desktop/releases/download/v0.5.0/browserrad-0.5.0.mcpb'
 
 export const EXTENSION_RELEASES_URL =
   'https://github.com/browseros-ai/browserclaw-claude-desktop/releases'
@@ -16,13 +16,13 @@ export const MCPB_FILENAME = EXTENSION_DOWNLOAD_URL.slice(
 )
 
 export const COWORK_REQUIREMENT_LINE =
-  'To use BrowserOS neo with Claude Cowork, you need to install this extension.'
+  'To use BrowserRAD with Claude Cowork, you need to install this extension.'
 
 /**
  * Screenshots live in the `browserclaw` R2 bucket rather than the extension
  * bundle so a Claude Desktop UI change can be corrected by re-uploading the
  * image, with no extension release. Masters are in `~/Desktop/
- * browseros-neo-install-screenshots` and in git history at commit 1d1c794ba.
+ * browserrad-install-screenshots` and in git history at commit 1d1c794ba.
  */
 const IMAGE_BASE = 'https://pub-c94be9094f01420f9166e717fbd4a20d.r2.dev'
 
@@ -64,7 +64,7 @@ export const INSTALL_STEPS: readonly InstallStep[] = [
     id: 'download',
     title: 'Download',
     kind: 'download',
-    body: `Download the BrowserOS neo extension. It saves to your Downloads folder as ${MCPB_FILENAME}.`,
+    body: `Download the BrowserRAD extension. It saves to your Downloads folder as ${MCPB_FILENAME}.`,
   },
   {
     id: 'install-extension',
@@ -87,10 +87,10 @@ export const INSTALL_STEPS: readonly InstallStep[] = [
   {
     id: 'confirm-install',
     title: 'Click Install',
-    body: 'Claude shows the BrowserOS neo extension details. Click Install to finish — Claude can now drive BrowserOS neo.',
+    body: 'Claude shows the BrowserRAD extension details. Click Install to finish — Claude can now drive BrowserRAD.',
     image: {
       src: `${IMAGE_BASE}/step-confirm-install.webp`,
-      alt: "Claude Desktop's BrowserOS neo extension details sheet with the Install button in the top right",
+      alt: "Claude Desktop's BrowserRAD extension details sheet with the Install button in the top right",
     },
   },
 ]
@@ -107,7 +107,7 @@ export const INSTALL_STEPS: readonly InstallStep[] = [
 export const SKILLS_PACK = 'browseros-ai/browseros'
 
 /** The one skill in that pack meant for users, rather than for working on this repo. */
-export const SKILL_NAME = 'browseros-neo'
+export const SKILL_NAME = 'browserrad'
 
 /**
  * Scoped to the single skill on purpose. `npx skills add <pack>` with no
@@ -119,7 +119,7 @@ export const SKILL_NAME = 'browseros-neo'
 export const SKILL_INSTALL_COMMAND = `npx skills add ${SKILLS_PACK} --skill ${SKILL_NAME}`
 
 /** The name the MCP server should be given, matching what the skill looks for. */
-export const MCP_SERVER_NAME = 'browseros-neo'
+export const MCP_SERVER_NAME = 'browserrad'
 
 export const MANUAL_SETUP_DOCS_URL = 'https://docs.browseros.com/neo/mcp/manual'
 

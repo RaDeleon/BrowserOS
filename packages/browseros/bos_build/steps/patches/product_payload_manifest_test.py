@@ -93,7 +93,7 @@ class ProductPayloadManifestPatchTest(unittest.TestCase):
         manifest = "bundled_extensions.json"
         agent = "bflpfmnmnokmjhmgnolecpppdbdophmk.crx"
         bug_reporter = "adlpneommgkgeanpaekgoaolcpncohkf.crx"
-        browserclaw = "pjimfkbpehlcllblajnpfamdfjhhlgkc.crx"
+        browserclaw = "efdbmkebmplcaefnjkgfnnbmgdjndifl.crx"
         base_sources = _source_literals(assignment.group("body"))
         browseros_sources = _conditional_sources(
             build,

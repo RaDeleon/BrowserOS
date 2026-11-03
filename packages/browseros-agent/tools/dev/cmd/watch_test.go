@@ -45,8 +45,8 @@ func TestWatchModeSelectsBrowserClaw(t *testing.T) {
 	if err != nil {
 		t.Fatalf("watchMode returned error: %v", err)
 	}
-	if mode != "BrowserOS neo" {
-		t.Fatalf("expected BrowserOS neo mode, got %q", mode)
+	if mode != "BrowserRAD" {
+		t.Fatalf("expected BrowserRAD mode, got %q", mode)
 	}
 }
 
@@ -111,7 +111,7 @@ func TestBuildWatchEnvSelectsBrowserOSProduct(t *testing.T) {
 func TestBuildWatchEnvSelectsBrowserClawProduct(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
-	t.Setenv("BROWSERCLAW_DIR", "")
+	t.Setenv("BROWSERRAD_DIR", "")
 	env, err := buildWatchEnvWithBinaryResolution(proc.Ports{
 		CDP:       9012,
 		Server:    9123,
@@ -127,10 +127,10 @@ func TestBuildWatchEnvSelectsBrowserClawProduct(t *testing.T) {
 
 	for _, want := range []string{
 		"BROWSEROS_PRODUCT=browserclaw",
-		"BROWSEROS_BINARY=/Applications/BrowserOS neo.app/Contents/MacOS/BrowserOS neo",
+		"BROWSEROS_BINARY=/Applications/BrowserRAD.app/Contents/MacOS/BrowserRAD",
 		"BROWSEROS_CLAW_CDP_PORT=9012",
 		"VITE_BROWSEROS_CLAW_API_URL=http://127.0.0.1:9123",
-		"BROWSERCLAW_DIR=" + filepath.Join("/tmp/browseros-dev", "browserclaw"),
+		"BROWSERRAD_DIR=" + filepath.Join("/tmp/browseros-dev", "browserclaw"),
 	} {
 		if !hasEnvEntry(env, want) {
 			t.Fatalf("expected env to contain %q, got %#v", want, env)
@@ -190,7 +190,7 @@ func TestBuildWatchEnvHonorsAndNormalizesProductStateOverrides(t *testing.T) {
 	}
 
 	clawRoot := filepath.Join(t.TempDir(), "claw-state")
-	t.Setenv("BROWSERCLAW_DIR", clawRoot)
+	t.Setenv("BROWSERRAD_DIR", clawRoot)
 	clawEnv, err := buildWatchEnvWithBinaryResolution(
 		proc.Ports{CDP: 9012, Server: 9123},
 		"/tmp/profile",
@@ -200,7 +200,7 @@ func TestBuildWatchEnvHonorsAndNormalizesProductStateOverrides(t *testing.T) {
 	if err != nil {
 		t.Fatalf("buildWatchEnvWithBinaryResolution returned error: %v", err)
 	}
-	if !hasEnvEntry(clawEnv, "BROWSERCLAW_DIR="+clawRoot) {
+	if !hasEnvEntry(clawEnv, "BROWSERRAD_DIR="+clawRoot) {
 		t.Fatalf("expected BrowserClaw override in %#v", clawEnv)
 	}
 }

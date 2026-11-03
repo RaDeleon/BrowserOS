@@ -54,7 +54,11 @@ def _validate_built_manifest(
 def validate_manifest_update_url(
     spec: ExtensionSpec, manifest: Mapping[str, object], dist_path: Path
 ) -> None:
-    """Require bundled update-feed extensions to use the stable updater."""
+    """Keep fork previews offline from upstream update feeds."""
+    if spec.name == "browserclaw":
+        if manifest.get("update_url"):
+            raise RuntimeError("BrowserRAD preview extension must omit update_url")
+        return
     if spec.name in _UPDATE_FEED_NAMES and manifest.get("update_url") != _UPDATE_MANIFEST_URL:
         raise RuntimeError(
             f"Extension '{spec.name}' build at '{dist_path}' has update_url "

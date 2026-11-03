@@ -10,7 +10,7 @@ import (
 
 func writeBundle(t *testing.T, bundleVersion string) string {
 	t.Helper()
-	app := filepath.Join(t.TempDir(), "BrowserOS neo.app")
+	app := filepath.Join(t.TempDir(), "BrowserRAD.app")
 	contents := filepath.Join(app, "Contents")
 	if err := os.MkdirAll(filepath.Join(contents, "MacOS"), 0o755); err != nil {
 		t.Fatal(err)
@@ -21,7 +21,7 @@ func writeBundle(t *testing.T, bundleVersion string) string {
 	if err := os.WriteFile(filepath.Join(contents, "Info.plist"), []byte(plist), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	return filepath.Join(contents, "MacOS", "BrowserOS neo")
+	return filepath.Join(contents, "MacOS", "BrowserRAD")
 }
 
 func TestNativeBrowserOSVersionTrustsOnlyReleaseStamps(t *testing.T) {

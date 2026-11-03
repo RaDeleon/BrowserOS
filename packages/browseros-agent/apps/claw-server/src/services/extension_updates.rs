@@ -14,7 +14,7 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 
-const EXTENSION_ID: &str = "pjimfkbpehlcllblajnpfamdfjhhlgkc";
+const EXTENSION_ID: &str = "efdbmkebmplcaefnjkgfnnbmgdjndifl";
 const API_SOURCE: &str = include_str!("../../../../contracts/extension-updates/api.js");
 const POLL: Duration = Duration::from_secs(30);
 const GRACE_MS: u64 = 30_000;

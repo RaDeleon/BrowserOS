@@ -55,6 +55,11 @@ const SDK_SURFACE: &[&str] = &[
     "save",
     // chained methods, the ones agents reach for on the wrong shape
     "snapshot",
+    "evidence",
+    "executePlan",
+    "fetchRead",
+    "siteTools",
+    "callSiteTool",
     "diff",
     "resolveRef",
     "click",

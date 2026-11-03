@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..b0a5361e2d18f6d52c0b75d2a0f8ad641f9a6443
 --- /dev/null
 +++ b/chrome/browser/mac/sparkle_glue.mm
-@@ -0,0 +1,714 @@
+@@ -0,0 +1,716 @@
 +// Copyright 2024 BrowserOS Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -339,6 +339,8 @@ index 0000000000000000000000000000000000000000..b0a5361e2d18f6d52c0b75d2a0f8ad64
 +#endif
 +
 ++ (nullable instancetype)sharedSparkleGlue {
++  // Fork previews must never install an upstream Neo binary.
++  if (browseros::IsBrowserClawProduct()) return nil;
 +  static SparkleGlue* instance = nil;
 +  static dispatch_once_t onceToken;
 +

@@ -14,7 +14,7 @@ from .manifests import ExtensionsFeedModule, parse_set_options
 
 AGENT_ID = "bflpfmnmnokmjhmgnolecpppdbdophmk"
 BUGREPORTER_ID = "adlpneommgkgeanpaekgoaolcpncohkf"
-BROWSERCLAW_ID = "pjimfkbpehlcllblajnpfamdfjhhlgkc"
+BROWSERCLAW_ID = "efdbmkebmplcaefnjkgfnnbmgdjndifl"
 
 LIVE_ALPHA_MANIFEST = render_update_manifest(
     {"agent": "0.0.117.0", "bugreporter": "54.0.0.0"}

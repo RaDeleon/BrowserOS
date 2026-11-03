@@ -72,12 +72,12 @@ func TestResolveBinary(t *testing.T) {
 			wantPreferred: BrowserClawBinaryPath,
 		},
 		{
-			name:          "BrowserClaw product falls back to BrowserOS when absent",
+			name:          "BrowserRAD never falls back to a stock app",
 			product:       ProductBrowserClaw,
 			wantProduct:   ProductBrowserClaw,
-			wantPath:      BrowserOSBinaryPath,
+			wantPath:      BrowserClawBinaryPath,
 			wantPreferred: BrowserClawBinaryPath,
-			wantFallback:  true,
+			wantFallback:  false,
 		},
 		{
 			name:          "unknown product keeps product flag but uses BrowserOS",

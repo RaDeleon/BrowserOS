@@ -31,6 +31,12 @@ SOURCE_SHA = "2" * 40
 
 
 class BundledExtensionsTest(unittest.TestCase):
+    def test_browserrad_rejects_published_upstream_resources(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            ctx = self._ctx("browserclaw", chromium_src=Path(temp))
+            with self.assertRaisesRegex(ValueError, "source resource mode"):
+                BundledExtensionsModule().execute(ctx)
+
     def test_manifest_url_defaults_to_live_bundled_manifest(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
             self.assertEqual(
@@ -45,11 +51,14 @@ class BundledExtensionsTest(unittest.TestCase):
         by_id = {extension.id: extension for extension in extensions}
         required = {
             extension_id: name
-            for product in ("browseros", "browserclaw")
+            for product in ("browseros",)
             for extension_id, name in get_product_descriptor(
                 product
             ).required_extension_ids
         }
+        # Tracked CDN snapshots belong to upstream. The fork CRX is source-built.
+        self.assertNotIn(BROWSERCLAW_EXTENSION_ID, by_id)
+        self.assertIn("pjimfkbpehlcllblajnpfamdfjhhlgkc", by_id)
         for extension_id, name in required.items():
             self.assertIn(extension_id, by_id, name)
         for extension in extensions:

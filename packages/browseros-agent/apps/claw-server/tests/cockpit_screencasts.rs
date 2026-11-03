@@ -21,7 +21,7 @@ use tokio_tungstenite::{
 };
 use tokio_util::sync::CancellationToken;
 
-const EXTENSION_ORIGIN: &str = "chrome-extension://pjimfkbpehlcllblajnpfamdfjhhlgkc";
+const EXTENSION_ORIGIN: &str = "chrome-extension://efdbmkebmplcaefnjkgfnnbmgdjndifl";
 
 struct TestServer {
     url: String,

@@ -259,7 +259,7 @@ pub async fn request_context(mut req: Request, next: Next) -> Response {
 }
 
 /// Stable origin derived from claw-app's manifest signing key.
-const BROWSERCLAW_EXTENSION_ORIGIN: &str = "chrome-extension://pjimfkbpehlcllblajnpfamdfjhhlgkc";
+const BROWSERCLAW_EXTENSION_ORIGIN: &str = "chrome-extension://efdbmkebmplcaefnjkgfnnbmgdjndifl";
 
 fn trusted_recording_origin(headers: &axum::http::HeaderMap) -> bool {
     match headers

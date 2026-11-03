@@ -201,6 +201,7 @@ def requires_browser_passkey_signing(ctx: Optional[Context]) -> bool:
     return bool(
         ctx
         and ctx.product.id in BROWSER_PASSKEY_PRODUCTS
+        and ctx.product.mac.bundle_id.startswith("com.browseros.")
         and ctx.build_type == "release"
     )
 

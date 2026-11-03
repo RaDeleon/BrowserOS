@@ -794,6 +794,11 @@ class BrowserPasskeySigningTest(unittest.TestCase):
                 with self.subTest(product=product_id):
                     ctx = self._context(root, product_id=product_id)
                     setattr(ctx.env, config.env_attr, str(root / "missing.profile"))
+                    if product_id == "browserclaw":
+                        # BrowserRAD must not load a configured upstream Neo profile.
+                        self.assertFalse(macos_module.requires_browser_passkey_signing(ctx))
+                        MacOSSignModule().preflight(ctx)
+                        continue
                     with self.assertRaisesRegex(
                         macos_module.ValidationError,
                         "profile not found",
@@ -908,7 +913,7 @@ class BrowserPasskeySigningTest(unittest.TestCase):
                     )
                     framework.parent.mkdir(parents=True)
                     framework.write_bytes(
-                        f"{PASSKEY_TEAM_ID}.{bundle_id}.webauthn".encode()
+                        f"{PASSKEY_TEAM_ID}.{ctx.product.mac.bundle_id}.webauthn".encode()
                     )
 
                     macos_module.verify_compiled_browser_passkey_identity(

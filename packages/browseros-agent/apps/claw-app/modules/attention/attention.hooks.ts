@@ -9,7 +9,7 @@ import { createQuery } from 'react-query-kit'
 import { attentionTitle } from './attention.helpers'
 import { notificationPermission } from './attention-alerts'
 
-const BASE_TITLE = 'BrowserOS neo'
+const BASE_TITLE = 'BrowserRAD'
 
 /** Puts "(1) Needs you" in the neo tab's title while agents are waiting. */
 export function useAttentionTitle(count: number): void {

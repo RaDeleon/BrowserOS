@@ -117,9 +117,7 @@ function MenuBar({ name }: { name: string | null }) {
       ) : (
         <DemoNeoMark className="size-[15px] rounded-[4px]" />
       )}
-      <b className="font-bold text-[13px] leading-4">
-        {name ?? 'BrowserOS neo'}
-      </b>
+      <b className="font-bold text-[13px] leading-4">{name ?? 'BrowserRAD'}</b>
       <span className="flex-1" />
       <span className="flex items-center gap-4 font-medium text-[13px] leading-4">
         <svg aria-hidden width="16" height="12" viewBox="0 0 16 12">
@@ -184,7 +182,7 @@ function RunningDot({ on }: { on: boolean }) {
 }
 
 /**
- * Terminal · Claude · ChatGPT · BrowserOS neo (no Finder, no separator, and
+ * Terminal · Claude · ChatGPT · BrowserRAD (no Finder, no separator, and
  * no Codex: it runs inside ChatGPT's Work mode). Real app icons at 44 px. The
  * playing app's tile has a soft blue ring; the others lift on hover, so the
  * tiles read as clickable.

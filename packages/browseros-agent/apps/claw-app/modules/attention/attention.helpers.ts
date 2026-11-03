@@ -69,7 +69,7 @@ export function badgeText(count: number): string {
   return count > 9 ? '9+' : String(count)
 }
 
-/** The neo tab title while agents wait: "(1) Needs you · BrowserOS neo". */
+/** The neo tab title while agents wait: "(1) Needs you · BrowserRAD". */
 export function attentionTitle(count: number, base: string): string {
   return count > 0 ? `(${count}) Needs you · ${base}` : base
 }

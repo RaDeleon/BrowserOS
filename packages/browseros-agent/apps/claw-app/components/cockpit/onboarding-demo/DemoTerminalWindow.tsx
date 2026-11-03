@@ -71,7 +71,7 @@ export function DemoTerminalWindow({
                   Claude Code
                 </b>
                 <span className="mt-0.5 block text-[#8C97B3] text-[11.5px] leading-[14px]">
-                  browseros-neo ✓ connected
+                  browserrad ✓ connected
                 </span>
               </div>
             </div>

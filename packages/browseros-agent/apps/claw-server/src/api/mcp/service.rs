@@ -51,8 +51,8 @@ use tracing::warn;
 use ulid::Ulid;
 use uuid::Uuid;
 
-const SERVER_NAME: &str = "browseros-neo";
-const SERVER_TITLE: &str = "BrowserOS neo";
+const SERVER_NAME: &str = "browserrad";
+const SERVER_TITLE: &str = "BrowserRAD";
 pub(super) const NAME_SESSION_TOOL_NAME: &str = "name_session";
 const NAME_SESSION_DESCRIPTION: &str = "Name this browser session at the start of a task: a small lowercase 2-3 word label for what it is doing, e.g. \"invoice processing\", a `category` for the kind of task, and a short `summary`. Tabs are grouped as <client>/<name>; the label stays on this machine, the summary powers audit search and is also recorded for analytics, and the category is used for anonymous aggregate analytics. Call again to update.";
 const NAME_SESSION_CATEGORY_DESCRIPTION: &str = "The kind of task, for anonymous aggregate analytics only; the free-form name is never sent. Pick the closest fit from the list.";
@@ -71,16 +71,16 @@ mod ultrafast;
 
 pub(super) use ultrafast::RUN_SKILL_TOOL_NAME;
 pub(super) const SAVE_SKILL_TOOL_NAME: &str = "save_skill";
-const SAVE_SKILL_DESCRIPTION: &str = "When you finish a repeatable browser task the user is likely to run again, save it as a BrowserOS neo skill so it can be re-run by name later; save genuinely repeatable, user-valuable tasks, not one-offs. Give a lowercase-hyphen name, a one-line description, the ordered steps, and any shortcuts learned this run. In the steps, name the exact browser SDK calls you actually used this session (e.g. browser.wait, browser.read, browser.pages.newPage) so a later run reuses them verbatim; never invent, rename, or guess a method that is not in the run tool's SDK (there is no browser.waitFor, for example). The skill is saved and linked into your agents under a neo- prefix (neo-<name>) so it never clobbers your own skills and you can list them all by typing /neo; a name given without the prefix is namespaced automatically. Call again with the same name to update it in place.";
+const SAVE_SKILL_DESCRIPTION: &str = "When you finish a repeatable browser task the user is likely to run again, save it as a BrowserRAD skill so it can be re-run by name later; save genuinely repeatable, user-valuable tasks, not one-offs. Give a lowercase-hyphen name, a one-line description, the ordered steps, and any shortcuts learned this run. In the steps, name the exact browser SDK calls you actually used this session (e.g. browser.wait, browser.read, browser.pages.newPage) so a later run reuses them verbatim; never invent, rename, or guess a method that is not in the run tool's SDK (there is no browser.waitFor, for example). The skill is saved and linked into your agents under a rad- prefix (rad-<name>) so it never clobbers your own skills and you can list them all by typing /rad; a name given without the prefix is namespaced automatically. Call again with the same name to update it in place.";
 pub(super) const MARK_SKILL_RUN_TOOL_NAME: &str = "mark_skill_run";
-const MARK_SKILL_RUN_DESCRIPTION: &str = "Mark this browser session as a run of a saved skill so BrowserOS neo records the run and its cost once the session ends. Call this once, at the start, when you are running a skill, with the skill's name.";
+const MARK_SKILL_RUN_DESCRIPTION: &str = "Mark this browser session as a run of a saved skill so BrowserRAD records the run and its cost once the session ends. Call this once, at the start, when you are running a skill, with the skill's name.";
 pub(super) const REQUEST_HELP_TOOL_NAME: &str = "request_human_help";
 const REQUEST_HELP_DESCRIPTION: &str = "Ask a human to take over a page when you hit something only a person can do: a sign-in, a one-time code, a captcha, an account choice, or an approval you should not make yourself. Pass `page` (the id of the page that needs the person, the same number you use with snapshot and act) and a short `reason` (what you need); optionally `details` (what the human should know), a `resumeHint` (what you will do after, so the human knows the task continues), and a `kind` (login, captcha, approval, other). This blocks for a short while and returns a status. If the status is \"waiting\", call await_human_help to keep waiting; do nothing else on the page until the status is \"resolved\". The cockpit shows your request so a human can take over that tab and hand control back.";
 pub(super) const AWAIT_HELP_TOOL_NAME: &str = "await_human_help";
 const AWAIT_HELP_DESCRIPTION: &str = "Keep waiting on an open human-help request. Call this repeatedly after request_human_help until the status is \"resolved\" (the human handed control back), \"cancelled\" (the run was stopped), or \"timed_out\" (no human responded in time). Do nothing else on the page while waiting.";
 /// For an agent whose cached tool list still offers request_human_help after the user turned
 /// human help off.
-const HUMAN_HELP_OFF_MESSAGE: &str = "Human help is turned off in BrowserOS neo settings. Do not wait for a human here: stop and tell the user in your chat what you need.";
+const HUMAN_HELP_OFF_MESSAGE: &str = "Human help is turned off in BrowserRAD settings. Do not wait for a human here: stop and tell the user in your chat what you need.";
 /// How long each wait call blocks before returning a `waiting` status. Short enough to stay under
 /// any reasonable client tool-call timeout so an agent that cannot hold a long call just re-calls.
 const HELP_WAIT_CHUNK: std::time::Duration = std::time::Duration::from_secs(75);
@@ -274,7 +274,7 @@ impl ClawMcpService {
             .await
         {
             return CallToolResult::error(vec![rmcp::model::ContentBlock::text(
-                "BrowserOS neo session is no longer live",
+                "BrowserRAD session is no longer live",
             )]);
         }
         let started_at = StdInstant::now();
@@ -386,7 +386,7 @@ impl ClawMcpService {
             .await
         {
             return CallToolResult::error(vec![rmcp::model::ContentBlock::text(
-                "BrowserOS neo session is no longer live",
+                "BrowserRAD session is no longer live",
             )]);
         }
         let started_at = StdInstant::now();
@@ -437,14 +437,14 @@ impl ClawMcpService {
             .await
         {
             return CallToolResult::error(vec![rmcp::model::ContentBlock::text(
-                "BrowserOS neo session is no longer live",
+                "BrowserRAD session is no longer live",
             )]);
         }
         let started_at = StdInstant::now();
         let session_id = started.session.id().as_str().to_string();
         let result = match parse_skill_name(raw_args) {
             Ok(name) => {
-                // Skills are namespaced under neo-; accept a bare name too so a
+                // Skills are namespaced under rad-; accept a bare name too so a
                 // run is still recorded if the agent drops the prefix.
                 let name = crate::services::skills::neo_prefixed(&name);
                 match self.state.skill_runs.mark(&session_id, &name).await {
@@ -571,7 +571,7 @@ impl ClawMcpService {
         let page_id = page.0;
         let Some(browser) = self.state.browser.session().await else {
             return Err(format!(
-                "request_human_help: the browser is not connected, so page {page_id} could not be brought to the front. Start BrowserOS neo, then ask again."
+                "request_human_help: the browser is not connected, so page {page_id} could not be brought to the front. Start BrowserRAD, then ask again."
             ));
         };
         let binding = self
@@ -624,7 +624,7 @@ impl ClawMcpService {
             .await
         {
             return CallToolResult::error(vec![rmcp::model::ContentBlock::text(
-                "BrowserOS neo session is no longer live",
+                "BrowserRAD session is no longer live",
             )]);
         }
         // A terminal cancel (cockpit Stop via the dispatch token, or session teardown via the
@@ -739,7 +739,7 @@ impl ClawMcpService {
                 lifecycle.stop_reported = true;
                 return Err(McpError::invalid_request(
                     format!(
-                        "BrowserOS neo session {session_id} was stopped and will not resume. \
+                        "BrowserRAD session {session_id} was stopped and will not resume. \
                          Call again and a new session will start."
                     ),
                     None,
@@ -1789,7 +1789,7 @@ fn with_agent_name_arg(mut tool: Tool, mode: ServerMode) -> Tool {
 /// on would just become a different way to produce a burst.
 fn session_was_stopped() -> McpError {
     McpError::invalid_request(
-        "This browser session was stopped from the BrowserOS neo cockpit and will not \
+        "This browser session was stopped from the BrowserRAD cockpit and will not \
          resume. Omit the `session` argument on your next call to start a new one, and do \
          not resend this handle.",
         None,
@@ -2772,8 +2772,8 @@ mod tests {
         let instructions = info
             .instructions
             .as_deref()
-            .ok_or_else(|| anyhow::anyhow!("BrowserOS neo instructions missing"))?;
-        assert!(instructions.contains("BrowserOS neo — the browser for agents"));
+            .ok_or_else(|| anyhow::anyhow!("BrowserRAD instructions missing"))?;
+        assert!(instructions.contains("BrowserRAD — the browser for agents"));
         assert!(instructions.contains("Reach for run first"));
         assert!(instructions.contains("optional fallback for your client"));
         assert!(instructions.contains("Put your task\n  name in name_session."));
@@ -3347,7 +3347,7 @@ mod tests {
             assert_eq!(result.is_error, Some(true), "{raw_args}");
             assert_eq!(
                 text_of(&result),
-                "Human help is turned off in BrowserOS neo settings. Do not wait for a human here: stop and tell the user in your chat what you need.",
+                "Human help is turned off in BrowserRAD settings. Do not wait for a human here: stop and tell the user in your chat what you need.",
                 "{raw_args}"
             );
         }
@@ -3650,7 +3650,7 @@ mod tests {
             )
             .await;
 
-        let created = call.state.skills.get("neo-inbox-sweep").await?;
+        let created = call.state.skills.get("rad-inbox-sweep").await?;
         assert_eq!(created.view.model.origin, "agent");
         assert_eq!(
             created.view.model.source_session_id.as_deref(),
@@ -3663,7 +3663,7 @@ mod tests {
                 .body
                 .contains("Read the DOM snapshot, not screenshots")
         );
-        assert!(created.body.contains("tools: browseros-neo"));
+        assert!(created.body.contains("tools: browserrad"));
 
         // Same name again updates in place and bumps the version.
         service
@@ -3677,7 +3677,7 @@ mod tests {
                 CancellationToken::new(),
             )
             .await;
-        let updated = call.state.skills.get("neo-inbox-sweep").await?;
+        let updated = call.state.skills.get("rad-inbox-sweep").await?;
         assert_eq!(updated.view.model.version, 2);
         assert_eq!(updated.view.model.description, "Check the inbox and reply");
         assert!(updated.body.contains("Draft and send"));
@@ -3699,7 +3699,7 @@ mod tests {
             agent_label: "codex".to_string(),
         };
 
-        // Author a skill; it is stored under the neo- namespace.
+        // Author a skill; it is stored under the rad- namespace.
         service
             .call_save_skill(
                 &started,
@@ -3711,9 +3711,9 @@ mod tests {
                 CancellationToken::new(),
             )
             .await;
-        assert!(call.state.skills.get("neo-weather").await.is_ok());
+        assert!(call.state.skills.get("rad-weather").await.is_ok());
 
-        // Marking with the bare name resolves to the stored neo-weather, so the
+        // Marking with the bare name resolves to the stored rad-weather, so the
         // run is recorded rather than rejected as an unknown skill.
         let bare = service
             .call_mark_skill_run(&started, &json!({ "name": "weather" }))

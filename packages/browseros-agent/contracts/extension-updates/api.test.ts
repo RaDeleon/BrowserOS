@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import createExtensionUpdateApi from './api.js'
 
-const ID = 'pjimfkbpehlcllblajnpfamdfjhhlgkc'
+const ID = 'efdbmkebmplcaefnjkgfnnbmgdjndifl'
 function fixture(factory = createExtensionUpdateApi) {
   const stored: Record<string, unknown> = {}
   let running = '0.2.28.0'

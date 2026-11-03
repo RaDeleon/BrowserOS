@@ -18,7 +18,7 @@ interface InstallExtensionDialogProps {
 }
 
 /**
- * Walks through installing the BrowserOS neo extension in the Claude desktop
+ * Walks through installing the BrowserRAD extension in the Claude desktop
  * app, one step at a time, with a picture of the real control at each stop.
  */
 export function InstallExtensionDialog({

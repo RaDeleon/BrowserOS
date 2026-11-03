@@ -1433,6 +1433,10 @@ mod tests {
     }
 
     /// Whether this read is one of the failures `counter` still holds, using it up if so.
+    #[allow(
+        deprecated,
+        reason = "fetch_update retains Rust 1.94 compatibility; renamed in Rust 1.99"
+    )]
     fn take_failure(counter: &AtomicUsize) -> bool {
         counter
             .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |left| match left {

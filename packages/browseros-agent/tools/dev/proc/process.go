@@ -429,7 +429,7 @@ func isBrowserProcessForUserDataDir(command string, userDataDirs []string, inclu
 
 func isBrowserAppCommand(command string) bool {
 	return strings.Contains(command, "BrowserOS.app/Contents/MacOS/BrowserOS") ||
-		strings.Contains(command, "BrowserOS neo.app/Contents/MacOS/BrowserOS neo")
+		strings.Contains(command, "BrowserRAD.app/Contents/MacOS/BrowserRAD")
 }
 
 func watchRunPaths(baseDir string, identity WatchRunIdentity) watchRunPathsResult {

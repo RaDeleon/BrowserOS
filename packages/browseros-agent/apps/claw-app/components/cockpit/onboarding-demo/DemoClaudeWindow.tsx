@@ -29,7 +29,7 @@ const ROW = 'flex h-7 flex-none items-center gap-[7px] rounded-[7px] px-2'
  * 5), in Claude's own default light theme (round 8) and the system face, as
  * Paper draws it. It opens on Chat, and the Switch beat moves it to Code
  * (round 9): only then do the code recents, the code placeholder and the
- * "BrowserOS neo ✓" chip (the one sign of the connection) appear. The cockpit
+ * "BrowserRAD ✓" chip (the one sign of the connection) appear. The cockpit
  * window has no "Browsing…" line: tool row ③ already shows the work (Paper).
  */
 export function DemoClaudeWindow({

@@ -12,10 +12,18 @@ use crate::{
 };
 use futures_util::future::BoxFuture;
 use serde_json::Value;
-use std::sync::atomic::{AtomicI64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};
 
 const SWEEP_EVERY_MS: i64 = 60 * 60 * 1000;
 static LAST_SWEEP_MS: AtomicI64 = AtomicI64::new(0);
+static SWEEP_RUNNING: AtomicBool = AtomicBool::new(false);
+
+struct SweepGuard;
+impl Drop for SweepGuard {
+    fn drop(&mut self) {
+        SWEEP_RUNNING.store(false, Ordering::Release);
+    }
+}
 
 pub fn apply(context: ToolObserverContext<'_>) -> BoxFuture<'_, anyhow::Result<()>> {
     Box::pin(async move {
@@ -46,18 +54,23 @@ pub fn apply(context: ToolObserverContext<'_>) -> BoxFuture<'_, anyhow::Result<(
             context.result.is_error,
         );
         let session = call.session_id.as_str().to_string();
+        let sweep_dir = dir.clone();
+        tokio::task::spawn_blocking(move || run_journal::append(&dir, &session, &entry)).await??;
         let now = now_epoch_ms();
-        let sweep = now - LAST_SWEEP_MS.load(Ordering::Relaxed) > SWEEP_EVERY_MS;
-        if sweep {
-            LAST_SWEEP_MS.store(now, Ordering::Relaxed);
+        if now.saturating_sub(LAST_SWEEP_MS.load(Ordering::Acquire)) > SWEEP_EVERY_MS
+            && SWEEP_RUNNING
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
+                .is_ok()
+        {
+            tokio::task::spawn_blocking(move || {
+                let _guard = SweepGuard;
+                // Recheck after admission: another sweep may have just finished.
+                if now.saturating_sub(LAST_SWEEP_MS.load(Ordering::Acquire)) > SWEEP_EVERY_MS {
+                    run_journal::sweep(&sweep_dir, RETENTION);
+                    LAST_SWEEP_MS.store(now, Ordering::Release);
+                }
+            });
         }
-        tokio::task::spawn_blocking(move || {
-            if sweep {
-                run_journal::sweep(&dir, RETENTION);
-            }
-            run_journal::append(&dir, &session, &entry)
-        })
-        .await??;
         Ok(())
     })
 }

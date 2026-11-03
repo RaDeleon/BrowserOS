@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>BrowserRAD synthetic benchmark</title>
+<style>body{font:18px system-ui;max-width:760px;margin:60px auto;background:#f4f1e9;color:#202020}label,input,button{display:block;margin:14px 0}input,button{font:inherit;padding:12px}aside{color:#777}output{display:block;padding:16px;border:1px solid}</style>
+<h1>BrowserRAD benchmark fixture</h1><aside>Public synthetic data. No accounts or external requests.</aside>
+<main id="inventory"><h2>Inventory</h2><p>Item: RAD-042</p><p>Stock: 17</p><p>Price: 29 credits</p><p role="status">Inventory verified</p></main>
+<form id="form"><label for="name">Project name</label><input id="name" name="name"><button id="save">Save project</button><output id="result" role="status">No project saved</output></form>
+<script>document.querySelector('#form').addEventListener('submit',e=>{e.preventDefault();document.querySelector('#result').textContent='Saved: '+document.querySelector('#name').value});</script>
+</html>

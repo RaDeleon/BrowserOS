@@ -16,9 +16,9 @@ import urllib.request
 MANAGED_IDS = {
     "bflpfmnmnokmjhmgnolecpppdbdophmk",
     "adlpneommgkgeanpaekgoaolcpncohkf",
-    "pjimfkbpehlcllblajnpfamdfjhhlgkc",
+    "efdbmkebmplcaefnjkgfnnbmgdjndifl",
 }
-NEO_IDS = {"adlpneommgkgeanpaekgoaolcpncohkf", "pjimfkbpehlcllblajnpfamdfjhhlgkc"}
+NEO_IDS = {"adlpneommgkgeanpaekgoaolcpncohkf", "efdbmkebmplcaefnjkgfnnbmgdjndifl"}
 
 
 def extension_state() -> dict:

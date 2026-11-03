@@ -12,9 +12,13 @@ use std::{
     fs,
     io::{self, Write},
     path::{Path, PathBuf},
+    sync::Mutex,
     time::{Duration, SystemTime},
 };
 
+// Retention runs in the background. Serialize short file mutations so it cannot
+// delete a journal after checking old metadata while another call appends to it.
+static FILE_MUTATIONS: Mutex<()> = Mutex::new(());
 const JOURNAL_DIR: &str = "journal";
 pub const RETENTION: Duration = Duration::from_secs(24 * 60 * 60);
 const MAX_VALUE_BYTES: usize = 8 * 1024;
@@ -111,6 +115,9 @@ pub fn append(browserclaw_dir: &Path, session: &str, entry: &JournalEntry) -> io
     let Some(path) = session_file(browserclaw_dir, session) else {
         return Ok(());
     };
+    let _guard = FILE_MUTATIONS
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     fs::create_dir_all(journal_dir(browserclaw_dir))?;
     let mut file = fs::OpenOptions::new()
         .create(true)
@@ -138,6 +145,9 @@ pub fn read(browserclaw_dir: &Path, session: &str) -> Vec<JournalEntry> {
 
 pub fn remove(browserclaw_dir: &Path, session: &str) {
     if let Some(path) = session_file(browserclaw_dir, session) {
+        let _guard = FILE_MUTATIONS
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let _ = fs::remove_file(path);
     }
 }
@@ -158,8 +168,22 @@ pub fn sweep(browserclaw_dir: &Path, max_age: Duration) -> usize {
                 .and_then(|modified| now.duration_since(modified).ok())
                 .is_some_and(|age| age > max_age)
         })
-        .filter(|entry| fs::remove_file(entry.path()).is_ok())
+        .filter(|entry| remove_if_expired(&entry.path(), max_age))
         .count()
+}
+
+fn remove_if_expired(path: &Path, max_age: Duration) -> bool {
+    let _guard = FILE_MUTATIONS
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    // The directory scan happened without the lock; an append may have refreshed
+    // this candidate since then. Recheck under the same lock used by append.
+    let expired = fs::metadata(path)
+        .and_then(|meta| meta.modified())
+        .ok()
+        .and_then(|modified| SystemTime::now().duration_since(modified).ok())
+        .is_some_and(|age| age > max_age);
+    expired && fs::remove_file(path).is_ok()
 }
 
 #[cfg(test)]
@@ -212,6 +236,25 @@ mod tests {
         append(dir.path(), "fresh", &entry)?;
         assert_eq!(sweep(dir.path(), RETENTION), 0);
         assert_eq!(sweep(dir.path(), Duration::ZERO), 1);
+        Ok(())
+    }
+    #[test]
+    fn retention_candidate_refreshed_by_append_is_not_deleted() -> anyhow::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let entry = JournalEntry::from_run("d".into(), 0, 0, "x", &json!({}), false);
+        append(dir.path(), "active", &entry)?;
+        let candidate =
+            session_file(dir.path(), "active").ok_or_else(|| anyhow::anyhow!("valid session"))?;
+        let old = SystemTime::now() - RETENTION * 2;
+        fs::File::options()
+            .write(true)
+            .open(&candidate)?
+            .set_times(fs::FileTimes::new().set_modified(old))?;
+        // A sweep can have selected this old path before a concurrent append.
+        assert!(candidate.metadata()?.modified()? < SystemTime::now() - RETENTION);
+        append(dir.path(), "active", &entry)?;
+        assert!(!remove_if_expired(&candidate, RETENTION));
+        assert_eq!(read(dir.path(), "active").len(), 2);
         Ok(())
     }
 }

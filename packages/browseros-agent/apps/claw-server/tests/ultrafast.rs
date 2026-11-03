@@ -130,27 +130,27 @@ async fn finished_session(state: &AppState, session: &str) -> anyhow::Result<()>
 async fn a_handed_back_run_keeps_its_mode_even_when_the_agent_marks_it_too() -> anyhow::Result<()> {
     let app = test_app().await?;
     let state = &app.state;
-    create_skill(state, "neo-shop-add").await?;
+    create_skill(state, "rad-shop-add").await?;
     finished_session(state, "uf-sess").await?;
 
     state
         .skill_runs
         .mark_as(
             "uf-sess",
-            "neo-shop-add",
+            "rad-shop-add",
             &RunMode::handed_back(2, "site_changed"),
         )
         .await?;
     // The agent finishing by hand marks the run as well; that must not erase the handover.
-    state.skill_runs.mark("uf-sess", "neo-shop-add").await?;
+    state.skill_runs.mark("uf-sess", "rad-shop-add").await?;
     assert!(state.skill_runs.finalize("uf-sess").await?);
 
-    let run = &state.skills.get("neo-shop-add").await?.runs[0];
+    let run = &state.skills.get("rad-shop-add").await?.runs[0];
     assert_eq!(run.mode, "handed_back");
     assert_eq!(run.handover_step, Some(2));
     assert_eq!(run.handover_cause.as_deref(), Some("site_changed"));
 
-    let (status, runs) = get(&app.router, "/api/v1/skills/neo-shop-add/runs").await?;
+    let (status, runs) = get(&app.router, "/api/v1/skills/rad-shop-add/runs").await?;
     assert_eq!(status, StatusCode::OK);
     assert_eq!(runs["items"][0]["mode"], "handed_back");
     assert_eq!(runs["items"][0]["handoverStep"], 2);
@@ -162,11 +162,11 @@ async fn a_handed_back_run_keeps_its_mode_even_when_the_agent_marks_it_too() -> 
 async fn a_plain_agent_run_is_recorded_as_agent() -> anyhow::Result<()> {
     let app = test_app().await?;
     let state = &app.state;
-    create_skill(state, "neo-shop-add").await?;
+    create_skill(state, "rad-shop-add").await?;
     finished_session(state, "plain-sess").await?;
-    state.skill_runs.mark("plain-sess", "neo-shop-add").await?;
+    state.skill_runs.mark("plain-sess", "rad-shop-add").await?;
     assert!(state.skill_runs.finalize("plain-sess").await?);
-    let run = &state.skills.get("neo-shop-add").await?.runs[0];
+    let run = &state.skills.get("rad-shop-add").await?.runs[0];
     assert_eq!(run.mode, "agent");
     assert_eq!(run.handover_step, None);
     Ok(())
@@ -176,12 +176,12 @@ async fn a_plain_agent_run_is_recorded_as_agent() -> anyhow::Result<()> {
 async fn ultrafast_state_is_reported_on_skills() -> anyhow::Result<()> {
     let app = test_app().await?;
     let state = &app.state;
-    create_skill(state, "neo-shop-add").await?;
+    create_skill(state, "rad-shop-add").await?;
 
-    let (_, detail) = get(&app.router, "/api/v1/skills/neo-shop-add").await?;
+    let (_, detail) = get(&app.router, "/api/v1/skills/rad-shop-add").await?;
     assert_eq!(detail["skill"]["ultrafast"]["status"], "none");
 
-    let mut row = flow::new_row("neo-shop-add", FlowStatus::Verified);
+    let mut row = flow::new_row("rad-shop-add", FlowStatus::Verified);
     row.flow_version = 2;
     row.effects = Some("write".to_string());
     row.p50_ms = Some(1_200);
@@ -194,8 +194,8 @@ async fn ultrafast_state_is_reported_on_skills() -> anyhow::Result<()> {
     assert_eq!(ultrafast["writeApproved"], flow::WRITES_ALLOWED_BY_DEFAULT);
     assert_eq!(ultrafast["p50Ms"], 1_200);
 
-    state.skills.delete("neo-shop-add").await?;
-    assert!(state.skills.flow_row("neo-shop-add").await?.is_none());
+    state.skills.delete("rad-shop-add").await?;
+    assert!(state.skills.flow_row("rad-shop-add").await?.is_none());
     Ok(())
 }
 
@@ -216,7 +216,7 @@ fn two_step_flow() -> flow::store::FlowDoc {
     use flow::store::{Effects, FlowDoc, FlowMeta, FlowStep};
     FlowDoc {
         meta: FlowMeta {
-            name: "neo-shop-add".to_string(),
+            name: "rad-shop-add".to_string(),
             flow_version: 1,
             effects: Effects::Read,
             hosts: vec![],
@@ -239,16 +239,16 @@ fn two_step_flow() -> flow::store::FlowDoc {
 async fn editing_steps_keeps_run_it_fast_only_while_they_line_up() -> anyhow::Result<()> {
     let app = test_app().await?;
     let state = &app.state;
-    create_skill(state, "neo-shop-add").await?;
-    flow::store::write(&state.skills.skill_dir("neo-shop-add"), &two_step_flow())?;
+    create_skill(state, "rad-shop-add").await?;
+    flow::store::write(&state.skills.skill_dir("rad-shop-add"), &two_step_flow())?;
     state
         .skills
-        .put_flow_row(flow::new_row("neo-shop-add", FlowStatus::Verified))
+        .put_flow_row(flow::new_row("rad-shop-add", FlowStatus::Verified))
         .await?;
 
     let (status, detail) = put(
         &app.router,
-        "/api/v1/skills/neo-shop-add",
+        "/api/v1/skills/rad-shop-add",
         json!({ "steps": ["Open the search", "Add the first match"], "learnedNotes": [] }),
     )
     .await?;
@@ -259,7 +259,7 @@ async fn editing_steps_keeps_run_it_fast_only_while_they_line_up() -> anyhow::Re
 
     let (_, detail) = put(
         &app.router,
-        "/api/v1/skills/neo-shop-add",
+        "/api/v1/skills/rad-shop-add",
         json!({ "steps": ["Open", "Look", "Add"], "learnedNotes": [] }),
     )
     .await?;

@@ -200,6 +200,21 @@ function harness(
 }
 
 describe('agent pointer page expression', () => {
+  test('BrowserRAD instant indicator arrives without waiting for animation frames', async () => {
+    const h = harness({ framesPaused: true })
+    const result = await h.execute({
+      ...command,
+      instant: true,
+    } as typeof command)
+    expect(result).toEqual({ status: 'arrived' })
+    expect(h.context.moves || 0).toBe(0)
+    expect(h.api().pos).toEqual({ x: command.x, y: command.y })
+    expect(h.api().hide()).toBe(true)
+    expect(h.api().show()).toBe(true)
+    await h.advance(4100)
+    expect(h.root.children).toHaveLength(0)
+  })
+
   test('tests that hidden and frame contexts skip before DOM work or bundle execution', async () => {
     for (const [options, reason] of [
       [{ hidden: true }, 'hidden'],

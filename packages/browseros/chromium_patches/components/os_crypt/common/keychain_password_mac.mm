@@ -17,8 +17,8 @@ index 212b93095214422112afd346e36cd2838891725b..6422141bbe9154f6c0f4922a43a122cf
 -const char kDefaultServiceName[] = "Chromium Safe Storage";
 -const char kDefaultAccountName[] = "Chromium";
 +#if BUILDFLAG(BROWSEROS_PRODUCT_BROWSERCLAW)
-+const char kDefaultServiceName[] = "BrowserClaw Safe Storage";
-+const char kDefaultAccountName[] = "BrowserClaw";
++const char kDefaultServiceName[] = "BrowserRAD Safe Storage";
++const char kDefaultAccountName[] = "BrowserRAD";
 +#else
 +const char kDefaultServiceName[] = "BrowserOS Safe Storage";
 +const char kDefaultAccountName[] = "BrowserOS";

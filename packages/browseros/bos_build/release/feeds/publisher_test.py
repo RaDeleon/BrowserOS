@@ -1172,10 +1172,11 @@ class PublisherTestCase(unittest.TestCase):
                 )
                 self.assertIsNotNone(extract_appcast_version(content))
 
+        # Historical upstream snapshots are not a published BrowserRAD release.
         expected_extension_ids = {
-            extension.extension_id
-            for extension in EXTENSIONS
-            if extension.in_update_feed
+            "adlpneommgkgeanpaekgoaolcpncohkf",
+            "bflpfmnmnokmjhmgnolecpppdbdophmk",
+            "pjimfkbpehlcllblajnpfamdfjhhlgkc",
         }
         for channel in ("alpha", "prod"):
             spec = update_manifest_feed(channel)
@@ -1189,7 +1190,7 @@ class PublisherTestCase(unittest.TestCase):
                     expected_extension_ids,
                 )
 
-    def test_browserclaw_snapshots_use_current_product_title(self):
+    def test_browserclaw_snapshots_retain_upstream_title_until_a_fork_release(self):
         updates = Path(__file__).resolve().parents[5] / "updates" / "browser"
 
         for spec in browser_feeds_for_product("browserclaw"):
@@ -1197,7 +1198,7 @@ class PublisherTestCase(unittest.TestCase):
                 content = (updates / spec.key).read_text()
                 self.assertEqual(
                     extract_channel_metadata(content),
-                    (spec.title, spec.link),
+                    (spec.title.replace("BrowserRAD", "BrowserOS neo"), spec.link),
                 )
                 self.assertNotIn("<title>BrowserClaw", content)
 
@@ -1268,9 +1269,9 @@ class PublisherTestCase(unittest.TestCase):
                     if name != "browserclaw"
                 }
             ),
-            canonical.replace("pjimfkbpehlcllblajnpfamdfjhhlgkc", "a" * 32),
+            canonical.replace("efdbmkebmplcaefnjkgfnnbmgdjndifl", "a" * 32),
             canonical.replace(
-                "pjimfkbpehlcllblajnpfamdfjhhlgkc",
+                "efdbmkebmplcaefnjkgfnnbmgdjndifl",
                 "bflpfmnmnokmjhmgnolecpppdbdophmk",
             ),
             canonical.replace(

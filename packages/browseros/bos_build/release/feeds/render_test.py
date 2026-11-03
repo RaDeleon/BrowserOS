@@ -144,7 +144,7 @@ GOLDEN_EXTENSIONS_JSON = """\
     "bflpfmnmnokmjhmgnolecpppdbdophmk": {
       "external_update_url": "https://cdn.browseros.com/extensions/update-manifest.alpha.xml"
     },
-    "pjimfkbpehlcllblajnpfamdfjhhlgkc": {
+    "efdbmkebmplcaefnjkgfnnbmgdjndifl": {
       "external_update_url": "https://cdn.browseros.com/extensions/update-manifest.alpha.xml"
     }
   }
@@ -293,7 +293,7 @@ class ExtensionsRenderTest(unittest.TestCase):
 
     def test_extensions_json_prod_points_at_prod_manifest(self):
         content = render_extensions_json("prod")
-        self.assertIn("pjimfkbpehlcllblajnpfamdfjhhlgkc", content)
+        self.assertIn("efdbmkebmplcaefnjkgfnnbmgdjndifl", content)
         self.assertIn(
             "https://cdn.browseros.com/extensions/update-manifest.xml", content
         )
@@ -352,7 +352,7 @@ class ExtensionsRenderTest(unittest.TestCase):
             {
                 "adlpneommgkgeanpaekgoaolcpncohkf",
                 "bflpfmnmnokmjhmgnolecpppdbdophmk",
-                "pjimfkbpehlcllblajnpfamdfjhhlgkc",
+                "efdbmkebmplcaefnjkgfnnbmgdjndifl",
             },
         )
 
@@ -364,11 +364,11 @@ class ExtensionsRenderTest(unittest.TestCase):
             }
         )
         unknown = canonical.replace(
-            "pjimfkbpehlcllblajnpfamdfjhhlgkc",
+            "efdbmkebmplcaefnjkgfnnbmgdjndifl",
             "a" * 32,
         )
         duplicate = canonical.replace(
-            "pjimfkbpehlcllblajnpfamdfjhhlgkc",
+            "efdbmkebmplcaefnjkgfnnbmgdjndifl",
             "bflpfmnmnokmjhmgnolecpppdbdophmk",
         )
         swapped = canonical.replace(

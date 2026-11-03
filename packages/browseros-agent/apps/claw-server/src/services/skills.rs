@@ -23,12 +23,12 @@ const RESERVED_SKILL_NAMES: [&str; 1] = ["browserclaw"];
 /// Every user- and agent-authored skill is namespaced under this prefix so its
 /// on-disk and linked-agent directory can never collide with a user's own
 /// skill, and so a user can list them all by typing `/neo` in their agent.
-const NEO_SKILL_PREFIX: &str = "neo-";
+const NEO_SKILL_PREFIX: &str = "rad-";
 const DEFAULT_RUN_LIMIT: u64 = 25;
 const MAX_RUN_LIMIT: u64 = 100;
 
 /// Where the agent gets told to drive the browser from a skill's frontmatter.
-const SKILL_TOOLS: &str = "browseros-neo";
+const SKILL_TOOLS: &str = "browserrad";
 
 /// Skill creation surface, independent of transport. The MCP tool and the REST
 /// handler both build this.
@@ -600,8 +600,8 @@ fn is_valid_skill_name(name: &str) -> bool {
             .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
 }
 
-/// Namespace a name under `neo-`. Idempotent: an already-prefixed name is
-/// returned unchanged, so an agent may pass either `weather` or `neo-weather`.
+/// Namespace a name under `rad-`. Idempotent: an already-prefixed name is
+/// returned unchanged, so an agent may pass either `weather` or `rad-weather`.
 pub(crate) fn neo_prefixed(name: &str) -> String {
     if name.starts_with(NEO_SKILL_PREFIX) {
         name.to_owned()
@@ -610,7 +610,7 @@ pub(crate) fn neo_prefixed(name: &str) -> String {
     }
 }
 
-/// Validate a raw skill name and return its canonical `neo-`-prefixed form.
+/// Validate a raw skill name and return its canonical `rad-`-prefixed form.
 fn normalized_skill_name(raw: &str) -> AppResult<String> {
     if !is_valid_skill_name(raw) {
         return Err(AppError::bad_request(
@@ -620,7 +620,7 @@ fn normalized_skill_name(raw: &str) -> AppResult<String> {
     let name = neo_prefixed(raw);
     if name.len() <= NEO_SKILL_PREFIX.len() {
         return Err(AppError::bad_request(
-            "skill name must have a slug after the neo- prefix",
+            "skill name must have a slug after the rad- prefix",
         ));
     }
     if RESERVED_SKILL_NAMES.contains(&name.as_str()) {
@@ -705,7 +705,7 @@ fn render_skill_markdown(
     let mut out = format!(
         "---\nname: {name}\ndescription: {description}\ntools: {SKILL_TOOLS}\n---\n\n## Steps\n"
     );
-    // Every run marks itself so BrowserOS neo records the run and its cost.
+    // Every run marks itself so BrowserRAD records the run and its cost.
     out.push_str(&format!(
         "1. Call the mark_skill_run tool with name: {name} so this run is recorded.\n"
     ));
@@ -783,8 +783,8 @@ mod tests {
         let steps = vec!["Open the search.".to_string(), "Add it.".to_string()];
         let notes = vec!["The grid fills late.".to_string()];
         assert_eq!(
-            render_skill_markdown("neo-shop", "Add to cart", &steps, &notes),
-            "---\nname: neo-shop\ndescription: \"Add to cart\"\ntools: browseros-neo\n---\n\n## Steps\n1. Call the mark_skill_run tool with name: neo-shop so this run is recorded.\n2. Open the search.\n3. Add it.\n\n## Learned from past runs\n- The grid fills late.\n"
+            render_skill_markdown("rad-shop", "Add to cart", &steps, &notes),
+            "---\nname: rad-shop\ndescription: \"Add to cart\"\ntools: browserrad\n---\n\n## Steps\n1. Call the mark_skill_run tool with name: rad-shop so this run is recorded.\n2. Open the search.\n3. Add it.\n\n## Learned from past runs\n- The grid fills late.\n"
         );
     }
 
@@ -799,12 +799,12 @@ mod tests {
                 ("match".to_string(), "string".to_string()),
             ],
         };
-        let body = render_ultrafast_markdown("neo-shop", "Add to cart", &steps, &notes, &fast);
+        let body = render_ultrafast_markdown("rad-shop", "Add to cart", &steps, &notes, &fast);
         assert!(body.contains("ultrafast: verified\n"));
         assert!(body.contains(
-            "Call the run_skill tool with name: neo-shop and inputs { query: string, match: string }."
+            "Call the run_skill tool with name: rad-shop and inputs { query: string, match: string }."
         ));
-        assert!(body.contains("call the mark_skill_run tool with name: neo-shop, then follow"));
+        assert!(body.contains("call the mark_skill_run tool with name: rad-shop, then follow"));
         assert!(body.contains("## Steps\n1. Open the search.\n2. Add it.\n"));
         // Steps and notes survive a round trip, so the skill can drop back to plain prose.
         assert_eq!(prose_steps(&body), steps);
@@ -813,26 +813,26 @@ mod tests {
 
     #[test]
     fn neo_prefixed_is_idempotent() {
-        assert_eq!(neo_prefixed("weather"), "neo-weather");
-        assert_eq!(neo_prefixed("neo-weather"), "neo-weather");
-        // Only a leading prefix is collapsed; an interior "neo-" is untouched.
-        assert_eq!(neo_prefixed("weather-neo-check"), "neo-weather-neo-check");
+        assert_eq!(neo_prefixed("weather"), "rad-weather");
+        assert_eq!(neo_prefixed("rad-weather"), "rad-weather");
+        // Only a leading prefix is collapsed; an interior "rad-" is untouched.
+        assert_eq!(neo_prefixed("weather-rad-check"), "rad-weather-rad-check");
     }
 
     #[test]
     fn normalized_skill_name_prefixes_and_validates() {
         assert_eq!(
             normalized_skill_name("weather").ok().as_deref(),
-            Some("neo-weather")
+            Some("rad-weather")
         );
         assert_eq!(
-            normalized_skill_name("neo-weather").ok().as_deref(),
-            Some("neo-weather")
+            normalized_skill_name("rad-weather").ok().as_deref(),
+            Some("rad-weather")
         );
         // Charset is rejected before prefixing.
         assert!(normalized_skill_name("Bad Name").is_err());
         assert!(normalized_skill_name("").is_err());
-        // A bare prefix has no slug after neo-.
-        assert!(normalized_skill_name("neo-").is_err());
+        // A bare prefix has no slug after rad-.
+        assert!(normalized_skill_name("rad-").is_err());
     }
 }

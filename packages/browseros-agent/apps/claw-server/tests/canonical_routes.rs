@@ -33,7 +33,7 @@ use tokio::sync::{Notify, broadcast};
 use tokio_util::sync::CancellationToken;
 use tower::ServiceExt;
 
-const BROWSERCLAW_EXTENSION_ORIGIN: &str = "chrome-extension://pjimfkbpehlcllblajnpfamdfjhhlgkc";
+const BROWSERCLAW_EXTENSION_ORIGIN: &str = "chrome-extension://efdbmkebmplcaefnjkgfnnbmgdjndifl";
 const EXPECTED_ALLOW_METHODS: &str = "GET,POST,PUT,PATCH,DELETE,OPTIONS";
 const EXPECTED_ALLOW_HEADERS: &str = "accept,content-type,authorization,mcp-session-id,mcp-protocol-version,last-event-id,x-recording-batch-id,x-recording-tab-id,x-recording-document-id,x-recording-has-gap";
 

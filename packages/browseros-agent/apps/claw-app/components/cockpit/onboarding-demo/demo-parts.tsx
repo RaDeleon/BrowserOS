@@ -115,11 +115,11 @@ export function PointerArrow({ className }: { className?: string }) {
   )
 }
 
-/** The three browseros-neo calls every flow shows, with what each touched. */
+/** The three browserrad calls every flow shows, with what each touched. */
 export const TOOL_CALLS = [
-  { name: 'browseros-neo · navigate', arg: 'google.com/travel/flights' },
-  { name: 'browseros-neo · fill', arg: 'New York · Fri' },
-  { name: 'browseros-neo · read', arg: '5 flights' },
+  { name: 'browserrad · navigate', arg: 'google.com/travel/flights' },
+  { name: 'browserrad · fill', arg: 'New York · Fri' },
+  { name: 'browserrad · read', arg: '5 flights' },
 ] as const
 
 /** Each app window's own colours for the tool rows (literal for Tailwind). */
@@ -196,7 +196,7 @@ export function DemoToolRows({
   )
 }
 
-/** The one sign of the connection in an app window: "BrowserOS neo ✓". */
+/** The one sign of the connection in an app window: "BrowserRAD ✓". */
 export function NeoConnectedChip({ className }: { className?: string }) {
   return (
     <span
@@ -206,7 +206,7 @@ export function NeoConnectedChip({ className }: { className?: string }) {
       )}
     >
       <DemoNeoMark className="size-3.5 rounded-[4px]" />
-      BrowserOS neo
+      BrowserRAD
       <Check aria-hidden className="size-[11px]" strokeWidth={2.5} />
     </span>
   )

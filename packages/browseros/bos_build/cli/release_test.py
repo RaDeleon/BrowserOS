@@ -332,7 +332,7 @@ def _configured_r2_env():
 
 
 def _github_metadata(product: str = "browserclaw"):
-    prefix = "BrowserOS_neo" if product == "browserclaw" else "BrowserOS"
+    prefix = "BrowserRAD" if product == "browserclaw" else "BrowserOS"
     filename = f"{prefix}_v0.49.0_x64_installer.exe"
     zip_filename = f"{prefix}_v0.49.0_x64_installer.zip"
     return {
@@ -362,8 +362,8 @@ def _linux_metadata():
     """A complete arm64 receipt from the same frozen Neo release transaction."""
     release = {**_github_metadata()["win"], "platform": "linux", "artifacts": {}}
     for key, filename in (
-        ("arm64_appimage", "BrowserOS_neo_v0.49.0_arm64.AppImage"),
-        ("arm64_deb", "BrowserOS_neo_v0.49.0_arm64.deb"),
+        ("arm64_appimage", "BrowserRAD_v0.49.0_arm64.AppImage"),
+        ("arm64_deb", "BrowserRAD_v0.49.0_arm64.deb"),
     ):
         release["artifacts"][key] = {
             "filename": filename,
@@ -487,13 +487,13 @@ class GithubCreateCliIntegrityTest(unittest.TestCase):
             mock.patch.object(
                 github_module,
                 "download_and_upload_artifacts",
-                return_value=[("BrowserOS_neo_installer.exe", False)],
+                return_value=[("BrowserRAD_installer.exe", False)],
             ),
         ):
             result = self.invoke_create()
 
         self.assertNotEqual(result.exit_code, 0)
-        self.assertIn("BrowserOS_neo_installer.exe", plain_output(result))
+        self.assertIn("BrowserRAD_installer.exe", plain_output(result))
 
     def test_zero_asset_candidates_makes_actual_cli_exit_nonzero(self):
         with (
@@ -526,7 +526,7 @@ class GithubCreateCliIntegrityTest(unittest.TestCase):
             mock.patch.object(
                 github_module,
                 "download_and_upload_artifacts",
-                return_value=[("BrowserOS_neo_installer.exe", True)],
+                return_value=[("BrowserRAD_installer.exe", True)],
             ),
             mock.patch.object(
                 github_module,
@@ -538,7 +538,7 @@ class GithubCreateCliIntegrityTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0, plain_output(result))
         args = create.call_args.args
-        self.assertIn("## BrowserOS neo v0.49.0", args[3])
+        self.assertIn("## BrowserRAD v0.49.0", args[3])
         self.assertEqual(args[0], "browserclaw/v0.49.0")
         self.assertEqual(args[5], target)
 
@@ -578,7 +578,7 @@ class GithubCreateCliIntegrityTest(unittest.TestCase):
             mock.patch.object(
                 github_module,
                 "download_and_upload_artifacts",
-                return_value=[("BrowserOS_neo_installer.exe", True)],
+                return_value=[("BrowserRAD_installer.exe", True)],
             ),
             mock.patch.object(
                 github_module,
@@ -667,8 +667,8 @@ class GithubCreateCliIntegrityTest(unittest.TestCase):
 
     def test_partial_refresh_never_deletes_other_platform_assets(self):
         existing_assets = [
-            "BrowserOS_neo_v0.49.0_universal.dmg",
-            "BrowserOS_neo_v0.49.0_x64_installer.exe",
+            "BrowserRAD_v0.49.0_universal.dmg",
+            "BrowserRAD_v0.49.0_x64_installer.exe",
         ]
         with (
             self.patches(),
@@ -848,8 +848,8 @@ class PublishCliIntegrityTest(unittest.TestCase):
             self.assertEqual(
                 {call.args[3] for call in copy.call_args_list},
                 {
-                    "download/BrowserOS_neo-arm64.AppImage",
-                    "download/BrowserOS_neo-arm64.deb",
+                    "download/BrowserRAD-arm64.AppImage",
+                    "download/BrowserRAD-arm64.deb",
                 },
             )
 
@@ -966,10 +966,10 @@ class PublishCliIntegrityTest(unittest.TestCase):
             "macos": {
                 "artifacts": {
                     "universal": {
-                        "filename": "BrowserOS_neo_v0.49.0_universal.dmg",
+                        "filename": "BrowserRAD_v0.49.0_universal.dmg",
                         "url": (
                             "https://cdn.browseros.com/releases/browserclaw/"
-                            "0.49.0/macos/BrowserOS_neo_v0.49.0_universal.dmg"
+                            "0.49.0/macos/BrowserRAD_v0.49.0_universal.dmg"
                         ),
                     }
                 }

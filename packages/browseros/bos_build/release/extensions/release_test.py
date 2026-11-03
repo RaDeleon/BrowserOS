@@ -32,7 +32,7 @@ ALL_KEYS = {
     "BROWSEROS_AGENT_V2_KEY": "agent-pem",
     "BROWSEROS_CONTROLLER_KEY": "controller-pem",
     "BUGREPORTER_KEY": "bugreporter-pem",
-    "BROWSERCLAW_KEY": "claw-pem",
+    "BROWSERRAD_EXTENSION_KEY": "claw-pem",
     "VITE_CLAW_POSTHOG_KEY": "phc-claw-app",
 }
 
@@ -604,13 +604,12 @@ class ValidateTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValidationError, "R2"):
                     self._module().validate(_ctx(has_r2=False))
 
-    def test_missing_browserclaw_build_env_names_the_variable(self):
+    def test_browserrad_build_does_not_require_analytics_key(self):
         env = dict(ALL_KEYS)
         env.pop("VITE_CLAW_POSTHOG_KEY")
         with patch.dict("os.environ", env, clear=True):
             with patch(f"{MODULE}.find_chrome_binary", return_value="chrome"):
-                with self.assertRaisesRegex(ValidationError, "VITE_CLAW_POSTHOG_KEY"):
-                    self._module(names=("browserclaw",)).validate(_ctx())
+                self._module(names=("browserclaw",)).validate(_ctx())
 
     def test_chrome_resolution_failure_fails_validation(self):
         with patch.dict("os.environ", ALL_KEYS):
@@ -631,30 +630,20 @@ class ManifestUpdateUrlTest(unittest.TestCase):
         self.dist_path = Path("apps/claw-app/dist/chrome-mv3")
         self.expected_url = "https://cdn.browseros.com/extensions/update-manifest.xml"
 
-    def test_in_feed_extension_without_update_url_fails(self):
-        with self.assertRaisesRegex(
-            RuntimeError, "browserclaw.*apps/claw-app/dist/chrome-mv3"
-        ):
-            _validate_manifest_update_url(
-                spec_by_name("browserclaw"), {}, self.dist_path
-            )
+    def test_browserrad_without_update_url_passes(self):
+        _validate_manifest_update_url(spec_by_name("browserclaw"), {}, self.dist_path)
 
-    def test_in_feed_extension_with_wrong_update_url_fails(self):
-        with self.assertRaisesRegex(
-            RuntimeError, "browserclaw.*apps/claw-app/dist/chrome-mv3"
-        ):
-            _validate_manifest_update_url(
-                spec_by_name("browserclaw"),
-                {"update_url": "https://example.com/update.xml"},
-                self.dist_path,
-            )
+    def test_browserrad_rejects_upstream_or_other_update_urls(self):
+        for url in (self.expected_url, "https://example.com/update.xml"):
+            with self.subTest(url=url), self.assertRaisesRegex(RuntimeError, "omit update_url"):
+                _validate_manifest_update_url(
+                    spec_by_name("browserclaw"), {"update_url": url}, self.dist_path
+                )
 
-    def test_in_feed_extension_with_expected_update_url_passes(self):
-        _validate_manifest_update_url(
-            spec_by_name("browserclaw"),
-            {"update_url": self.expected_url},
-            self.dist_path,
-        )
+    def test_upstream_agent_still_requires_its_feed(self):
+        with self.assertRaisesRegex(RuntimeError, "expected"):
+            _validate_manifest_update_url(spec_by_name("agent"), {}, self.dist_path)
+        _validate_manifest_update_url(spec_by_name("agent"), {"update_url": self.expected_url}, self.dist_path)
 
     def test_controller_without_update_url_passes(self):
         _validate_manifest_update_url(

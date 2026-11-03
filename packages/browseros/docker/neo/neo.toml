@@ -32,3 +32,7 @@
 # JavaScript world the page cannot see. false runs them in the page's own
 # world. Needs a claw-server newer than 0.0.84.
 # isolated_world = true
+
+# BrowserRAD preview: preserve the indicator while skipping animated travel.
+[performance]
+# instant_pointer = true

@@ -37,12 +37,12 @@ class ReleaseSourceKeyTest(unittest.TestCase):
             ctx,
             "macos",
             "0.31.0",
-            {"filename": "BrowserOS_neo_v0.31.0_universal.dmg"},
+            {"filename": "BrowserRAD_v0.31.0_universal.dmg"},
         )
 
         self.assertEqual(
             key,
-            "releases/browserclaw/0.31.0/macos/BrowserOS_neo_v0.31.0_universal.dmg",
+            "releases/browserclaw/0.31.0/macos/BrowserRAD_v0.31.0_universal.dmg",
         )
 
     def _ctx(self, product: str) -> Context:
@@ -74,7 +74,7 @@ class PublishModuleIntegrityTest(unittest.TestCase):
                     "win": {
                         "artifacts": {
                             "x64_installer": {
-                                "filename": "BrowserOS_neo_installer.exe",
+                                "filename": "BrowserRAD_installer.exe",
                                 "url": "https://cdn.browseros.com/installer.exe",
                             }
                         }
@@ -100,7 +100,7 @@ class PublishModuleIntegrityTest(unittest.TestCase):
             mock.ANY,
             "bucket",
             "installer.exe",
-            "download/BrowserOS_neo_installer.exe",
+            "download/BrowserRAD_installer.exe",
         )
 
     def test_default_selection_validates_only_loaded_platforms(self):
@@ -127,11 +127,11 @@ class PublishModuleIntegrityTest(unittest.TestCase):
                 "workflow_run_attempt": "1",
                 "artifacts": {
                     "x64_installer": {
-                        "filename": "BrowserOS_neo_installer.exe",
+                        "filename": "BrowserRAD_installer.exe",
                         "url": "https://cdn.browseros.com/installer.exe",
                     },
                     "x64_zip": {
-                        "filename": "BrowserOS_neo_installer.zip",
+                        "filename": "BrowserRAD_installer.zip",
                         "url": "https://cdn.browseros.com/installer.zip",
                     },
                 },
@@ -201,7 +201,7 @@ class PublishModuleIntegrityTest(unittest.TestCase):
                     "win": {
                         "artifacts": {
                             "x64_installer": {
-                                "filename": "BrowserOS_neo_installer.exe",
+                                "filename": "BrowserRAD_installer.exe",
                                 "url": "https://cdn.browseros.com/installer.exe",
                             }
                         }
@@ -264,10 +264,10 @@ class PublishModuleIntegrityTest(unittest.TestCase):
             "macos": {
                 "artifacts": {
                     "universal": {
-                        "filename": "BrowserOS_neo_v0.49.0_universal.dmg",
+                        "filename": "BrowserRAD_v0.49.0_universal.dmg",
                         "url": (
                             "https://cdn.browseros.com/releases/browserclaw/"
-                            "0.49.0/macos/BrowserOS_neo_v0.49.0_universal.dmg"
+                            "0.49.0/macos/BrowserRAD_v0.49.0_universal.dmg"
                         ),
                     }
                 }

@@ -121,7 +121,7 @@ class ProductUserDataDirPatchTest(unittest.TestCase):
             buildflags,
             re.compile(
                 r'\+if \(browseros_product_browserclaw\) \{\n'
-                r'\+  browseros_product_dir_name = "BrowserClaw"\n'
+                r'\+  browseros_product_dir_name = "BrowserRAD"\n'
                 r'\+\} else \{\n'
                 r'\+  browseros_product_dir_name = "BrowserOS"\n'
                 r'\+\}'

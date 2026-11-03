@@ -35,17 +35,17 @@ index 0000000000000000000000000000000000000000..c383a4374cc5a7bd4c4408c4efbdeb7d
 +
 +constexpr ManagedServerDescriptor kBrowserClawServerDescriptor = {
 +    Product::kBrowserClaw,
-+    "BrowserClaw server",
++    "BrowserRAD server",
 +    FILE_PATH_LITERAL("BrowserClawServer"),
 +    FILE_PATH_LITERAL("browseros-claw-server"),
 +    FILE_PATH_LITERAL("config.json"),
 +    "/system/health",
-+    true,
++    false,
 +    {
-+        // Isolate Claw OTA state under .browseros/BrowserClawServer/.
-+        FILE_PATH_LITERAL("BrowserClawServer"),
-+        "https://cdn.browseros.com/appcast-claw-server.xml",
-+        "https://cdn.browseros.com/appcast-claw-server.alpha.xml",
++        // Isolate BrowserRAD OTA state under .browseros/BrowserRADServer/.
++        FILE_PATH_LITERAL("BrowserRADServer"),
++        "",
++        "",
 +        // Claw does not expose the {can_update} readiness contract yet; empty
 +        // skips readiness and restarts after verification.
 +        "",

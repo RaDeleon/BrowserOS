@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BrowserOS neo — the browser for web agents."""
+"""BrowserRAD — the browser for web agents."""
 
 from pathlib import Path
 
@@ -14,28 +14,32 @@ from ..server_binaries import ServerBundle, SignSpec
 
 BROWSERCLAW_PRODUCT = ProductDescriptor.define(
     id="browserclaw",
-    display_name="BrowserOS neo",
-    windows_installer_guid="{FA2AFFF8-647B-477C-A5D2-905BA8DB9B82}",
+    display_name="BrowserRAD",
+    windows_installer_guid="{D31EA8BC-25D9-4A97-91A1-10E7A1BAA42B}",
+    company="TechInSF",
+    homepage_url="https://github.com/RaDeleon/BrowserOS",
+    support_url="https://github.com/RaDeleon/BrowserOS/discussions",
+    bugtracker_url="https://github.com/RaDeleon/BrowserOS/issues",
     summary="The open source browser for web agents",
-    description="BrowserOS neo is a Chromium-based browser for agent workflows.",
+    description="BrowserRAD is a Chromium-based browser for agent workflows.",
     required_extensions=(
-        (BROWSERCLAW_EXTENSION_ID, "BrowserOS neo app"),
+        (BROWSERCLAW_EXTENSION_ID, "BrowserRAD app"),
         (BROWSEROS_BUG_REPORTER_EXTENSION_ID, "BrowserOS bug reporter"),
     ),
     server_bundle_ids=("browserclaw-server",),
-    artifact_prefix="BrowserOS_neo",
+    artifact_prefix="BrowserRAD",
     mac=MacProductIdentity(
-        bundle_id="com.browseros.BrowserClaw",
-        dev_bundle_id="com.browseros.dev.BrowserClaw",
-        signing_identifier="com.browseros.BrowserClaw",
-        dev_signing_identifier="com.browseros.dev.BrowserClaw",
-        framework_name="BrowserOS neo Framework.framework",
-        dev_framework_name="BrowserOS neo Dev Framework.framework",
-        dmg_volume_name="BrowserOS neo",
+        bundle_id="com.techinsf.BrowserRAD",
+        dev_bundle_id="com.techinsf.dev.BrowserRAD",
+        signing_identifier="com.techinsf.BrowserRAD",
+        dev_signing_identifier="com.techinsf.dev.BrowserRAD",
+        framework_name="BrowserRAD Framework.framework",
+        dev_framework_name="BrowserRAD Dev Framework.framework",
+        dmg_volume_name="BrowserRAD",
     ),
     windows=WindowsProductIdentity(
-        app_user_model_id="BrowserOS.BrowserClaw",
-        installer_app_id="{FA2AFFF8-647B-477C-A5D2-905BA8DB9B82}",
+        app_user_model_id="TechInSF.BrowserRAD",
+        installer_app_id="{D31EA8BC-25D9-4A97-91A1-10E7A1BAA42B}",
     ),
 )
 

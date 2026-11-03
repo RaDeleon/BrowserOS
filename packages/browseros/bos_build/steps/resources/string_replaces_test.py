@@ -93,7 +93,7 @@ class ApplyStringReplacementsTest(unittest.TestCase):
         content = (
             self.chromium.src / "chrome" / "app" / "chromium_strings.grd"
         ).read_text()
-        self.assertIn("BrowserOS neo", content)
+        self.assertIn("BrowserRAD", content)
         self.assertNotIn("BrowserClaw", content)
 
 

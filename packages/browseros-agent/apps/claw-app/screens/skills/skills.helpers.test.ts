@@ -41,7 +41,7 @@ describe('parseSkillBody', () => {
     '---',
     'name: inbox-sweep',
     'description: "Check the inbox"',
-    'tools: browseros-neo',
+    'tools: browserrad',
     '---',
     '',
     '## Steps',

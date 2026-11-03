@@ -32,7 +32,7 @@ export default defineContentScript({
     let currentContext: TakeoverContext | null = null
 
     const ui = await createShadowRootUi<TakeoverBar>(ctx, {
-      name: 'browseros-neo-takeover',
+      name: 'browserrad-takeover',
       position: 'overlay',
       alignment: 'bottom-left',
       zIndex: 2147483000,

@@ -289,6 +289,10 @@ struct PaidSlot<'a> {
 }
 
 impl<'a> PaidSlot<'a> {
+    #[allow(
+        deprecated,
+        reason = "fetch_update retains Rust 1.94 compatibility; renamed in Rust 1.99"
+    )]
     fn reserve(paid: &'a AtomicU32, limit: u32) -> Option<Self> {
         paid.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |count| {
             (count < limit).then(|| count + 1)

@@ -125,13 +125,13 @@ EXTENSION_SPECS: Tuple[ExtensionSpec, ...] = (
         dist_path="apps/claw-app/dist/chrome-mv3",
         manifest_path="apps/claw-app/package.json",
         extension_id=BROWSERCLAW_EXTENSION_ID,
-        signing_key_env="BROWSERCLAW_KEY",
+        signing_key_env="BROWSERRAD_EXTENSION_KEY",
         env=(
             "VITE_CLAW_POSTHOG_KEY",
             "VITE_CLAW_POSTHOG_HOST",
             "NODE_ENV",
         ),
-        required_env=("VITE_CLAW_POSTHOG_KEY",),
+        required_env=(),  # Fork builds do not require an analytics account.
         env_dir="apps/claw-app",
     ),
 )

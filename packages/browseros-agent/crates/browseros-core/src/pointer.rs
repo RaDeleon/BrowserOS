@@ -16,7 +16,7 @@ use tokio::time::timeout;
 /// Enables page-local pointer animation for one browser execution view.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Pointer {
-    _private: (),
+    instant: bool,
 }
 
 #[derive(Debug, Clone, Copy, Serialize)]
@@ -29,6 +29,12 @@ pub(crate) enum PointerAction {
 }
 
 impl Pointer {
+    /// Keep the indicator and target recheck, without animated travel.
+    #[must_use]
+    pub fn instant() -> Self {
+        Self { instant: true }
+    }
+
     /// Only an explicit page-side skip preserves the original input sequence.
     /// A drawing error may follow partial travel, so the caller must recheck.
     pub(crate) async fn move_to(
@@ -46,6 +52,7 @@ impl Pointer {
         });
         let command = json!({
             "op": "move",
+            "instant": self.instant,
             "kind": action,
             "x": point.x,
             "y": point.y,
@@ -54,7 +61,8 @@ impl Pointer {
             "idleMs": timeouts::POINTER_IDLE.as_millis(),
         });
         let expression = template.replace("__BROWSEROS_POINTER_CMD__", &command.to_string());
-        match timeout(
+        let started = std::time::Instant::now();
+        let recheck = match timeout(
             timeouts::POINTER_MOVE_DEADLINE,
             PageJs::isolated(session).eval::<Value>(&expression),
         )
@@ -79,7 +87,13 @@ impl Pointer {
                 tracing::debug!("agent pointer move deadline elapsed");
                 true
             }
-        }
+        };
+        tracing::debug!(
+            instant = self.instant,
+            duration_ms = started.elapsed().as_secs_f64() * 1000.0,
+            "browserrad pointer phase"
+        );
+        recheck
     }
 
     pub(crate) async fn click_effect(&self, session: &ProtocolSession, point: Point) {
@@ -167,7 +181,7 @@ mod tests {
                 .as_str()
                 .ok_or("missing expression")?;
             let command = json!({
-                "op": "move", "kind": kind, "x": 12.5, "y": 35.0,
+                "op": "move", "instant": false, "kind": kind, "x": 12.5, "y": 35.0,
                 "travelMs": timeouts::POINTER_TRAVEL.as_millis(),
                 "timeoutMs": (timeouts::POINTER_TRAVEL * 2).as_millis(),
                 "idleMs": timeouts::POINTER_IDLE.as_millis(),

@@ -38,7 +38,7 @@ index 0000000000000..e7b9a3a608cde
 +    "adlpneommgkgeanpaekgoaolcpncohkf";
 +
 +inline constexpr char kBrowserClawExtensionId[] =
-+    "pjimfkbpehlcllblajnpfamdfjhhlgkc";
++    "efdbmkebmplcaefnjkgfnnbmgdjndifl";
 +
 +inline constexpr char kBrowserOSUpdateUrl[] =
 +    "https://cdn.browseros.com/extensions/update-manifest.xml";

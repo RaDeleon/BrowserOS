@@ -28,6 +28,8 @@ pub struct Behavior {
     /// page cannot see or tamper with (`browseros_core::page_js`). Off runs every script in the
     /// page's own world, as before isolated worlds; it is the rollout's off switch.
     pub isolated_world: bool,
+    /// BrowserRAD: instant visual feedback without removing input validation.
+    pub instant_pointer: bool,
 }
 
 impl Behavior {
@@ -43,6 +45,7 @@ impl Behavior {
                 ServerMode::Hosted => 30 * 60,
             }),
             isolated_world: true,
+            instant_pointer: true,
         }
     }
 }
@@ -114,6 +117,14 @@ struct Knob {
 
 /// Every key the behaviour file may set.
 const KNOBS: &[Knob] = &[
+    Knob {
+        section: "performance",
+        key: "instant_pointer",
+        apply: |behavior, value| {
+            behavior.instant_pointer = value.try_into()?;
+            Ok(())
+        },
+    },
     Knob {
         section: "tabs",
         key: "grouping",

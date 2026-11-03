@@ -40,7 +40,7 @@ export function SidebarBrand() {
         className="size-[30px] shrink-0 rounded-md"
       />
       <span className="truncate font-extrabold text-[16px] text-cyanotype-ink tracking-[-0.02em]">
-        BrowserOS neo
+        BrowserRAD
       </span>
     </div>
   )

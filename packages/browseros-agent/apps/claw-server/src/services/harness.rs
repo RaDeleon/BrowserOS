@@ -30,9 +30,9 @@ mod reconciliation;
 use preferences::Preferences;
 pub use reconciliation::ReconciliationOutcome;
 
-pub const BROWSEROS_MCP_SERVER_NAME: &str = "browseros-neo";
-pub const BROWSEROS_NEO_LEGACY_MCP_SERVER_NAME: &str = "BrowserOS neo";
-pub const BROWSERCLAW_LEGACY_MCP_SERVER_NAME: &str = "BrowserClaw";
+pub const BROWSEROS_MCP_SERVER_NAME: &str = "browserrad";
+pub const BROWSEROS_NEO_LEGACY_MCP_SERVER_NAME: &str = "BrowserRAD";
+pub const BROWSERCLAW_LEGACY_MCP_SERVER_NAME: &str = "BrowserRAD-preview";
 
 const BROWSEROS_LEGACY_MCP_SERVER_NAMES: [&str; 2] = [
     BROWSEROS_NEO_LEGACY_MCP_SERVER_NAME,
@@ -287,7 +287,7 @@ impl HarnessService {
         .await?
     }
 
-    /// The agents currently linked to BrowserOS neo over MCP, i.e. the set a
+    /// The agents currently linked to BrowserRAD over MCP, i.e. the set a
     /// newly authored skill links into by default.
     pub async fn connected_agents(&self) -> AppResult<BTreeSet<AgentId>> {
         let _guard = self.mutex.lock().await;
@@ -369,7 +369,7 @@ impl HarnessService {
 
         match result {
             Ok((created, config_path, skill_warning)) => {
-                tracing::info!(harness = %harness, agent = %agent, "connected BrowserOS neo to harness");
+                tracing::info!(harness = %harness, agent = %agent, "connected BrowserRAD to harness");
                 if created {
                     self.analytics.capture(
                         events::HARNESS_CONNECTED,
@@ -445,7 +445,7 @@ impl HarnessService {
                     agent = %agent,
                     unlinked,
                     removed_manifest,
-                    "disconnected BrowserOS neo from harness"
+                    "disconnected BrowserRAD from harness"
                 );
                 if unlinked {
                     self.analytics.capture(
@@ -694,8 +694,8 @@ fn reconcile_managed_skill(
         }
     };
     // Heal installs from before the skill directory was renamed: remove the legacy
-    // `browserclaw` directories (marker-verified) so the reconcile below replants the
-    // skill under its current `browseros-neo` name. Idempotent and a no-op once done.
+    // `browserrad-preview` directories (marker-verified) so reconcile replants the
+    // skill under its current `browserrad` name. Idempotent and a no-op once done.
     let migrated = reconciler.remove_legacy_directories(
         super::harness_skills::LEGACY_SKILL_DIRECTORY_NAME,
         &managed_skill.environment,
@@ -703,7 +703,7 @@ fn reconcile_managed_skill(
     if !migrated.is_empty() {
         tracing::info!(
             agents = ?migrated,
-            "migrated legacy BrowserOS neo skill directories to the current name"
+            "migrated legacy BrowserRAD skill directories to the current name"
         );
     }
     reconciler.reconcile(&managed_skill.spec, &consumers, &managed_skill.environment)
@@ -736,7 +736,7 @@ fn reconcile_skill_warning(
 fn with_skill_retry_message(message: String, warning: Option<String>) -> String {
     match warning {
         Some(warning) => format!(
-            "{message} BrowserOS neo skill reconciliation needs a retry on restart or reconnect: {warning}"
+            "{message} BrowserRAD skill reconciliation needs a retry on restart or reconnect: {warning}"
         ),
         None => message,
     }
@@ -839,7 +839,7 @@ fn migrate_browseros_identity(
         ) {
             Ok(true) => {
                 outcome.migrated += 1;
-                tracing::info!(harness = %harness, agent = %agent, "migrated BrowserOS neo MCP identity");
+                tracing::info!(harness = %harness, agent = %agent, "migrated BrowserRAD MCP identity");
             }
             Ok(false) => outcome.skipped += 1,
             Err(error) => {

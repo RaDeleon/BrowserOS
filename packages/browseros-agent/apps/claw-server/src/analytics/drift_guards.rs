@@ -53,7 +53,16 @@ mod tests {
     /// The page handle every page-scoped call hangs off. Parsed separately from the
     /// `browser` literal because it is built by a factory, not spelled inline.
     fn live_handle_members() -> Vec<String> {
-        let members = literal_members("return guard({", "      ");
+        let mut members = literal_members("const page = {", "      ");
+        let rad = include_str!("../../../../crates/browseros-mcp/src/tools/rad-runtime.js");
+        for line in rad.lines() {
+            if let Some(rest) = line.trim_start().strip_prefix("async ")
+                && let Some((name, _)) = rest.split_once('(')
+                && !name.is_empty()
+            {
+                members.push(name.to_string());
+            }
+        }
         assert!(
             members.len() >= 30,
             "parsed only {members:?} from the page handle, the parser has drifted"

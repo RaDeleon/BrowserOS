@@ -3,7 +3,7 @@
  * Copyright 2025 BrowserOS
  * SPDX-License-Identifier: AGPL-3.0-or-later
  *
- * Server-owned settings for the tools BrowserOS neo offers to agents, such as
+ * Server-owned settings for the tools BrowserRAD offers to agents, such as
  * whether they may ask a person for help. Callers publish a save's response to
  * the cache under `useAgentSettings.getKey()`.
  */

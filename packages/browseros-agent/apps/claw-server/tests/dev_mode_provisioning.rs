@@ -1,5 +1,5 @@
 //! A dev claw-server (tools/dev `dev:claw:watch`) shares the developer's home with their
-//! installed BrowserOS neo, and both name their MCP entry `browseros-neo`. These tests launch
+//! installed BrowserRAD, and both name their MCP entry `browserrad`. These tests launch
 //! the real binary against a disposable home holding the installed app's entry, so only a
 //! non-dev server may provision agent harnesses on its own.
 use std::{
@@ -29,7 +29,7 @@ fn dev_server_leaves_the_installed_apps_harness_configs_alone() -> anyhow::Resul
 
     assert_eq!(home.claude_mcp_url()?, INSTALLED_MCP_URL);
     assert!(
-        !home.path().join(".agents/skills/browseros-neo").exists(),
+        !home.path().join(".agents/skills/browserrad").exists(),
         "a dev server must not install its skill into the shared skill roots"
     );
     Ok(())
@@ -40,6 +40,16 @@ fn installed_server_provisions_harnesses_on_boot() -> anyhow::Result<()> {
     let home = Home::seeded()?;
     let server = Server::launch(&home, false)?;
     server.wait_for_any(&[PROVISIONING_RAN])?;
+    let config: Value =
+        serde_json::from_str(&fs::read_to_string(home.path().join(".claude.json"))?)?;
+    assert_eq!(
+        config["mcpServers"]["browseros-neo"]["url"],
+        "http://127.0.0.1:7777/mcp"
+    );
+    assert_eq!(
+        config["mcpServers"]["BrowserClaw"]["url"],
+        "http://127.0.0.1:7778/mcp"
+    );
 
     assert_eq!(
         home.claude_mcp_url()?,
@@ -60,7 +70,7 @@ impl Home {
         fs::create_dir_all(home.join(".claude"))?;
         fs::write(
             home.join(".claude.json"),
-            json!({ "mcpServers": { "browseros-neo": { "type": "http", "url": INSTALLED_MCP_URL } } })
+            json!({ "mcpServers": { "browserrad": { "type": "http", "url": INSTALLED_MCP_URL }, "browseros-neo": { "type": "http", "url": "http://127.0.0.1:7777/mcp" }, "BrowserClaw": { "type": "http", "url": "http://127.0.0.1:7778/mcp" } } })
                 .to_string(),
         )?;
         Ok(Self { root })
@@ -73,7 +83,7 @@ impl Home {
     fn claude_mcp_url(&self) -> anyhow::Result<String> {
         let config: Value =
             serde_json::from_str(&fs::read_to_string(self.path().join(".claude.json"))?)?;
-        Ok(config["mcpServers"]["browseros-neo"]["url"]
+        Ok(config["mcpServers"]["browserrad"]["url"]
             .as_str()
             .unwrap_or_default()
             .to_string())
@@ -99,7 +109,7 @@ impl Server {
             .env("HOME", home.path())
             .env("USERPROFILE", home.path())
             .env("PATH", "")
-            .env("BROWSERCLAW_DIR", home.root.path().join("state"))
+            .env("BROWSERRAD_DIR", home.root.path().join("state"))
             .env("CLAW_ANALYTICS_ENABLED", "false")
             .stdout(Stdio::null())
             .stderr(Stdio::piped())

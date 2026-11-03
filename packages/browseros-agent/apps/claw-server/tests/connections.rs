@@ -100,7 +100,7 @@ async fn run_connections_case() -> anyhow::Result<()> {
         browserclaw_dir.join("mcp-manager"),
         browserclaw_dir.join("harness-integrations"),
         home.clone(),
-        SkillSpec::new("browseros-neo", "managed skill v1\n")?,
+        SkillSpec::new("browserrad", "managed skill v1\n")?,
         analytics.clone(),
     );
     let paths = config_paths()?;
@@ -152,7 +152,7 @@ async fn run_connections_case() -> anyhow::Result<()> {
     let claude_path = path_for(&paths, AgentId::ClaudeCode)?;
     fs::write(
         claude_path,
-        r#"{"mcpServers":{"BrowserOS neo":{"command":"foreign"},"BrowserClaw":{"command":"unrelated"}}}"#,
+        r#"{"mcpServers":{"BrowserRAD":{"command":"foreign"},"BrowserRAD-preview":{"command":"unrelated"}}}"#,
     )?;
     let claude = service
         .connect_browseros(Harness::ClaudeCode, MCP_URL)
@@ -164,7 +164,7 @@ async fn run_connections_case() -> anyhow::Result<()> {
         claude.message,
         "BrowserOS registered as an MCP server in Claude Code."
     );
-    let claude_skill = home.join("skills/browseros-neo");
+    let claude_skill = home.join("skills/browserrad");
     assert_eq!(
         fs::read_to_string(claude_skill.join("SKILL.md"))?,
         "managed skill v1\n"
@@ -173,12 +173,12 @@ async fn run_connections_case() -> anyhow::Result<()> {
     let codex = service.connect_browseros(Harness::Codex, MCP_URL).await?;
     let zed = service.connect_browseros(Harness::Zed, MCP_URL).await?;
     assert!(codex.installed && zed.installed);
-    let shared_skill = home.join(".agents/skills/browseros-neo");
+    let shared_skill = home.join(".agents/skills/browserrad");
     assert_eq!(
         fs::read_to_string(shared_skill.join("SKILL.md"))?,
         "managed skill v1\n"
     );
-    let shared_target_path = fs::canonicalize(parent(&shared_skill)?)?.join("browseros-neo");
+    let shared_target_path = fs::canonicalize(parent(&shared_skill)?)?.join("browserrad");
     let skill_manifest_path = browserclaw_dir.join("harness-integrations/skills.json");
     let skill_manifest: Value = serde_json::from_str(&fs::read_to_string(&skill_manifest_path)?)?;
     let shared_record = skill_manifest["targets"]
@@ -206,7 +206,7 @@ async fn run_connections_case() -> anyhow::Result<()> {
     );
 
     let codex_raw = fs::read_to_string(path_for(&paths, AgentId::Codex)?)?;
-    assert!(codex_raw.contains("[mcp_servers.browseros-neo]"));
+    assert!(codex_raw.contains("[mcp_servers.browserrad]"));
     let codex_toml: toml::Value = toml::from_str(&codex_raw)?;
     assert_eq!(
         codex_toml["mcp_servers"][BROWSEROS_MCP_SERVER_NAME]["url"].as_str(),
@@ -280,7 +280,7 @@ async fn run_connections_case() -> anyhow::Result<()> {
         browserclaw_dir.join("mcp-manager"),
         browserclaw_dir.join("harness-integrations"),
         home.clone(),
-        SkillSpec::new("browseros-neo", "managed skill v2\n")?,
+        SkillSpec::new("browserrad", "managed skill v2\n")?,
         analytics.clone(),
     );
     let ota_update = ota_service.run_skill_reconciliation().await?;
@@ -374,7 +374,7 @@ async fn run_connections_case() -> anyhow::Result<()> {
     assert!(!codex.installed);
     assert_eq!(codex.message, "Codex is not configured.");
 
-    let antigravity_skill = home.join(".gemini/config/skills/browseros-neo");
+    let antigravity_skill = home.join(".gemini/config/skills/browserrad");
     fs::create_dir_all(&antigravity_skill)?;
     fs::write(antigravity_skill.join("SKILL.md"), "foreign skill")?;
     fs::write(antigravity_skill.join("keep.txt"), "keep")?;
@@ -694,7 +694,7 @@ async fn assert_identity_migration(
 
     let foreign_workspace = home.join("claw/identity-foreign-manager");
     let foreign_service = HarnessService::new(foreign_workspace.clone(), home.to_path_buf());
-    let foreign_raw = r#"{"mcpServers":{"BrowserClaw":{"command":"foreign"},"BrowserOS neo":{"command":"standalone"}},"keep":true}"#;
+    let foreign_raw = r#"{"mcpServers":{"BrowserRAD-preview":{"command":"foreign"},"BrowserRAD":{"command":"standalone"}},"keep":true}"#;
     fs::write(cursor_path, foreign_raw)?;
     let foreign = foreign_service.migrate_browseros_identity(MCP_URL).await?;
     assert_eq!(foreign.migrated, 0);
@@ -833,7 +833,7 @@ async fn assert_legacy_manifest_migration(
     fs::write(
         claude_path,
         format!(
-            "{{\"mcpServers\":{{\"BrowserClaw\":{{\"type\":\"http\",\"url\":\"{MCP_URL}\"}}}}}}"
+            "{{\"mcpServers\":{{\"BrowserRAD-preview\":{{\"type\":\"http\",\"url\":\"{MCP_URL}\"}}}}}}"
         ),
     )?;
     let added_at = "2026-01-02T03:04:05Z";
@@ -842,13 +842,13 @@ async fn assert_legacy_manifest_migration(
         serde_json::to_string_pretty(&json!({
             "version": 1,
             "servers": {
-                "BrowserClaw": {
+                "BrowserRAD-preview": {
                     "spec": { "transport": "http", "url": MCP_URL },
                     "addedAt": added_at
                 }
             },
             "links": [{
-                "serverName": "BrowserClaw",
+                "serverName": "BrowserRAD-preview",
                 "agent": "claude-code",
                 "configPath": claude_path
             }]

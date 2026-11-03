@@ -7,19 +7,19 @@ use crate::config::TabGrouping;
 use crate::error::{AppError, AppResult};
 
 // This skill ships twice. This copy is installed automatically for the harnesses on
-// the connect board; `skills/browseros-neo/SKILL.md` at the repo root is the copy every
+// the connect board; `skills/browserrad/SKILL.md` at the repo root is the copy every
 // other agent installs by hand through the skills CLI. Editing one means editing both.
 // MCP 2026-07-28 removed `initialize`, so keep the installed skill self-contained for
 // hosts that do not call `server/discover` or expose its instructions.
 const EMBEDDED_BROWSERCLAW_SKILL: &str =
     include_str!("../../../../resources/skills/browserclaw/SKILL.md");
-const SKILL_FRONTMATTER_NAME: &str = "browseros-neo";
+const SKILL_FRONTMATTER_NAME: &str = "browserrad";
 /// On-disk directory name for the managed skill; matches the SKILL.md frontmatter
 /// `name` so agents that require `name == parent directory` accept it.
-pub(crate) const MANAGED_SKILL_DIRECTORY: &str = "browseros-neo";
+pub(crate) const MANAGED_SKILL_DIRECTORY: &str = "browserrad";
 /// The pre-rename directory name earlier builds installed the skill under. Existing
 /// installs at this name are migrated to `MANAGED_SKILL_DIRECTORY` on reconcile.
-pub(crate) const LEGACY_SKILL_DIRECTORY_NAME: &str = "browserclaw";
+pub(crate) const LEGACY_SKILL_DIRECTORY_NAME: &str = "browserrad-preview";
 
 /// The guide's promises of server-made tab groups, and what explicit grouping says instead.
 ///
@@ -156,9 +156,9 @@ mod tests {
     fn harness_skills_embedded_resource_is_a_self_contained_operating_guide()
     -> Result<(), Box<dyn std::error::Error>> {
         let content = embedded_browserclaw_skill();
-        assert!(content.starts_with("---\nname: browseros-neo\n"));
+        assert!(content.starts_with("---\nname: browserrad\n"));
         assert!(content.contains("description:"));
-        assert!(content.contains("use BrowserOS neo's tools"));
+        assert!(content.contains("use BrowserRAD's tools"));
         assert!(content.contains("prefer it over other browser surfaces"));
         assert!(content.contains("Call `name_session` early"));
         assert!(content.contains("Core loop: snapshot -> act -> verify"));
@@ -176,12 +176,12 @@ mod tests {
         let root = tempdir()?;
         let skill_dir = root.path().join("skills/browserclaw");
         fs::create_dir_all(&skill_dir)?;
-        let runtime = "---\nname: browseros-neo\ndescription: Runtime copy\n---\nruntime\n";
+        let runtime = "---\nname: browserrad\ndescription: Runtime copy\n---\nruntime\n";
         fs::write(skill_dir.join("SKILL.md"), runtime)?;
 
         let loaded = load_browserclaw_skill(root.path(), TabGrouping::Automatic)?;
 
-        assert_eq!(loaded.name(), "browseros-neo");
+        assert_eq!(loaded.name(), "browserrad");
         assert_eq!(loaded.content(), runtime);
         Ok(())
     }
@@ -212,7 +212,7 @@ mod tests {
 
         fs::write(
             &path,
-            "---\nname: browseros-neo\ndescription: [\n---\nmalformed\n",
+            "---\nname: browserrad\ndescription: [\n---\nmalformed\n",
         )?;
         assert_eq!(
             load_browserclaw_skill(root.path(), TabGrouping::Automatic)?.content(),
@@ -221,7 +221,7 @@ mod tests {
 
         fs::write(
             &path,
-            "---\nname: browseros-neo\ndescription: |\n---\nempty description\n",
+            "---\nname: browserrad\ndescription: |\n---\nempty description\n",
         )?;
         assert_eq!(
             load_browserclaw_skill(root.path(), TabGrouping::Automatic)?.content(),

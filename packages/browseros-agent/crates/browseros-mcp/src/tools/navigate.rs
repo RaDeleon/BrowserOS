@@ -7,7 +7,7 @@ use serde_json::json;
 
 const DESCRIPTION: &str = "\
 Navigate a page: load a url, or go back/forward/reload. \
-Returns a fresh snapshot of the resulting page \
+Returns a fresh snapshot by default (snapshot=false returns URL/status only). Old refs expire on navigation. Snapshot of the resulting page \
 (navigation invalidates refs, so old [ref=eN] handles no longer apply). \
 Returns once the page has stopped changing, not merely once it has loaded, \
 so do not pause afterwards to let it catch up. \
@@ -35,6 +35,13 @@ struct NavigateArgs {
     action: NavigateAction,
     /// Required when action is "url".
     url: Option<String>,
+    /// Set false when the next operation is a targeted read; default true.
+    #[serde(default = "default_snapshot")]
+    snapshot: bool,
+}
+
+fn default_snapshot() -> bool {
+    true
 }
 
 pub fn definition() -> crate::framework::ToolDef {
@@ -114,7 +121,9 @@ fn handler<'a>(
             data["status"] = json!(status);
         }
         response.data(data);
-        response.include_snapshot(args.page);
+        if args.snapshot {
+            response.include_snapshot(args.page);
+        }
         Ok(None)
     })
 }

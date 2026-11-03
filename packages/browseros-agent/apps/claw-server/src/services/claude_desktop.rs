@@ -14,7 +14,7 @@ use std::{
 };
 
 /// Claude derives this from the bundle's author and name.
-pub const EXTENSION_ID: &str = "local.mcpb.browseros.browserclaw";
+pub const EXTENSION_ID: &str = "local.mcpb.techinsf.browserrad";
 
 /// The extension release this server installs, pinned by hash.
 #[derive(Clone, Debug)]
@@ -27,10 +27,9 @@ pub struct ExtensionBundle {
 impl Default for ExtensionBundle {
     fn default() -> Self {
         Self {
-            version: "0.5.0".to_string(),
-            url: "https://github.com/browseros-ai/browserclaw-claude-desktop/releases/download/v0.5.0/browseros-neo-0.5.0.mcpb".to_string(),
-            sha256: "824a909d2e3986fd9a7e7f727c9d1249a99e9c9271adb86b95fec543aeba8819"
-                .to_string(),
+            version: "unavailable".to_string(),
+            url: String::new(),
+            sha256: "824a909d2e3986fd9a7e7f727c9d1249a99e9c9271adb86b95fec543aeba8819".to_string(),
         }
     }
 }
@@ -132,6 +131,12 @@ impl ClaudeDesktop {
     }
 
     pub async fn install(&self) -> AppResult<ClaudeDesktopInstallStatus> {
+        if self.bundle.url.is_empty() {
+            return Err(AppError::Internal(
+                "BrowserRAD Desktop bundle is not published. Use the manual MCP endpoint."
+                    .to_string(),
+            ));
+        }
         let Some(app) = self.locations.app().map(Path::to_path_buf) else {
             return Ok(ClaudeDesktopInstallStatus::Missing);
         };
@@ -364,7 +369,7 @@ mod tests {
         std::fs::create_dir_all(&fixture.app)?;
         std::fs::write(
             &fixture.installations,
-            r#"{"extensions":{"local.mcpb.browseros.browserclaw":{"id":"local.mcpb.browseros.browserclaw","version":"0.4.0"},"local.mcpb.other.tool":{"version":"9.9.9"}}}"#,
+            r#"{"extensions":{"local.mcpb.techinsf.browserrad":{"id":"local.mcpb.techinsf.browserrad","version":"0.4.0"},"local.mcpb.other.tool":{"version":"9.9.9"}}}"#,
         )?;
 
         let status = desktop(&fixture).status().await;

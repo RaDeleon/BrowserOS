@@ -44,6 +44,8 @@ class BundledExtensionsModule(Step):
 
     def execute(self, ctx: Context) -> None:
         self.validate(ctx)
+        if ctx.product.id == "browserclaw" and ctx.resource_mode != "source":
+            raise ValueError("BrowserRAD requires source resource mode; upstream CRXs have a different identity")
         if ctx.resource_mode == "source":
             manifest = validated_common_resources(ctx)
             staged = self._prepared_extensions(ctx, manifest)

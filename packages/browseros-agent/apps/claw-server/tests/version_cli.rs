@@ -8,7 +8,7 @@ fn version_output_is_exact_and_side_effect_free() -> anyhow::Result<()> {
     let state_dir = root.path().join("browserclaw-state");
     let output = Command::new(env!("CARGO_BIN_EXE_browseros-claw-server-rs"))
         .arg("--version")
-        .env("BROWSERCLAW_DIR", &state_dir)
+        .env("BROWSERRAD_DIR", &state_dir)
         .output()?;
 
     assert!(

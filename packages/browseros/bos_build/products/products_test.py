@@ -15,7 +15,7 @@ from bos_build.products import DEFAULT_PRODUCT_ID, PRODUCTS
 
 BROWSEROS_AGENT_EXTENSION_ID = "bflpfmnmnokmjhmgnolecpppdbdophmk"
 BROWSEROS_BUG_REPORTER_EXTENSION_ID = "adlpneommgkgeanpaekgoaolcpncohkf"
-BROWSERCLAW_EXTENSION_ID = "pjimfkbpehlcllblajnpfamdfjhhlgkc"
+BROWSERCLAW_EXTENSION_ID = "efdbmkebmplcaefnjkgfnnbmgdjndifl"
 
 EXPECTED_BROWSEROS = ProductDescriptor(
     id="browseros",
@@ -68,34 +68,34 @@ EXPECTED_BROWSEROS = ProductDescriptor(
 EXPECTED_BROWSERCLAW = ProductDescriptor(
     id="browserclaw",
     gn_product="browserclaw",
-    display_name="BrowserOS neo",
-    dev_display_name="BrowserOS neo Dev",
-    company_full_name="BrowserOS",
-    company_short_name="BrowserOS",
-    installer_full_name="BrowserOS neo Installer",
-    dev_installer_full_name="BrowserOS neo Dev Installer",
-    app_base_name="BrowserOS neo",
-    artifact_prefix="BrowserOS_neo",
+    display_name="BrowserRAD",
+    dev_display_name="BrowserRAD Dev",
+    company_full_name="TechInSF",
+    company_short_name="TechInSF",
+    installer_full_name="BrowserRAD Installer",
+    dev_installer_full_name="BrowserRAD Dev Installer",
+    app_base_name="BrowserRAD",
+    artifact_prefix="BrowserRAD",
     release_prefix="browserclaw",
-    homepage_url="https://www.browseros.com/",
-    support_url="https://docs.browseros.com/",
-    bugtracker_url="https://github.com/browseros-ai/BrowserOS/issues",
+    homepage_url="https://github.com/RaDeleon/BrowserOS",
+    support_url="https://github.com/RaDeleon/BrowserOS/discussions",
+    bugtracker_url="https://github.com/RaDeleon/BrowserOS/issues",
     summary="The open source browser for web agents",
-    description="BrowserOS neo is a Chromium-based browser for agent workflows.",
-    string_replacements=_replacements("BrowserOS neo"),
+    description="BrowserRAD is a Chromium-based browser for agent workflows.",
+    string_replacements=_replacements("BrowserRAD"),
     required_extension_ids=(
-        (BROWSERCLAW_EXTENSION_ID, "BrowserOS neo app"),
+        (BROWSERCLAW_EXTENSION_ID, "BrowserRAD app"),
         (BROWSEROS_BUG_REPORTER_EXTENSION_ID, "BrowserOS bug reporter"),
     ),
     server_bundle_ids=("browserclaw-server",),
     mac=MacProductIdentity(
-        bundle_id="com.browseros.BrowserClaw",
-        dev_bundle_id="com.browseros.dev.BrowserClaw",
-        signing_identifier="com.browseros.BrowserClaw",
-        dev_signing_identifier="com.browseros.dev.BrowserClaw",
-        framework_name="BrowserOS neo Framework.framework",
-        dev_framework_name="BrowserOS neo Dev Framework.framework",
-        dmg_volume_name="BrowserOS neo",
+        bundle_id="com.techinsf.BrowserRAD",
+        dev_bundle_id="com.techinsf.dev.BrowserRAD",
+        signing_identifier="com.techinsf.BrowserRAD",
+        dev_signing_identifier="com.techinsf.dev.BrowserRAD",
+        framework_name="BrowserRAD Framework.framework",
+        dev_framework_name="BrowserRAD Dev Framework.framework",
+        dmg_volume_name="BrowserRAD",
     ),
     linux=LinuxProductIdentity(
         package_name="browserclaw",
@@ -108,8 +108,8 @@ EXPECTED_BROWSERCLAW = ProductDescriptor(
         metainfo_id="browserclaw.desktop",
     ),
     windows=WindowsProductIdentity(
-        app_user_model_id="BrowserOS.BrowserClaw",
-        installer_app_id="{FA2AFFF8-647B-477C-A5D2-905BA8DB9B82}",
+        app_user_model_id="TechInSF.BrowserRAD",
+        installer_app_id="{D31EA8BC-25D9-4A97-91A1-10E7A1BAA42B}",
     ),
 )
 

@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-02",
+  "kind": "synthetic browser-execution baseline; not client end-to-end",
+  "browser": "BrowserOS neo 0.52.1.1",
+  "sourceCommit": "e35f20e54679936fba79b3a649de34fb17032dd6",
+  "state": "warmed, background tab, same page, no learning",
+  "samples": [
+    {
+      "iteration": 0,
+      "scopedReadChars": 334,
+      "snapshotChars": 263,
+      "snapshotMs": 42,
+      "taskMs": 412,
+      "verified": true
+    },
+    {
+      "iteration": 1,
+      "scopedReadChars": 334,
+      "snapshotChars": 272,
+      "snapshotMs": 34,
+      "taskMs": 400,
+      "verified": true
+    },
+    {
+      "iteration": 2,
+      "scopedReadChars": 334,
+      "snapshotChars": 272,
+      "snapshotMs": 34,
+      "taskMs": 392,
+      "verified": true
+    },
+    {
+      "iteration": 3,
+      "scopedReadChars": 334,
+      "snapshotChars": 272,
+      "snapshotMs": 32,
+      "taskMs": 383,
+      "verified": true
+    },
+    {
+      "iteration": 4,
+      "scopedReadChars": 334,
+      "snapshotChars": 272,
+      "snapshotMs": 25,
+      "taskMs": 392,
+      "verified": true
+    }
+  ],
+  "batchWallMs": 2003,
+  "independentFinalReadback": "Saved: RAD-4",
+  "clientTokens": null,
+  "providerTokens": null,
+  "totalCost": null
+}

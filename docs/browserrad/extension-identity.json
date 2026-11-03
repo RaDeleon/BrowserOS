@@ -1,0 +1,6 @@
+{
+  "product": "BrowserRAD",
+  "extensionId": "efdbmkebmplcaefnjkgfnnbmgdjndifl",
+  "publicKeySha256": "4531ca41cfb2045d9a65dd1c639d385bb6fa7ef9728441bb8845ad9c5fc6ef97",
+  "privateKey": "Local only; never commit or publish. Build env: BROWSERRAD_EXTENSION_KEY."
+}

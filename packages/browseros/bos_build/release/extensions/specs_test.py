@@ -114,7 +114,8 @@ class SpecTableTest(unittest.TestCase):
                 "NODE_ENV",
             ),
         )
-        self.assertEqual(browserclaw.required_env, ("VITE_CLAW_POSTHOG_KEY",))
+        self.assertEqual(browserclaw.required_env, ())
+        self.assertEqual(browserclaw.signing_key_env, "BROWSERRAD_EXTENSION_KEY")
         self.assertEqual(browserclaw.env_dir, "apps/claw-app")
 
     def test_non_claw_extensions_have_no_required_build_env(self):

@@ -8,7 +8,7 @@ BrowserOS Neo remains the foundation and the comparison. BrowserRAD gets its own
 
 ## Current status
 
-**Source published on `codex/browserrad`; native validation in progress. No BrowserRAD app installed or published.** The fork is based on `e35f20e54679936fba79b3a649de34fb17032dd6`; internal build selector `browserclaw` remains to limit merge churn. The installed comparison is Neo 0.52.1.1.
+**Alpha.2 is published for Apple Silicon macOS. No app has been installed locally. Visible desktop acceptance and matched benchmarks remain open.** The fork is based on `e35f20e54679936fba79b3a649de34fb17032dd6`; internal build selector `browserclaw` remains to limit merge churn. The installed comparison is Neo 0.52.1.1.
 
 | Workstream | Status | Next evidence |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ BrowserOS Neo remains the foundation and the comparison. BrowserRAD gets its own
 | Same-origin retrieval / WebMCP | Retrieval works on fixture; unsupported WebMCP reported honestly | Real supported-site invocation and cancellation |
 | README / Claude / Codex guidance | Original hero visually inspected; local links and SVG validated | Keep docs synchronized with build status |
 | Baseline | Five synthetic Neo runs recorded | Larger matched client-reported workload |
-| Toolchain / packaging | Native app built; alpha.2 ZIP/signing validation underway | Native app artifact and coexistence verification |
+| Toolchain / packaging | Alpha.2 ZIP published; signatures and native MCP smoke verified | Native app artifact and coexistence verification |
 
 ## November 2, 2026 — Give the experiment its own front door
 
@@ -120,3 +120,13 @@ The complete native pipeline succeeded in **252 minutes 48 seconds**, including 
 The corrected candidate is **0.0.1-alpha.2**. Its ZIP preserves the signed app, and its explicit preview signing omits hardened runtime/library validation while retaining the component entitlement templates. Developer ID behavior remains separate. This is an ad-hoc, unnotarized alpha, not production signing. No Chromium recompilation is needed; the native implementation checkpoint remains unchanged. The published alpha.1 source tag is preserved, and its GitHub release remains a superseded draft with no binaries.
 
 The actual packaged-app launch and coexistence checks are still required before publishing alpha.2. Nothing has been installed over Neo.
+
+## November 3, 2026 — The first runnable alpha is published
+
+[BrowserRAD 0.0.1-alpha.2](https://github.com/RaDeleon/BrowserOS/releases/tag/v0.0.1-alpha.2) is now a public GitHub prerelease, built from implementation checkpoint `29e425d71a067d5c8ad47884120866dd963be1b3` with packaging source/tag commit `abb0fcc0dea960cb981e97e2b511324123b37129`. The published files are the Apple Silicon app ZIP, `SHA256SUMS` and a sanitized `release-manifest.json`. All three were downloaded from GitHub and checked against their expected hashes before publication.
+
+The actual ZIP-extracted app passed strict nested-signature verification and an isolated headless JavaScript test. Its own MCP server then answered shared evidence queries and completed a bounded fill/save procedure; a separate MCP call independently confirmed the result. Neo stayed running, and the checked Claude/Codex configuration files were unchanged. The app's test-created global BrowserRAD skill guide was moved out during cleanup. Test browser processes and synthetic servers were stopped.
+
+The alpha is ad-hoc signed, without hardened runtime, and not notarized. Visible desktop onboarding, managed Apple capabilities, broad site coverage and matched task speed/token/cost trials remain unverified. These successful smoke tests establish a runnable experimental artifact, not production readiness or an efficiency multiplier. Main remains unmerged, the alpha.1 tag is preserved with a superseded draft, and nothing was installed over Neo.
+
+The ZIP is 183,543,578 bytes. Its SHA-256 is `da81ce6665d0fe021e3b001413c6c3b120f247a695e4cea90c70d9af13d419bd`.

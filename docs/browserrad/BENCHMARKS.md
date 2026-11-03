@@ -47,3 +47,9 @@ The new JavaScript helper was injected into stock Neo's `run` sandbox on the syn
 [Every sample](evidence-prototype-2026-11-02.json) is retained. This small local prototype is not a native BrowserRAD result, a statistically established tail estimate, or an agent-level speed multiplier. The helper was subsequently tightened to a default 6,000-character total excerpt budget; these short fixture results fit within that limit. Tool-description overhead is additional and has not been measured as client tokens, so net token savings remain unproven.
 
 A separate live compatibility check filled and saved `RAD-live-verified` through a bounded plan; a second MCP call independently read that value back. A same-origin GET returned the synthetic fixture with HTTP 200. WebMCP discovery reported unsupported in installed Neo; actual site-tool invocation remains unverified outside unit mocks.
+
+## Native alpha smoke checks — November 3, 2026
+
+The alpha.2 ZIP-extracted BrowserRAD app passed a JavaScript DOM check in a temporary headless profile. Its packaged MCP server also passed shared-evidence queries, a bounded fill/save plan and a separate readback on the synthetic fixture. The tests used hosted mode, temporary state and a mock Keychain while the existing Neo process remained running. The test-created BrowserRAD skill guide was removed during cleanup.
+
+These are functional checks, not a matched performance benchmark: no client token/cost measurement or comparable task latency was captured. Visible desktop onboarding remains unverified. The native compile and initial package took 252 minutes 48 seconds with four compiler jobs; alpha.2's packaging corrections reused that compiled code. Distribution failures in alpha.1 (HFS metadata and ad-hoc library-validation incompatibility) were retained in the diary rather than counted as successful attempts.

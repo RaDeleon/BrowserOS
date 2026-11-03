@@ -7,7 +7,7 @@
   <a href="README.Neo.md"><strong>Upstream Neo</strong></a>
 </p>
 <p align="center">
-  <img alt="Status: source preview" src="https://img.shields.io/badge/status-source_preview-ff713c?style=flat-square">
+  <img alt="Status: experimental alpha" src="https://img.shields.io/badge/status-experimental_alpha-ff713c?style=flat-square">
   <img alt="License AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-262b2e?style=flat-square">
   <img alt="Approach: measure first" src="https://img.shields.io/badge/approach-measure_first-262b2e?style=flat-square">
 </p>
@@ -18,9 +18,9 @@
 
 We start close to the browser: remove avoidable animation waits, ask several questions of one fresh capture, execute bounded actions, and reuse procedures only while their targets and outcomes still hold.
 
-> **Source preview.** BrowserRAD is under development. The installed Neo remains the working comparison. A BrowserRAD installer and an end-to-end speed/token claim are not available yet.
+> **Experimental alpha.** An Apple Silicon macOS build is available. It is ad-hoc signed, without hardened runtime, and not notarized. Isolated headless launch and native MCP smoke checks passed; visible desktop onboarding and matched speed/token/cost measurements remain unverified.
 
-First release in preparation: **0.0.1-alpha.2**, for Apple Silicon macOS. See the [alpha release notes and remaining gates](docs/browserrad/release-notes/v0.0.1-alpha.2.md).
+[**Download BrowserRAD 0.0.1-alpha.2 for Apple Silicon macOS →**](https://github.com/RaDeleon/BrowserOS/releases/tag/v0.0.1-alpha.2) · [Release notes and remaining checks](docs/browserrad/release-notes/v0.0.1-alpha.2.md). Unzip the download to obtain `BrowserRAD.app`.
 
 ## What is taking shape
 
@@ -34,7 +34,7 @@ First release in preparation: **0.0.1-alpha.2**, for Apple Silicon macOS. See th
 | Selective vision | DOM first; return unresolved evidence to the planner; no mandatory vision pass | No new provider dependency |
 | Direct retrieval | Opt-in same-origin GET in the existing browser context | Experimental; no cookie export |
 | Site-provided tools | Opt-in current WebMCP discovery/invocation with origin checks | Experimental; browser/site support required |
-| Separate installation | BrowserRAD app, bundle ID, profile, state, MCP names | Source wired; native packaging verification pending |
+| Separate installation | BrowserRAD app, bundle ID, profile, state, MCP names | Packaged alpha; isolated headless/MCP smoke checks passed |
 
 Implementation and rollout details live in the [development guide](docs/browserrad/DEVELOPMENT.md). A feature in source is not a claim that an installed build has passed live acceptance.
 

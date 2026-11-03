@@ -417,6 +417,12 @@ class MacOSKeychainSelectionTest(unittest.TestCase):
         developer_command = macos_module._codesign_cmd(Path("tool"), "Developer ID")
         self.assertIn("--timestamp", developer_command)
 
+    def test_ad_hoc_helpers_do_not_require_a_developer_team(self):
+        command = macos_module._codesign_cmd(Path("Helper"), "-", options="restrict,kill,runtime,library")
+        self.assertEqual(command[command.index("--options") + 1], "restrict,kill")
+        developer_command = macos_module._codesign_cmd(Path("Helper"), "Developer ID", options="restrict,kill,runtime,library")
+        self.assertEqual(developer_command[developer_command.index("--options") + 1], "restrict,kill,runtime,library")
+
     def test_ad_hoc_app_does_not_require_an_apple_certificate_chain(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -437,6 +443,9 @@ class MacOSKeychainSelectionTest(unittest.TestCase):
                 command = calls[-1]
                 self.assertEqual("--requirements" in command, identity != "-")
                 self.assertEqual("--timestamp=none" in command, identity == "-")
+                options = command[command.index("--options") + 1].split(",")
+                self.assertEqual("runtime" in options, identity != "-")
+                self.assertEqual("library" in options, identity != "-")
                 if identity != "-":
                     self.assertIn("anchor apple generic", command[command.index("--requirements") + 1])
 

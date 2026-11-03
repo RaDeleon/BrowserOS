@@ -19,7 +19,7 @@ BrowserOS Neo remains the foundation and the comparison. BrowserRAD gets its own
 | Same-origin retrieval / WebMCP | Retrieval works on fixture; unsupported WebMCP reported honestly | Real supported-site invocation and cancellation |
 | README / Claude / Codex guidance | Original hero visually inspected; local links and SVG validated | Keep docs synchronized with build status |
 | Baseline | Five synthetic Neo runs recorded | Larger matched client-reported workload |
-| Toolchain / packaging | Release server and cockpit built; 422 native patches applied; compilation running | Native app artifact and coexistence verification |
+| Toolchain / packaging | Native app built; alpha.2 ZIP/signing validation underway | Native app artifact and coexistence verification |
 
 ## November 2, 2026 — Give the experiment its own front door
 
@@ -112,3 +112,11 @@ This Mac has no valid Developer ID signing identity. The alpha packaging path th
 The native executable is still compiling. A new packager stages a separate copy, checks identity/architecture/source provenance, stamps the outer release version, and prepares the DMG and checksums. It cannot publish an unverified build. The GitHub prerelease remains a draft until the actual executable, isolated launch and coexistence gates pass. Setup is not a claim that a download is ready.
 
 Alpha-preparation checks passed: 39 macOS signing tests and 7 packaging guard tests. A disposable arm64 native fixture was ad-hoc signed, passed strict signature verification and executed successfully. This verifies the signing mechanism, not the full BrowserRAD app.
+
+## November 3, 2026 — Chromium is built; distribution gets its own test
+
+The complete native pipeline succeeded in **252 minutes 48 seconds**, including compilation and initial DMG packaging, with four compiler jobs. BrowserRAD.app exists and all 422 patches compiled. The alpha checks then caught two distribution failures that unit tests and compilation could not establish: HFS hybrid packaging added FinderInfo to a nested executable, and hardened-runtime library validation rejected the ad-hoc framework because it has no Developer ID team.
+
+The corrected candidate is **0.0.1-alpha.2**. Its ZIP preserves the signed app, and its explicit preview signing omits hardened runtime/library validation while retaining the component entitlement templates. Developer ID behavior remains separate. This is an ad-hoc, unnotarized alpha, not production signing. No Chromium recompilation is needed; the native implementation checkpoint remains unchanged. The published alpha.1 source tag is preserved, and its GitHub release remains a superseded draft with no binaries.
+
+The actual packaged-app launch and coexistence checks are still required before publishing alpha.2. Nothing has been installed over Neo.

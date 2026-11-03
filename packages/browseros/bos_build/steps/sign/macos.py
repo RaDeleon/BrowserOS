@@ -1067,6 +1067,10 @@ def _codesign_cmd(
     if identifier:
         cmd.extend(["--identifier", identifier])
 
+    if options and certificate_name == "-":
+        # Ad-hoc components have no Team ID. Hardened runtime/library validation
+        # would reject the browser's own ad-hoc frameworks at dlopen time.
+        options = ",".join(flag for flag in options.split(",") if flag not in {"runtime", "library"})
     if options:
         cmd.extend(["--options", options])
 
@@ -1371,7 +1375,7 @@ def sign_all_components(
                 "--identifier",
                 main_identifier,
                 "--options",
-                "restrict,library,runtime,kill",
+                "restrict,kill" if certificate_name == "-" else "restrict,library,runtime,kill",
             ]
             # Ad-hoc preview signatures have no Apple certificate chain.
             # Keep codesign's generated requirement for those builds.

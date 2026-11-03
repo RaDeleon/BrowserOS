@@ -107,7 +107,7 @@ On this macOS setup, native shader compilation also required Apple's Metal Toolc
 
 ## Alpha packaging
 
-`tools/browserrad/release.json` owns the fork's release version separately from inherited Chromium/BrowserOS engine versions. The first requested “0.01 alpha” is represented as `0.0.1-alpha.1`, tag `v0.0.1-alpha.1`. Do not renumber Chromium's framework or change the pinned engine to label a BrowserRAD release.
+`tools/browserrad/release.json` owns the fork's release version separately from inherited Chromium/BrowserOS engine versions. The requested “0.01 alpha” uses the `0.0.1-alpha.N` series. The current candidate is `0.0.1-alpha.2`; alpha.1 remains a superseded draft after packaging validation failures. Do not renumber Chromium's framework or change the pinned engine to label a BrowserRAD release.
 
 After the native build finishes, from the repository root:
 
@@ -115,9 +115,9 @@ After the native build finishes, from the repository root:
 uv run --project packages/browseros python tools/browserrad/package_alpha.py --app /path/to/BrowserRAD-chromium/src/out/Default_browserclaw_arm64/BrowserRAD.app --chromium-src /path/to/BrowserRAD-chromium/src
 ```
 
-The packager requires clean committed source at the declared release tag, the declared Chromium pin, the BrowserRAD identity and Apple Silicon architecture. It rejects executable-source changes since the declared build checkpoint, unexpected private-state files and symlinks escaping the app. It copies the app into ignored `tools/browserrad/results/releases/`, stamps only the outer app's release version, signs nested components ad hoc with the existing entitlement templates, checks signature integrity and builds a DMG plus checksum/provenance files. It refuses to overwrite an existing output directory. It never installs, tags, uploads or publishes anything.
+The packager requires clean committed source at the declared release tag, the declared Chromium pin, the BrowserRAD identity and Apple Silicon architecture. It rejects executable-source changes since the declared build checkpoint, unexpected private-state files and symlinks escaping the app. It copies the app into ignored `tools/browserrad/results/releases/`, stamps only the outer app's release version, signs nested components ad hoc with the existing entitlement templates, checks signature integrity and builds a ZIP plus checksum/provenance files. It refuses to overwrite an existing output directory. It never installs, tags, uploads or publishes anything.
 
-Ad-hoc signing is not Developer ID signing or notarization. This alpha's GitHub release stays a draft until a real packaged-app launch and coexistence check pass. Record those results in the manifest and release notes, regenerate the checksum if the manifest changes, then publish as a prerelease with only the reviewed DMG, `SHA256SUMS` and `release-manifest.json`. Do not attach the entire local output directory, build logs or private signing material. Never move a published release tag to hide a fix; issue another alpha version when executable source changes.
+Ad-hoc signing is not Developer ID signing or notarization. The preview omits hardened runtime and library validation, which require a Developer ID team to load this app’s bundled frameworks. The ZIP avoids FinderInfo metadata introduced by the HFS DMG path. This alpha's GitHub release stays a draft until a real packaged-app launch and coexistence check pass. Record those results in the manifest and release notes, regenerate the checksum if the manifest changes, then publish as a prerelease with only the reviewed ZIP, `SHA256SUMS` and `release-manifest.json`. Do not attach the entire local output directory, build logs or private signing material. Never move a published release tag to hide a fix; issue another alpha version when executable source changes.
 
 ## Fork and branch workflow
 

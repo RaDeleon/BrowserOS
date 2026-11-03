@@ -15,7 +15,6 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "packages/browseros"))
 
 from bos_build.core.context import Context
-from bos_build.steps.package.macos import create_dmg
 from bos_build.steps.sign.macos import (
     sign_all_components,
     verify_server_resources_bundle,
@@ -118,15 +117,16 @@ def main() -> None:
     if not verify_signature(staged, ctx):
         raise RuntimeError("Signature integrity check failed")
     validate_bundle(staged, release)
-    dmg = output / f"BrowserRAD-{release['version']}-macos-arm64.dmg"
-    if not create_dmg(staged, dmg, f"BrowserRAD {release['version']}", ctx.get_pkg_dmg_path()):
-        raise RuntimeError("DMG packaging failed")
+    archive = output / f"BrowserRAD-{release['version']}-macos-arm64.zip"
+    # pkg-dmg's HFS hybrid adds FinderInfo to nested executables, invalidating
+    # strict signature checks. ZIP preserves the already verified app bundle.
+    subprocess.run(["ditto", "-c", "-k", "--keepParent", str(staged), str(archive)], check=True)
     manifest = output / "release-manifest.json"
     manifest.write_text(json.dumps(dict(provenance,
-        artifact={"name": dmg.name, "bytes": dmg.stat().st_size, "sha256": sha256(dmg)},
+        artifact={"name": archive.name, "bytes": archive.stat().st_size, "sha256": sha256(archive)},
         validation={"signature_integrity": "passed", "isolated_launch": "pending", "coexistence": "pending"}
     ), indent=2) + "\n")
-    (output / "SHA256SUMS").write_text("".join(f"{sha256(p)}  {p.name}\n" for p in (dmg, manifest)))
+    (output / "SHA256SUMS").write_text("".join(f"{sha256(p)}  {p.name}\n" for p in (archive, manifest)))
     print(f"Staged alpha: {output}\nDo not publish until isolated launch and coexistence validation pass.")
 
 

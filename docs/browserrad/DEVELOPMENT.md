@@ -93,6 +93,18 @@ Source mode requires a clean tracked checkout so artifacts can be attributed to 
 
 Inspect the plan before running it. Source resource mode is essential: the default published mode would bundle upstream components instead of the edited fork. Debug naming is `BrowserRAD Dev`; release naming is `BrowserRAD`. Preview signing must not use upstream's Apple team or provisioning profiles. Native packaging, separate-profile launch, signature inspection, and matched benchmarks are required before calling the fork installable. Do not replace anything in `/Applications` as part of a test build.
 
+### Resume a configured native build
+
+Once resources, patches and GN configuration have succeeded, resume at compilation instead of rerunning preparation:
+
+```sh
+uv run browseros build --preset release --product browserclaw --chromium-src /path/to/BrowserRAD-chromium/src --resource-mode source --provision none --no-clean --no-sign --no-upload --from compile
+```
+
+Use the same toolchain, environment, checkout and output directory as the original build. Inspect with `--show-plan` first: the remaining steps should be `compile` and `package_macos`. The patch step expects a pristine pinned tree and is not idempotent. Reapplying it over a prepared checkout can fail on modified or newly created files; do not use broad cleanup commands that remove Chromium dependencies or incremental output.
+
+On this macOS setup, native shader compilation also required Apple's Metal Toolchain component. `xcrun metal --version` verifies its availability; `xcodebuild -downloadComponent MetalToolchain` installed the missing component after dependency setup was authorized.
+
 ## Upstream maintenance
 
 Keep `origin` on the fork and `upstream` on BrowserOS. Fetch and review changes on a separate branch; merge or rebase only with a clean, understood working tree. Re-run identity/coexistence, patch integrity, API, and benchmark checks after changes to the browser or execution layer. Do not enable upstream binary feeds as a substitute for merging source.

@@ -19,7 +19,7 @@ BrowserOS Neo remains the foundation and the comparison. BrowserRAD gets its own
 | Same-origin retrieval / WebMCP | Retrieval works on fixture; unsupported WebMCP reported honestly | Real supported-site invocation and cancellation |
 | README / Claude / Codex guidance | Original hero visually inspected; local links and SVG validated | Keep docs synchronized with build status |
 | Baseline | Five synthetic Neo runs recorded | Larger matched client-reported workload |
-| Toolchain / packaging | Release server and cockpit built; Chromium source/dependencies ready | Native app artifact and coexistence verification |
+| Toolchain / packaging | Release server and cockpit built; 422 native patches applied; compilation running | Native app artifact and coexistence verification |
 
 ## November 2, 2026 — Give the experiment its own front door
 
@@ -86,3 +86,11 @@ The source build also requires a clean tracked commit for provenance. A local ch
 The final pre-build rerun passed **1,726 Rust tests** (10 ignored), **2,295 Bun tests** (3 skipped, pinned Bun 1.4.2), and **1,326 Python build-system tests** (4 skipped). Strict Clippy and the configured lint/type/check pipeline passed; the existing Fallow warnings remain. The 35 focused JavaScript helper/pointer tests passed 3,304 assertions. The upstream feed snapshots were preserved as historical Neo fixtures, and BrowserRAD explicitly rejects published-mode extension packaging.
 
 Chromium 155.0.8059.26 and its dependencies are prepared at commit `16c3e55476d3564bea713314b2fff638749ce3e6`. The original source transfer stalled; the official GitHub mirror supplied the same verified commit. The native build is configured for four compiler jobs at reduced scheduling priority, unsigned and without uploads or external notifications. CRX packing uses an isolated temporary Chrome profile. Source and dependency preparation are complete; the native executable is still a separate verification gate.
+
+## November 2, 2026 — From source preview to the native compiler
+
+The implementation is now captured in local commit `29e425d71a067d5c8ad47884120866dd963be1b3`. Source-mode packaging built the fork's server and cockpit, signed the CRX with its separate local extension key, and recorded that source SHA in the prepared-resource manifest. This checkpoint has not been pushed.
+
+All **422 Chromium patches applied**, and GN generated **35,908 targets**. The first compile stopped because Apple's Metal compiler was missing. Installing the Metal Toolchain resolved that prerequisite; `xcrun metal --version` reports Apple metal 32023.922. A subsequent full-pipeline retry exposed the non-idempotent patch step. Generated patch targets were backed up and restored selectively; dependencies, incremental output and unrelated files were preserved. All 422 patches then applied again with zero failures.
+
+Compilation is running with four compiler jobs at reduced scheduling priority. This entry records the start, not completion: no final BrowserRAD executable, package signature, profile coexistence result or native benchmark is claimed yet. Future compiler retries use `--from compile`, whose inspected plan contains only compilation and macOS packaging. The installed Neo has not been restarted or replaced.

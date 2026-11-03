@@ -105,6 +105,16 @@ Use the same toolchain, environment, checkout and output directory as the origin
 
 On this macOS setup, native shader compilation also required Apple's Metal Toolchain component. `xcrun metal --version` verifies its availability; `xcodebuild -downloadComponent MetalToolchain` installed the missing component after dependency setup was authorized.
 
+## Fork and branch workflow
+
+`origin` is our repository, `RaDeleon/BrowserOS`. `upstream` is the original `browseros-ai/BrowserOS`. Each remote has its own `main`; they do not need to stay identical.
+
+The initial BrowserRAD implementation lives on `codex/browserrad`, including its README, agent instructions and diary. Keep it separate until native packaging and coexistence checks pass. Then open a pull request **inside our fork**, from `codex/browserrad` into `RaDeleon/BrowserOS:main`. Merging makes BrowserRAD the fork's main code and README. It does not change the original BrowserOS repository or install an app.
+
+After that initial merge, use our `main` for the stable BrowserRAD line and create short feature branches such as `codex/shared-evidence` for new work. Commit and push those branches to `origin`; review and merge them through pull requests targeting our fork. No new fork or copied repository is needed for each feature.
+
+For upstream updates, fetch `upstream` and merge its chosen commit or branch on a dedicated integration branch based on our current BrowserRAD line. Review conflicts, preserve fork identities and rerun relevant checks before merging into our main. Prefer merges over rebasing already published shared history. Never force-sync the fork by discarding its custom commits.
+
 ## Upstream maintenance
 
 Keep `origin` on the fork and `upstream` on BrowserOS. Fetch and review changes on a separate branch; merge or rebase only with a clean, understood working tree. Re-run identity/coexistence, patch integrity, API, and benchmark checks after changes to the browser or execution layer. Do not enable upstream binary feeds as a substitute for merging source.

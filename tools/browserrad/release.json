@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "product": "BrowserRAD",
+  "version": "0.0.1-alpha.1",
+  "tag": "v0.0.1-alpha.1",
+  "macos_short_version": "0.0.1",
+  "macos_bundle_version": "1",
+  "bundle_id": "com.techinsf.BrowserRAD",
+  "architecture": "arm64",
+  "build_source_commit": "29e425d71a067d5c8ad47884120866dd963be1b3",
+  "upstream_source_commit": "e35f20e54679936fba79b3a649de34fb17032dd6",
+  "chromium_source_commit": "16c3e55476d3564bea713314b2fff638749ce3e6",
+  "signing": "ad-hoc",
+  "notarized": false
+}

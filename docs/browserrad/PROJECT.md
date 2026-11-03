@@ -102,3 +102,13 @@ The initial implementation and documentation are now pushed to [our fork's `code
 Our fork's `main` remains at the original base, and upstream is unchanged. The new README is visible on the BrowserRAD branch. After native packaging and coexistence checks pass, a pull request inside our fork can promote this work to our main branch and repository front page. Later changes use focused branches, while upstream improvements arrive through reviewed integration branches.
 
 The outgoing implementation commits were checked for excluded artifacts, private key markers, recognizable credential patterns and local personal paths. No findings were reported by that targeted check; it is not a guarantee or an audit of all inherited upstream history. The local extension signing key remains ignored and untracked. This milestone publishes source only: compilation is still running, with app packaging, isolated launch and matched native measurements outstanding.
+
+## November 2, 2026 — Name the first alpha, keep the evidence honest
+
+The first BrowserRAD release is being prepared as **0.0.1-alpha.1** (`v0.0.1-alpha.1`), the machine-readable form of the requested “0.01 alpha.” It remains on `codex/browserrad`; main is not being merged for this milestone. Release versioning is separate from the inherited engine numbers.
+
+This Mac has no valid Developer ID signing identity. The alpha packaging path therefore uses explicit ad-hoc signatures, preserves the existing component entitlements, omits Apple-certificate requirements and secure timestamps for that mode, and verifies signature integrity. Developer ID behavior remains covered separately. The planned release is not notarized and must say so.
+
+The native executable is still compiling. A new packager stages a separate copy, checks identity/architecture/source provenance, stamps the outer release version, and prepares the DMG and checksums. It cannot publish an unverified build. The GitHub prerelease remains a draft until the actual executable, isolated launch and coexistence gates pass. Setup is not a claim that a download is ready.
+
+Alpha-preparation checks passed: 39 macOS signing tests and 7 packaging guard tests. A disposable arm64 native fixture was ad-hoc signed, passed strict signature verification and executed successfully. This verifies the signing mechanism, not the full BrowserRAD app.

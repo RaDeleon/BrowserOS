@@ -410,6 +410,36 @@ class MacOSKeychainSelectionTest(unittest.TestCase):
             self.assertIn("--keychain", calls[0])
             self.assertEqual(calls[0][calls[0].index("--keychain") + 1], str(keychain))
 
+    def test_ad_hoc_component_does_not_request_secure_timestamp(self):
+        command = macos_module._codesign_cmd(Path("tool"), "-")
+        self.assertIn("--timestamp=none", command)
+        self.assertNotIn("--timestamp", command)
+        developer_command = macos_module._codesign_cmd(Path("tool"), "Developer ID")
+        self.assertIn("--timestamp", developer_command)
+
+    def test_ad_hoc_app_does_not_require_an_apple_certificate_chain(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            app = root / "BrowserRAD.app"
+            _write_exec(app / "Contents" / "MacOS" / "BrowserRAD")
+            ctx = Context(product="browserclaw", build_type="release")
+            for identity in ("-", "Developer ID"):
+                calls = []
+                with (
+                    mock.patch.object(macos_module, "find_components_to_sign", return_value={
+                        name: [] for name in ("helpers", "xpc_services", "frameworks", "dylibs", "executables", "apps")
+                    }),
+                    mock.patch.object(macos_module, "validate_browser_passkey_signing_inputs", return_value=None),
+                    mock.patch.object(macos_module, "_run_probe", _fake_probe([], set(), macho=False)),
+                    mock.patch.object(macos_module, "run_command", _fake_run_command(calls)),
+                ):
+                    self.assertTrue(macos_module.sign_all_components(app, identity, ctx.root_dir, ctx))
+                command = calls[-1]
+                self.assertEqual("--requirements" in command, identity != "-")
+                self.assertEqual("--timestamp=none" in command, identity == "-")
+                if identity != "-":
+                    self.assertIn("anchor apple generic", command[command.index("--requirements") + 1])
+
     def test_notarize_app_uses_configured_keychain_for_profile(self):
         with tempfile.TemporaryDirectory() as tmp:
             app_path = Path(tmp) / "BrowserOS.app"

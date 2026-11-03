@@ -20,6 +20,8 @@ We start close to the browser: remove avoidable animation waits, ask several que
 
 > **Source preview.** BrowserRAD is under development. The installed Neo remains the working comparison. A BrowserRAD installer and an end-to-end speed/token claim are not available yet.
 
+First release in preparation: **0.0.1-alpha.1**, for Apple Silicon macOS. See the [alpha release notes and remaining gates](docs/browserrad/release-notes/v0.0.1-alpha.1.md).
+
 ## What is taking shape
 
 | Technique | BrowserRAD approach | State |

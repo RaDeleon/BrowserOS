@@ -1056,7 +1056,10 @@ def _codesign_cmd(
     entitlements: Optional[Path] = None,
     keychain_path: Optional[Path] = None,
 ) -> List[str]:
-    cmd = ["codesign", "--sign", certificate_name, "--force", "--timestamp"]
+    cmd = [
+        "codesign", "--sign", certificate_name, "--force",
+        "--timestamp=none" if certificate_name == "-" else "--timestamp",
+    ]
 
     if keychain_path:
         cmd.extend(["--keychain", str(keychain_path)])
@@ -1364,14 +1367,16 @@ def sign_all_components(
                 "--sign",
                 certificate_name,
                 "--force",
-                "--timestamp",
+                "--timestamp=none" if certificate_name == "-" else "--timestamp",
                 "--identifier",
                 main_identifier,
                 "--options",
                 "restrict,library,runtime,kill",
-                "--requirements",
-                requirements,
             ]
+            # Ad-hoc preview signatures have no Apple certificate chain.
+            # Keep codesign's generated requirement for those builds.
+            if certificate_name != "-":
+                cmd.extend(["--requirements", requirements])
 
             if keychain_path:
                 cmd.extend(["--keychain", str(keychain_path)])

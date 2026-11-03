@@ -8,7 +8,7 @@ BrowserOS Neo remains the foundation and the comparison. BrowserRAD gets its own
 
 ## Current status
 
-**Source implementation and validation in progress. No BrowserRAD app installed or published.** The fork is based on `e35f20e54679936fba79b3a649de34fb17032dd6`; internal build selector `browserclaw` remains to limit merge churn. The installed comparison is Neo 0.52.1.1.
+**Source published on `codex/browserrad`; native validation in progress. No BrowserRAD app installed or published.** The fork is based on `e35f20e54679936fba79b3a649de34fb17032dd6`; internal build selector `browserclaw` remains to limit merge churn. The installed comparison is Neo 0.52.1.1.
 
 | Workstream | Status | Next evidence |
 | --- | --- | --- |
@@ -94,3 +94,11 @@ The implementation is now captured in local commit `29e425d71a067d5c8ad478841208
 All **422 Chromium patches applied**, and GN generated **35,908 targets**. The first compile stopped because Apple's Metal compiler was missing. Installing the Metal Toolchain resolved that prerequisite; `xcrun metal --version` reports Apple metal 32023.922. A subsequent full-pipeline retry exposed the non-idempotent patch step. Generated patch targets were backed up and restored selectively; dependencies, incremental output and unrelated files were preserved. All 422 patches then applied again with zero failures.
 
 Compilation is running with four compiler jobs at reduced scheduling priority. This entry records the start, not completion: no final BrowserRAD executable, package signature, profile coexistence result or native benchmark is claimed yet. Future compiler retries use `--from compile`, whose inspected plan contains only compilation and macOS packaging. The installed Neo has not been restarted or replaced.
+
+## November 2, 2026 — A fork with its own working branch
+
+The initial implementation and documentation are now pushed to [our fork's `codex/browserrad` branch](https://github.com/RaDeleon/BrowserOS/tree/codex/browserrad). The branch was renamed from `codex/browserhelm-integration` to match the product. Its first verified remote checkpoint is `ad7950ebc008b4d0873f625051c97b50acf14c8a`; the implementation checkpoint remains `29e425d71a067d5c8ad47884120866dd963be1b3`.
+
+Our fork's `main` remains at the original base, and upstream is unchanged. The new README is visible on the BrowserRAD branch. After native packaging and coexistence checks pass, a pull request inside our fork can promote this work to our main branch and repository front page. Later changes use focused branches, while upstream improvements arrive through reviewed integration branches.
+
+The outgoing implementation commits were checked for excluded artifacts, private key markers, recognizable credential patterns and local personal paths. No findings were reported by that targeted check; it is not a guarantee or an audit of all inherited upstream history. The local extension signing key remains ignored and untracked. This milestone publishes source only: compilation is still running, with app packaging, isolated launch and matched native measurements outstanding.

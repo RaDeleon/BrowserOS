@@ -17,7 +17,8 @@ const MAX_DEPTH: usize = 100;
 const DESCRIPTION: &str = "\
 Capture the page as an indented accessibility tree. \
 Each actionable element carries a stable [ref=eN] you pass to `act`. \
-mode=\"interactive\" returns actionables plus headings and ancestor context; depth caps nesting. \
+mode=\"interactive\" returns actionables plus headings and ancestor context. \
+mode=\"compact\" also keeps status and alert text needed to verify outcomes; depth caps nesting. \
 Default mode=\"full\" is unchanged; iframe content is stitched inline. \
 Re-snapshot after navigation or large changes (refs are invalidated). \
 This is the start of the loop: snapshot -> act -> (reads back a diff).";
@@ -28,6 +29,7 @@ enum SnapshotModeArg {
     #[default]
     Full,
     Interactive,
+    Compact,
 }
 
 impl SnapshotModeArg {
@@ -35,6 +37,7 @@ impl SnapshotModeArg {
         match self {
             Self::Full => "full",
             Self::Interactive => "interactive",
+            Self::Compact => "compact",
         }
     }
 }
@@ -44,6 +47,7 @@ impl From<SnapshotModeArg> for SnapshotMode {
         match value {
             SnapshotModeArg::Full => Self::Full,
             SnapshotModeArg::Interactive => Self::Interactive,
+            SnapshotModeArg::Compact => Self::Compact,
         }
     }
 }

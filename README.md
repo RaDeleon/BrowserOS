@@ -29,6 +29,7 @@ We start close to the browser: remove avoidable animation waits, ask several que
 | Fast local input | Instant pointer feedback; native hit checks remain | Implemented in source |
 | Less response overhead | Retention cleanup leaves the journal response path; append remains awaited | Implemented in source |
 | Smaller observations | Several literal queries share one fresh capture; scoped content reads | Implemented in source |
+| Status-aware compact snapshot | Optional compact tree retains action refs, headings, alerts and status text | Source and Rust tests passed; not installed |
 | Fewer planner turns | Bounded plans resolve fresh, unique targets and check postconditions | Implemented in source |
 | Deterministic reuse | Existing saved flows plus reusable plans; stop on stale or uncertain actions | Native mechanisms retained; fork validation ongoing |
 | Selective vision | DOM first; return unresolved evidence to the planner; no mandatory vision pass | No new provider dependency |
@@ -89,6 +90,6 @@ The repository keeps upstream internal package names and the `browserclaw` build
 
 Built on [BrowserOS](https://github.com/browseros-ai/BrowserOS) and Chromium. The [original Neo README](README.Neo.md), [license](LICENSE), and upstream notices remain in the repository. This fork is independent and is not an official BrowserOS release.
 
-Technique research draws on [Stagehand](https://docs.stagehand.dev/v4/best-practices/speed-optimization), [Browser Use](https://docs.browser-use.com/open-source/customize/agent/all-parameters), [Skyvern](https://www.skyvern.com/docs/developers/browser-automation), [Browserless](https://docs.browserless.io/baas/best-practices), and [agent-browser](https://agent-browser.dev/snapshots). Their published performance numbers are not BrowserRAD benchmarks. No competing agent stack is required.
+Technique research draws on [Stagehand](https://docs.stagehand.dev/v4/best-practices/speed-optimization), [Browser Use](https://docs.browser-use.com/open-source/customize/agent/all-parameters), [Skyvern](https://www.skyvern.com/docs/developers/browser-automation), [Browserless](https://docs.browserless.io/baas/best-practices), and [agent-browser](https://agent-browser.dev/snapshots). The [current ten-product landscape review](docs/browserrad/BROWSER-AGENT-LANDSCAPE-2026-11-08.md) separates public mechanisms from unknown internals. Their published performance numbers are not BrowserRAD benchmarks. No competing agent stack is required.
 
 README composition was inspired by [Dify](https://github.com/langgenius/dify), [Browser Use](https://github.com/browser-use/browser-use), [Supabase](https://github.com/supabase/supabase), and [Ollama](https://github.com/ollama/ollama). The BrowserRAD artwork and wording are original.

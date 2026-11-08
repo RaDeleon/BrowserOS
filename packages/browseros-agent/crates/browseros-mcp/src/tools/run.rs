@@ -71,7 +71,7 @@ Page handle (refs eN come from a snapshot's text/refs):
   page.goto(url)                     -> { status } (the HTTP status, null when unknown), or { download: true } when the url is a file the browser downloaded instead. A url the browser cannot load (unknown host, refused connection) throws.
   page.back() / forward()            -> { navigated }, false when there is no history entry that way (the page is unchanged)
   page.reload()
-  page.snapshot({ mode, depth }?)    -> { text, refs, url, partial, frameErrors? }. mode "interactive" plus depth keeps a big page small. partial: some frame was not fully read (frameErrors says which and why), so content it holds is unknown, not absent; every ref returned still works.
+  page.snapshot({ mode, depth }?)    -> { text, refs, url, partial, frameErrors? }. mode "interactive" keeps actions and headings; mode "compact" also keeps status/alert text. depth limits nesting. partial: some frame was not fully read (frameErrors says which and why), so content it holds is unknown, not absent; every ref returned still works.
   page.diff()                        -> { text, added, removed, changed, partial, frameErrors?, uncomparedFrames? }. uncomparedFrames: frames the previous capture read differently, left out of the diff rather than counted as added or removed.
   page.resolveRef(ref)               -> { backendNodeId, sessionId }
   page.read(selector?)               -> the whole page as a markdown STRING, so the script can search or slice all of it; return only what you need
@@ -1572,9 +1572,10 @@ fn snapshot_options(opts: Option<&Map<String, Value>>) -> Result<SnapshotOptions
     let mode = match optional_string_field(opts, "mode")?.as_deref() {
         None | Some("full") => SnapshotMode::Full,
         Some("interactive") => SnapshotMode::Interactive,
+        Some("compact") => SnapshotMode::Compact,
         Some(other) => {
             return Err(format!(
-                "snapshot: mode must be \"full\" or \"interactive\", got {other:?}"
+                "snapshot: mode must be \"full\", \"interactive\" or \"compact\", got {other:?}"
             ));
         }
     };
@@ -3582,6 +3583,12 @@ return seen;
         )
         .await?;
         assert!(!result_text(&good)?.contains("mode must be"));
+        let compact = run_tool(
+            "await browser.page(1).snapshot({ mode: 'compact', depth: 4 });",
+            None,
+        )
+        .await?;
+        assert!(!result_text(&compact)?.contains("mode must be"));
         Ok(())
     }
 

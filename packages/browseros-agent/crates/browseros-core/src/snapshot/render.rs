@@ -29,6 +29,7 @@ pub enum SnapshotMode {
     #[default]
     Full,
     Interactive,
+    Compact,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -74,6 +75,7 @@ pub fn apply_snapshot_options(text: &str, options: SnapshotOptions) -> String {
     let text = match options.mode {
         SnapshotMode::Full => text.to_string(),
         SnapshotMode::Interactive => filter_interactive_lines(text),
+        SnapshotMode::Compact => filter_compact_lines(text),
     };
     if let Some(max_depth) = options.depth {
         filter_depth_lines(&text, max_depth)
@@ -119,6 +121,12 @@ impl RenderContext<'_, '_> {
         // Only the line shows them: the ref keeps the tree's name, which ref recovery matches.
         let label_text = (is_cursor_hit && name.is_empty() && role.as_deref() == Some("LabelText"))
             .then(|| self.text_of(node));
+        let status_text = (name.is_empty()
+            && matches!(
+                role.as_deref(),
+                Some("status" | "alert" | "alertdialog" | "log")
+            ))
+        .then(|| self.text_of(node));
 
         if is_dropped(role.as_deref(), &name, is_cursor_hit) {
             for child_id in node.child_ids.as_deref().unwrap_or(&[]) {
@@ -153,7 +161,10 @@ impl RenderContext<'_, '_> {
             &role,
             LineName {
                 tree: &name,
-                shown: label_text.as_deref().unwrap_or(&name),
+                shown: label_text
+                    .as_deref()
+                    .or(status_text.as_deref())
+                    .unwrap_or(&name),
             },
             absolute_depth,
             in_card_form,
@@ -298,6 +309,61 @@ fn filter_interactive_lines(text: &str) -> String {
             for ancestor in &ancestors {
                 keep[*ancestor] = true;
             }
+        }
+
+        if ancestors.len() == depth {
+            ancestors.push(index);
+        } else if depth < ancestors.len() {
+            ancestors[depth] = index;
+        } else {
+            ancestors.resize(depth, index);
+            ancestors.push(index);
+        }
+    }
+
+    lines
+        .into_iter()
+        .enumerate()
+        .filter_map(|(index, line)| keep[index].then_some(line))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// Keep actionable refs and the status text needed to verify an action, while
+/// omitting unrelated page copy. The full capture still owns every ref.
+fn filter_compact_lines(text: &str) -> String {
+    let lines = split_rendered_lines(text);
+    if lines.is_empty() {
+        return String::new();
+    }
+
+    let mut keep = vec![false; lines.len()];
+    let mut ancestors = Vec::<usize>::new();
+    let mut status_depth = None;
+    for (index, line) in lines.iter().enumerate() {
+        let depth = rendered_depth(line);
+        if status_depth.is_some_and(|root| depth <= root) {
+            status_depth = None;
+        }
+        if ancestors.len() > depth {
+            ancestors.truncate(depth);
+        }
+
+        let role = rendered_role(line);
+        let status_root = matches!(role, Some("status" | "alert" | "alertdialog" | "log"));
+        if index == 0
+            || has_ref(line)
+            || role == Some("heading")
+            || status_root
+            || status_depth.is_some()
+        {
+            keep[index] = true;
+            for ancestor in &ancestors {
+                keep[*ancestor] = true;
+            }
+        }
+        if status_root {
+            status_depth = Some(depth);
         }
 
         if ancestors.len() == depth {
@@ -1188,6 +1254,47 @@ mod tests {
         );
 
         assert_eq!(text, ["- main", "  - section"].join("\n"));
+    }
+
+    #[test]
+    fn compact_mode_keeps_action_and_status_evidence_without_unrelated_copy() {
+        let mut nodes = vec![
+            ax("1", "RootWebArea", &["2"]),
+            ax("2", "main", &["3", "4", "5", "7"]),
+            ax("3", "paragraph", &[]),
+            ax("4", "button", &[]),
+            ax("5", "status", &["6"]),
+            ax("6", "StaticText", &[]),
+            ax("7", "alert", &["8"]),
+            ax("8", "StaticText", &[]),
+        ];
+        nodes[2].name = Some(name("Unrelated introduction"));
+        nodes[3].name = Some(name("Save"));
+        nodes[3].backend_dom_node_id = Some(10);
+        nodes[5].name = Some(name("Saved"));
+        nodes[7].name = Some(name("Another field is required"));
+
+        let mut refs = RefMap::new();
+        let text = render_with_snapshot_options(
+            &nodes,
+            &mut refs,
+            SnapshotOptions {
+                mode: SnapshotMode::Compact,
+                depth: None,
+            },
+        );
+
+        assert_eq!(
+            text,
+            [
+                "- main",
+                "  - button \"Save\" [ref=e1]",
+                "  - status \"Saved\"",
+                "  - alert \"Another field is required\"",
+            ]
+            .join("\n")
+        );
+        assert_eq!(refs.entries_in_order().len(), 1);
     }
 
     #[test]

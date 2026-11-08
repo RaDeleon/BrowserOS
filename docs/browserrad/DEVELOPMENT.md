@@ -54,6 +54,8 @@ Do not hand-edit generated API DTOs. New runtime helpers live in `crates/browser
 
 Shared evidence defaults to a 6,000-character total excerpt budget, fairly divided across up to eight queries. `maxChars` accepts 256–16,000; counts and truncation remain explicit. This is a payload mechanism, not a measured token guarantee.
 
+The snapshot tool and the run page SDK accept mode "compact" when action refs and outcome messages are enough. It keeps headings, status/alert/log text and ancestor context. Full mode remains the default when ordinary page copy matters; depth still caps the tree.
+
 ## Bounded plans and reuse
 
 ```js

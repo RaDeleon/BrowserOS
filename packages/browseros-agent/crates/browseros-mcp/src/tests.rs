@@ -1974,6 +1974,26 @@ async fn snapshot_tool_plumbs_mode_depth_and_structured_fields() {
     assert_eq!(structured.get("writtenToFile"), Some(&json!(false)));
 }
 
+#[tokio::test]
+async fn snapshot_tool_accepts_compact_mode() {
+    let (ctx, _connection, page) = harness_ctx().await;
+    let result = execute_tool(
+        &snapshot::definition(),
+        json!({ "page": page, "mode": "compact" }),
+        &ctx,
+    )
+    .await
+    .unwrap_or_else(|err| panic!("compact snapshot should execute: {err}"));
+
+    let text = result_text(&result);
+    assert!(text.contains("button \"Save\" [ref="), "{text}");
+    assert!(!text.contains("paragraph \"Intro\""), "{text}");
+    let structured = result
+        .structured_content
+        .unwrap_or_else(|| panic!("snapshot should return structured content"));
+    assert_eq!(structured["mode"], json!("compact"));
+}
+
 /// What every tool reports for the framed page while `frame-b` cannot be read.
 fn frame_b_errors() -> Value {
     json!([{
@@ -1994,7 +2014,7 @@ fn split_at_fence(text: &str) -> (&str, &str) {
 async fn snapshot_tool_reports_an_unreadable_frame_and_keeps_its_sibling() {
     let (ctx, connection, page) = harness_ctx().await;
     connection.serve_frames(true);
-    for mode in ["full", "interactive"] {
+    for mode in ["full", "interactive", "compact"] {
         let result = execute_tool(
             &snapshot::definition(),
             json!({ "page": page, "mode": mode }),

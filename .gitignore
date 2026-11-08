@@ -46,3 +46,19 @@ packages/browseros/build/extensions/
 .browserrad/
 .browserrad-dev/
 tools/browserrad/results/
+
+# Private local development records
+/devlog.html
+/Devlog.html
+/devlog.md
+/Devlog.md
+/changelog.md
+/CHANGELOG.md
+/sessionlog.md
+/SessionLog.md
+/sessions.log
+/docs/dev-diary/
+/dev-diary/
+/devdiary/
+/[Dd]ev[Dd]iary*
+/docs/dev-diary/README.md

@@ -130,3 +130,20 @@ The actual ZIP-extracted app passed strict nested-signature verification and an 
 The alpha is ad-hoc signed, without hardened runtime, and not notarized. Visible desktop onboarding, managed Apple capabilities, broad site coverage and matched task speed/token/cost trials remain unverified. These successful smoke tests establish a runnable experimental artifact, not production readiness or an efficiency multiplier. Main remains unmerged, the alpha.1 tag is preserved with a superseded draft, and nothing was installed over Neo.
 
 The ZIP is 183,543,578 bytes. Its SHA-256 is `da81ce6665d0fe021e3b001413c6c3b120f247a695e4cea90c70d9af13d419bd`.
+
+
+## November 8, 2026 — First browser/native/browser development slice
+
+The goal now includes one optional desktop mode inside BrowserRAD.app. This is a functionality expansion; adding a second controller is not evidence of speed or token savings. The [capability matrix and design](DESKTOP-INTEGRATION.md) preserve RAD's browser controller and identify native accessibility control as the first gap to address.
+
+Work began on an isolated `codex/browserrad-desktop` worktree from `c01896dc1`, preserving the existing uncommitted savings/server/benchmark work in the parent checkout. The installed resource manifest identifies alpha.3-dev with cockpit 0.2.59; neither installed browser was replaced or reconfigured.
+
+Implemented an experimental Python host adapter around the pinned agent-desktop 1.2.0 macOS CLI, a synthetic Swift AppKit fixture and a disposable-profile RAD MCP runner. Desktop mode is off by default; the probe scopes actions to the owned app/process incarnation/window, retires refs, locks out writes after possible delivery, checks cancellation, bounds subprocess output/time, and emits a shared metadata-only task log. The host does not expose a general desktop shell, physical fallback or unrestricted second MCP endpoint.
+
+**Verified:** 27 Python tests; Python compilation; 35 existing helper/pointer tests with 3,304 assertions on Bun 1.4.2; arm64 fixture compilation; default-off with zero native dispatches; two fresh live browser → native click → browser receipt-upload/readback tasks. The last full probe took 6,553 ms including fixture compilation, startup and cleanup. Actual client tokens and provider cost remain null. Final process inventory found no remaining owned fixture/profile/helper processes.
+
+**Failures retained:** sandbox permission denial (host grants already existed), fixture startup discovery, empty MCP SSE heartbeat, and a native action followed by a failed final check because the host initially compared RAD's wrapped content directly. Corrected the startup observation, SSE parser, local Swift cache and trust-envelope readback. The uncertain write was not replayed; later attempts used new synthetic tokens/profiles/apps. Initial pointer tests lacked a workspace dependency link; the final test run passed after adding the ignored local link.
+
+**Limitations / next gate:** this is a development probe outside the shipping server. Its task log is not the cockpit audit trail. Server-owned Desktop grants, opt-in/Stop UI, unified cockpit events, native dialogs/broader apps, live adversarial fault injection, helper bundling/signing and candidate-app coexistence remain open. No new Chromium build, installed app, release or embedded chat is claimed. [Reproduction and evidence](../../tools/browserrad/desktop/README.md).
+
+Repository drift at handoff: while this isolated work ran, `codex/browserrad` advanced independently to `4a01c3b1a` (savings report and validation coverage) and became clean. This feature branch remains based on `c01896dc1`; integration with that newer commit is an open gate. No parent files were committed by this desktop work.

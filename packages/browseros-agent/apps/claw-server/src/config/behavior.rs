@@ -30,6 +30,8 @@ pub struct Behavior {
     pub isolated_world: bool,
     /// BrowserRAD: instant visual feedback without removing input validation.
     pub instant_pointer: bool,
+    /// Hard/default script budget, shared by MCP discovery, execution and saved flows.
+    pub run_policy: browseros_mcp::RunPolicy,
 }
 
 impl Behavior {
@@ -46,6 +48,7 @@ impl Behavior {
             }),
             isolated_world: true,
             instant_pointer: true,
+            run_policy: browseros_mcp::RunPolicy::default(),
         }
     }
 }
@@ -122,6 +125,15 @@ const KNOBS: &[Knob] = &[
         key: "instant_pointer",
         apply: |behavior, value| {
             behavior.instant_pointer = value.try_into()?;
+            Ok(())
+        },
+    },
+    Knob {
+        section: "run",
+        key: "wall_timeout_seconds",
+        apply: |behavior, value| {
+            let seconds: NonZeroU32 = value.try_into()?;
+            behavior.run_policy = browseros_mcp::RunPolicy::from_seconds(seconds);
             Ok(())
         },
     },
@@ -258,6 +270,7 @@ fn edit_distance(left: &str, right: &str) -> usize {
 mod tests {
     use super::{Behavior, Ignored, KNOBS, TabGrouping, read};
     use crate::config::ServerMode;
+    use std::time::Duration;
 
     fn hosted() -> Behavior {
         Behavior::defaults(ServerMode::Hosted)
@@ -268,6 +281,32 @@ mod tests {
             key: key.to_string(),
             reason: reason.to_string(),
         }
+    }
+
+    #[test]
+    fn run_wall_timeout_is_a_recognized_deployment_setting() -> Result<(), toml::de::Error> {
+        let applied = read("[run]\nwall_timeout_seconds = 120\n", hosted())?;
+        assert!(applied.ignored.is_empty(), "{:?}", applied.ignored);
+        assert_eq!(
+            applied.behavior.run_policy.wall_timeout(),
+            Duration::from_secs(120)
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn invalid_run_budgets_warn_and_retain_the_mode_default() -> Result<(), toml::de::Error> {
+        for mode in [ServerMode::Desktop, ServerMode::Hosted] {
+            let defaults = Behavior::defaults(mode);
+            assert_eq!(defaults.run_policy.wall_timeout(), Duration::from_secs(60));
+            for raw in ["0", "-1", "1.5", "true", "\"120\"", "4294967296"] {
+                let applied = read(&format!("[run]\nwall_timeout_seconds = {raw}\n"), defaults)?;
+                assert_eq!(applied.behavior, defaults);
+                assert_eq!(applied.ignored.len(), 1);
+                assert_eq!(applied.ignored[0].key, "run.wall_timeout_seconds");
+            }
+        }
+        Ok(())
     }
 
     #[test]

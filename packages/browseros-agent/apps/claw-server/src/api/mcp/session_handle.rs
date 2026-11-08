@@ -22,6 +22,15 @@ use rmcp::{
 };
 use serde_json::{Value, json};
 use std::sync::Arc;
+use uuid::Uuid;
+
+pub(super) const MAX_MINT_ATTEMPTS: usize = 128;
+
+/// A compact local task selector, not an authentication credential. Its first UUIDv4
+/// field is random; the task registry must reserve it before any session is published.
+pub(super) fn candidate() -> SessionId {
+    SessionId::new(format!("{:08x}", Uuid::new_v4().as_fields().0))
+}
 
 /// The argument the agent echoes, and the structured field it reads the handle from.
 const FIELD: &str = "session";
@@ -94,6 +103,7 @@ pub(super) fn attach(
     // without asking to. Saying so is the difference between an agent that adopts the new
     // handle and one that keeps resending a dead one, which is what fills the cockpit with
     // one-call sessions.
+    let echoed = presented.as_ref() == Some(&handle);
     let replaced = presented.is_some_and(|presented| presented != handle);
     let handle = handle.to_string();
     result.map(|mut call_result| {
@@ -104,13 +114,17 @@ pub(super) fn attach(
         if let Some(Value::Object(structured)) = call_result.structured_content.as_mut() {
             structured.insert(FIELD.to_string(), Value::String(handle.clone()));
         }
-        let line = if replaced {
+        let line = if echoed {
+            // The current call demonstrates continuity. Keep a recent visible copy for
+            // content-only clients without repeating an instruction they already followed.
+            format!("[browserrad session: {handle}]")
+        } else if replaced {
             format!(
-                "[browseros-neo session: {handle}. The handle you sent is no longer active, so this call continued in a new session. Pass this exact value as the `session` argument from now on, and stop sending the previous one.]"
+                "[browserrad session: {handle}. The handle you sent is no longer active, so this call continued in a new session. Pass this exact value as the `session` argument from now on, and stop sending the previous one.]"
             )
         } else {
             format!(
-                "[browseros-neo session: {handle}. Pass this exact value as the `session` argument on every following call to keep this browser session and its tab ownership.]"
+                "[browserrad session: {handle}. Pass this exact value as the `session` argument on every following call to keep this browser session and its tab ownership.]"
             )
         };
         call_result.content.push(ContentBlock::text(line));
@@ -273,7 +287,27 @@ mod tests {
 
         // An agent that presented the handle it got back is not told anything unusual.
         let text = text_of(&attached(ok(), "same", Some("same"))?);
-        assert!(!text.contains("no longer active"), "{text}");
+        assert_eq!(text, "ok\n[browserrad session: same]");
+        Ok(())
+    }
+
+    #[test]
+    fn a_matching_echo_keeps_the_handle_without_repeating_guidance_on_tool_errors()
+    -> anyhow::Result<()> {
+        let result = attached(
+            CallToolResult::error(vec![ContentBlock::text("page is closed")]),
+            "0123abcd",
+            Some("0123abcd"),
+        )?;
+        assert_eq!(result.is_error, Some(true));
+        assert_eq!(
+            text_of(&result),
+            "page is closed\n[browserrad session: 0123abcd]"
+        );
+        assert_eq!(
+            result.meta.as_ref().and_then(|meta| meta.get(META_KEY)),
+            Some(&json!("0123abcd"))
+        );
         Ok(())
     }
 

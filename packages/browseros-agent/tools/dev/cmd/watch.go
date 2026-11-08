@@ -35,13 +35,17 @@ var (
 
 const (
 	watchRunLockMode           = "watch"
+	clawWatchStateLockMode     = "watch-claw-state"
 	defaultClawWatchServerPort = 9200
 	clawWatchStateDirName      = "browserclaw"
-	rustClawWatchPollInterval  = time.Second
+	// Three managed child groups can each take up to eight seconds to stop.
+	// Leave room for that cleanup before a replacement watcher gives up.
+	watchShutdownTimeout      = 30 * time.Second
+	rustClawWatchPollInterval = time.Second
 )
 
 func init() {
-	watchCmd.Flags().BoolVar(&watchNew, "new", false, "Use random available ports in 9000-9999 and create a fresh user-data directory")
+	watchCmd.Flags().BoolVar(&watchNew, "new", false, "Use random available ports in 9000-9999 and a fresh browser profile and state")
 	watchCmd.Flags().BoolVar(&watchManual, "manual", false, "Build agent statically instead of WXT HMR mode")
 	watchCmd.Flags().BoolVar(&watchClaw, "claw", false, "Run the BrowserRAD UI and standalone server")
 	rootCmd.AddCommand(watchCmd)
@@ -73,14 +77,53 @@ func runWatch(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	var runLock *proc.WatchRunLock
+	if watchNew {
+		proc.LogMsg(proc.TagInfo, "Selecting random available ports...")
+		p, reservations, err = proc.ResolveWatchPorts(true)
+		if err != nil {
+			return err
+		}
+		userDataDir, err = os.MkdirTemp("", "browseros-dev-")
+		if err != nil {
+			return fmt.Errorf("creating temp dir: %w", err)
+		}
+		proc.LogMsgf(proc.TagInfo, "Created fresh profile: %s", userDataDir)
+	}
+	stateKey, stateDir, err := resolveWatchProductStateDir(watchClaw, userDataDir)
+	if err != nil {
+		return err
+	}
+	stateLockDir := stateDir
+	if watchClaw {
+		stateLockDir, err = resolveClawWatchStateLockDir(stateDir)
+		if err != nil {
+			return err
+		}
+	}
+	var runLock, stateLock *proc.WatchRunLock
+	defer func() {
+		// The ownership locks outlive all managed children, including shutdown.
+		for _, lock := range []*proc.WatchRunLock{stateLock, runLock} {
+			if lock == nil {
+				continue
+			}
+			if err := lock.Close(); err != nil {
+				proc.LogMsgf(proc.TagInfo, "Warning: closing run lock: %v", err)
+			}
+		}
+	}()
+	defer func() {
+		if reservations != nil {
+			reservations.ReleaseAll()
+		}
+	}()
 	acquireRunLock := func(ports proc.Ports) error {
 		lock, stopped, err := proc.AcquireWatchRunLock(proc.WatchRunIdentity{
 			// All watch variants share one owner so they cannot supervise the same profile concurrently.
 			Mode:    watchRunLockMode,
 			Profile: userDataDir,
 			Ports:   ports,
-		}, 3*time.Second)
+		}, watchShutdownTimeout)
 		if err != nil {
 			return err
 		}
@@ -88,22 +131,26 @@ func runWatch(cmd *cobra.Command, args []string) error {
 		if stopped {
 			proc.LogMsgf(proc.TagInfo, "Stopped existing dev watch for profile %s", userDataDir)
 		}
+		if watchClaw {
+			// An explicit state override can be shared across profiles. Claim the
+			// root before clearing ports so another watcher cannot write it.
+			lock, stopped, err = proc.AcquireWatchRunLock(proc.WatchRunIdentity{
+				Mode:    clawWatchStateLockMode,
+				Profile: stateLockDir,
+				Ports:   ports,
+			}, watchShutdownTimeout)
+			if err != nil {
+				return err
+			}
+			stateLock = lock
+			if stopped {
+				proc.LogMsgf(proc.TagInfo, "Stopped existing dev watch for Claw state %s", stateDir)
+			}
+		}
 		return nil
 	}
 
 	if watchNew {
-		proc.LogMsg(proc.TagInfo, "Selecting random available ports...")
-		p, reservations, err = proc.ResolveWatchPorts(true)
-		if err != nil {
-			return err
-		}
-
-		dir, err := os.MkdirTemp("", "browseros-dev-")
-		if err != nil {
-			return fmt.Errorf("creating temp dir: %w", err)
-		}
-		userDataDir = dir
-		proc.LogMsgf(proc.TagInfo, "Created fresh profile: %s", userDataDir)
 		if err := acquireRunLock(p); err != nil {
 			return err
 		}
@@ -137,13 +184,6 @@ func runWatch(cmd *cobra.Command, args []string) error {
 				p.CDP, p.Server, p.Extension)
 		}
 	}
-	defer func() {
-		if err := runLock.Close(); err != nil {
-			proc.LogMsgf(proc.TagInfo, "Warning: closing run lock: %v", err)
-		}
-	}()
-	defer reservations.ReleaseAll()
-
 	if err := runDevSetup(cmd.Context(), root); err != nil {
 		return err
 	}
@@ -160,12 +200,9 @@ func runWatch(cmd *cobra.Command, args []string) error {
 		clawBinary = browser.ResolveInstalledBinary(browser.ProductBrowserClaw)
 		logClawBrowserBinary(clawBinary)
 	}
-	env, err := buildWatchEnvWithBinaryResolution(p, userDataDir, watchClaw, clawBinary)
-	if err != nil {
-		return err
-	}
+	env := buildWatchEnvWithResolvedState(p, userDataDir, watchClaw, clawBinary, stateKey, stateDir)
 	if watchClaw {
-		proc.LogMsgf(proc.TagInfo, "Claw state: %s", envValue(env, "BROWSERRAD_DIR"))
+		proc.LogMsgf(proc.TagInfo, "BrowserRAD state: %s", stateDir)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -236,19 +273,22 @@ func resolveWatchDefaultPorts(root string, claw bool) (proc.Ports, error) {
 }
 
 // buildWatchEnv forwards the selected product into WXT's Chromium launcher config.
-func buildWatchEnv(p proc.Ports, userDataDir string, claw bool) ([]string, error) {
-	return buildWatchEnvWithBinaryResolution(p, userDataDir, claw, browser.BinaryResolution{})
+func buildWatchEnv(p proc.Ports, userDataDir string, claw bool, fresh bool) ([]string, error) {
+	return buildWatchEnvWithBinaryResolution(p, userDataDir, claw, fresh, browser.BinaryResolution{})
 }
 
-func buildWatchEnvWithBinaryResolution(p proc.Ports, userDataDir string, claw bool, binaryResolution browser.BinaryResolution) ([]string, error) {
-	env := proc.BuildEnv(p, "development")
+func buildWatchEnvWithBinaryResolution(p proc.Ports, userDataDir string, claw bool, _ bool, binaryResolution browser.BinaryResolution) ([]string, error) {
 	stateKey, stateDir, err := resolveWatchProductStateDir(claw, userDataDir)
 	if err != nil {
 		return nil, err
 	}
-	// Resolve the root once before launching anything. Chromium and every
-	// sidecar then open the same installation.json instead of independently
-	// interpreting dev mode, HOME, or a relative environment override.
+	return buildWatchEnvWithResolvedState(p, userDataDir, claw, binaryResolution, stateKey, stateDir), nil
+}
+
+// buildWatchEnvWithResolvedState forwards the root claimed before port cleanup.
+// Chromium and every sidecar must share the selected installation.json.
+func buildWatchEnvWithResolvedState(p proc.Ports, userDataDir string, claw bool, binaryResolution browser.BinaryResolution, stateKey string, stateDir string) []string {
+	env := proc.BuildEnv(p, "development")
 	env = replaceEnvValue(env, stateKey, stateDir)
 	env = append(env,
 		fmt.Sprintf("BROWSEROS_USER_DATA_DIR=%s", userDataDir),
@@ -261,16 +301,16 @@ func buildWatchEnvWithBinaryResolution(p proc.Ports, userDataDir string, claw bo
 		env = append(env, fmt.Sprintf("BROWSEROS_BINARY=%s", binaryResolution.Path))
 		env = buildClawWatchEnv(env, p)
 	}
-	return env, nil
+	return env
 }
 
 // resolveWatchProductStateDir picks the product state root, honoring an env override.
 // BrowserRAD state defaults to a directory inside the browser profile: it describes that
 // profile's tabs, sessions and target bindings, so it is per checkout for watch, fresh for
-// --new, guarded by the same run lock, and removed with the profile by dev:cleanup. A shared
-// root would let two dev servers open one database and close each other's live sessions.
+// --new, guarded by the run and state locks, and removed with the profile by dev:cleanup.
 func resolveWatchProductStateDir(claw bool, userDataDir string) (string, string, error) {
 	key := "BROWSEROS_DIR"
+	dirName := devDirName
 	if claw {
 		key = "BROWSERRAD_DIR"
 	}
@@ -288,7 +328,21 @@ func resolveWatchProductStateDir(claw bool, userDataDir string) (string, string,
 	if err != nil {
 		return "", "", fmt.Errorf("resolve %s default: %w", key, err)
 	}
-	return key, filepath.Join(home, devDirName), nil
+	return key, filepath.Join(home, dirName), nil
+}
+
+// resolveClawWatchStateLockDir gives filesystem aliases one ownership identity.
+// Create the selected root first so symlinks can be resolved even on its first
+// run; /tmp/state and /private/tmp/state must never open the database concurrently.
+func resolveClawWatchStateLockDir(stateDir string) (string, error) {
+	if err := os.MkdirAll(stateDir, 0o700); err != nil {
+		return "", fmt.Errorf("creating Claw state dir: %w", err)
+	}
+	dir, err := filepath.EvalSymlinks(stateDir)
+	if err != nil {
+		return "", fmt.Errorf("resolving Claw state dir for ownership: %w", err)
+	}
+	return dir, nil
 }
 
 // envValue returns the last value assigned to key in an environ-style slice.

@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::warn;
 
-pub const EFFICIENCY_ESTIMATOR_VERSION: i64 = 4;
+pub const EFFICIENCY_ESTIMATOR_VERSION: i64 = 5;
 pub const SCREENSHOT_BASELINE_WIDTH: usize = 1920;
 pub const SCREENSHOT_BASELINE_HEIGHT: usize = 1080;
 const DAY_MS: i64 = 24 * 60 * 60 * 1000;
@@ -221,9 +221,13 @@ fn calculate_session_efficiency(
     source: &SessionEfficiencySource,
     computed_at: i64,
 ) -> Option<session_efficiency_stats::Model> {
-    if source.dispatches.is_empty()
-        || source
-            .dispatches
+    let dispatches: Vec<_> = source
+        .dispatches
+        .iter()
+        .filter(|dispatch| dispatch.parent_dispatch_id.is_none())
+        .collect();
+    if dispatches.is_empty()
+        || dispatches
             .iter()
             .any(|dispatch| dispatch.token_estimator_version != ELIGIBLE_TOKEN_ESTIMATOR_VERSION)
     {
@@ -232,20 +236,28 @@ fn calculate_session_efficiency(
 
     let mut tool_input_token_estimate = 0_i64;
     let mut tool_output_token_estimate = 0_i64;
-    for dispatch in &source.dispatches {
+    for dispatch in &dispatches {
         tool_input_token_estimate =
             tool_input_token_estimate.saturating_add(dispatch.tool_input_token_estimate.max(0));
         tool_output_token_estimate =
             tool_output_token_estimate.saturating_add(dispatch.tool_output_token_estimate.max(0));
     }
 
-    let started_at = source
-        .start
-        .as_ref()
-        .map(|start| start.created_at)
-        .unwrap_or(source.dispatches[0].created_at);
-    let active_duration_ms = source.end.created_at.saturating_sub(started_at).max(0);
-    let dispatch_count = i64::try_from(source.dispatches.len()).unwrap_or(i64::MAX);
+    // Bound observed work by tool start/return, not transport lifetime or idle reaping.
+    let first = dispatches
+        .iter()
+        .map(|dispatch| dispatch.created_at)
+        .min()?;
+    let last = dispatches
+        .iter()
+        .map(|dispatch| {
+            dispatch
+                .created_at
+                .saturating_add(dispatch.duration_ms.unwrap_or(0).max(0))
+        })
+        .max()?;
+    let active_duration_ms = last.saturating_sub(first).max(0);
+    let dispatch_count = i64::try_from(dispatches.len()).unwrap_or(i64::MAX);
     Some(session_efficiency_stats::Model {
         session_id: source.session_id.clone(),
         ended_at: source.end.created_at,
@@ -486,7 +498,7 @@ mod tests {
     }
 
     #[test]
-    fn calculator_uses_elapsed_session_duration() -> anyhow::Result<()> {
+    fn calculator_excludes_idle_tail_and_includes_tool_completion() -> anyhow::Result<()> {
         let source = source(vec![
             dispatch(1, 1_000, Some(500), 10, 100, 1),
             dispatch(2, 1_200, Some(400), 20, 200, 1),
@@ -497,11 +509,11 @@ mod tests {
         assert_eq!(stats.session_id, "session");
         assert_eq!(stats.ended_at, 10_000);
         assert_eq!(stats.dispatch_count, 2);
-        assert_eq!(stats.active_duration_ms, 10_000);
+        assert_eq!(stats.active_duration_ms, 600);
         assert_eq!(stats.tool_input_token_estimate, 30);
         assert_eq!(stats.tool_output_token_estimate, 300);
         assert_eq!(stats.screenshot_baseline_token_estimate, 6_000);
-        assert_eq!(stats.efficiency_estimator_version, 4);
+        assert_eq!(stats.efficiency_estimator_version, 5);
         assert_eq!(stats.computed_at, 12_000);
         Ok(())
     }
@@ -516,14 +528,15 @@ mod tests {
 
         let stats = calculate_session_efficiency(&source, 300)
             .ok_or_else(|| anyhow::anyhow!("eligible session was skipped"))?;
-        assert_eq!(stats.active_duration_ms, 9_900);
+        assert_eq!(stats.active_duration_ms, 100);
         assert_eq!(stats.tool_input_token_estimate, i64::MAX);
         assert_eq!(stats.tool_output_token_estimate, i64::MAX);
         Ok(())
     }
 
     #[test]
-    fn calculator_clamps_a_start_after_the_end_to_zero() -> anyhow::Result<()> {
+    fn calculator_uses_saturating_tool_completion_despite_inconsistent_session_start()
+    -> anyhow::Result<()> {
         let mut source = source(vec![
             dispatch(1, 100, Some(i64::MAX), 0, 0, 1),
             dispatch(2, 200, Some(1), 0, 0, 1),
@@ -536,7 +549,26 @@ mod tests {
 
         let stats = calculate_session_efficiency(&source, 300)
             .ok_or_else(|| anyhow::anyhow!("eligible session was skipped"))?;
-        assert_eq!(stats.active_duration_ms, 0);
+        assert_eq!(stats.active_duration_ms, i64::MAX - 100);
+        Ok(())
+    }
+
+    #[test]
+    fn calculator_counts_only_top_level_payload_and_handles_out_of_order_tools()
+    -> anyhow::Result<()> {
+        let mut child = dispatch(3, 1_100, Some(20), 999, 999, 0);
+        child.parent_dispatch_id = Some("outer".to_owned());
+        let source = source(vec![
+            dispatch(2, 1_200, Some(400), 20, 200, 1),
+            child,
+            dispatch(1, 1_000, Some(500), 10, 100, 1),
+        ]);
+        let stats = calculate_session_efficiency(&source, 12_000)
+            .ok_or_else(|| anyhow::anyhow!("eligible session skipped"))?;
+        assert_eq!(stats.dispatch_count, 2);
+        assert_eq!(stats.active_duration_ms, 600);
+        assert_eq!(stats.tool_input_token_estimate, 30);
+        assert_eq!(stats.tool_output_token_estimate, 300);
         Ok(())
     }
 
@@ -770,7 +802,7 @@ mod tests {
                     "screenshot_baseline_token_estimate": 3_000,
                     "screenshot_first_token_estimate": 3_030,
                     "raw_token_savings_estimate": -1_000,
-                    "efficiency_estimator_version": 4,
+                    "efficiency_estimator_version": 5,
                     "screenshot_baseline_width": 1_920,
                     "screenshot_baseline_height": 1_080,
                     "screenshot_tokens_per_dispatch": 3_000,

@@ -7,6 +7,7 @@ import { Analytics } from '@/modules/analytics/Analytics'
 import { Audit } from '@/screens/audit/Audit'
 import { Cockpit } from '@/screens/cockpit/Cockpit'
 import { Mcp } from '@/screens/mcp/Mcp'
+import { Savings } from '@/screens/savings/Savings'
 import { Settings } from '@/screens/settings/Settings'
 import { SkillDetail } from '@/screens/skills/SkillDetail'
 import { Skills } from '@/screens/skills/Skills'
@@ -21,6 +22,14 @@ export function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Cockpit />} />
+          <Route
+            path="/savings"
+            element={
+              <SensitiveRouteContent>
+                <Savings />
+              </SensitiveRouteContent>
+            }
+          />
           <Route path="/mcp" element={<Mcp />} />
           <Route
             path="/diagnostics"

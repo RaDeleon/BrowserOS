@@ -132,3 +132,9 @@ For upstream updates, fetch `upstream` and merge its chosen commit or branch on 
 ## Upstream maintenance
 
 Keep `origin` on the fork and `upstream` on BrowserOS. Fetch and review changes on a separate branch; merge or rebase only with a clean, understood working tree. Re-run identity/coexistence, patch integrity, API, and benchmark checks after changes to the browser or execution layer. Do not enable upstream binary feeds as a substitute for merging source.
+
+## Local installation and Spotlight
+
+After validating a BrowserRAD candidate and confirming no BrowserRAD task is active, install the tested app at `/Applications/BrowserRAD.app` and launch that path for normal use. Preserve the existing BrowserRAD profile, settings, and extension identity. Keep the Chromium checkout and `out/Default_browserclaw_arm64/BrowserRAD.app` for incremental builds; it is a build output, not the app to select in Spotlight. Generated candidates belong in ignored `tools/browserrad/results/` only until validation and installation; remove obsolete copies after the installed app is verified. Release ZIPs and checksums are separate artifacts, and a local install does not publish a GitHub release.
+
+Before signing and installing a candidate, verify that each bundled CRX manifest version agrees with its `bundled_extensions.json` `external_version` and the local provenance metadata. A newer CRX with an older catalog version will not upgrade an existing profile. Re-sign and verify after any package-resource correction, then confirm the active profile actually loaded the new extension version.

@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Browser comparison fixture</title>
+<style>body{font:16px system-ui;max-width:850px;margin:3rem auto;line-height:1.5}section{border:1px solid #bbb;padding:1rem;margin:1rem 0}button,input{font:inherit;padding:.5rem}#visual{width:100px;height:70px;background:#f60;border:0;border-radius:60% 20% 60% 20%;cursor:pointer}iframe{width:100%;height:100px}</style>
+<h1>Browser comparison fixture</h1><p>Synthetic data only. Case IDs are stable; a new nonce makes each trial distinct.</p>
+<section id="extract"><h2>Inventory</h2><table><thead><tr><th>SKU</th><th>Stock</th><th>Price</th></tr></thead><tbody><tr><td>RAD-042</td><td>17</td><td>$23</td></tr><tr><td>NEO-118</td><td>4</td><td>$31</td></tr><tr><td>RAD-317</td><td>0</td><td>$14</td></tr></tbody></table><p id="policy">Backorders are unavailable. Delivery window: 3 business days.</p></section>
+<section id="dynamic"><h2>Delayed order</h2><button id="load">Load order</button><div id="status" role="status">Order has not loaded</div><button id="reveal" hidden>Reveal total</button><div id="total"></div></section>
+<section id="write"><h2>Project form</h2><label>Project name <input id="project"></label><button id="save">Save project</button><button id="clear">Reset fixture state</button><div id="saved" role="status"></div></section>
+<section id="complex"><h2>Embedded and visual controls</h2><iframe title="Shipping frame" srcdoc='<p>Shipping code: FRAME-29</p>'></iframe><div id="shadow-host"></div><p>Click the orange leaf-shaped control to reveal the visual code.</p><button id="visual" aria-label="" title=""></button><div id="visual-result" role="status"></div></section>
+<section id="tabs"><h2>Multi-tab evidence</h2><a href="comparison-suite.html?tab=alpha" target="_blank">Open Alpha record</a> · <a href="comparison-suite.html?tab=beta" target="_blank">Open Beta record</a><div id="tab-record"></div></section>
+<script>
+const params=new URLSearchParams(location.search);const nonce=params.get('nonce')||'unset';
+const records={alpha:'Alpha threshold: 72',beta:'Beta threshold: 64'};document.querySelector('#tab-record').textContent=records[params.get('tab')]||'Open each record in a separate tab.';
+document.querySelector('#load').onclick=()=>{document.querySelector('#status').textContent='Loading order…';setTimeout(()=>{document.querySelector('#status').textContent='Order ready';document.querySelector('#reveal').hidden=false},850)};
+document.querySelector('#reveal').onclick=()=>{document.querySelector('#total').textContent='Total: $54'};
+const key='browser-comparison-'+nonce;document.querySelector('#saved').textContent=localStorage.getItem(key)||'Nothing saved';
+document.querySelector('#save').onclick=()=>{const value=document.querySelector('#project').value;localStorage.setItem(key,'Saved: '+value);document.querySelector('#saved').textContent='Saved: '+value;history.replaceState(null,'',location.pathname+'?nonce='+encodeURIComponent(nonce)+'&saved=1')};
+document.querySelector('#clear').onclick=()=>{localStorage.removeItem(key);document.querySelector('#saved').textContent='Nothing saved'};
+const shadow=document.querySelector('#shadow-host').attachShadow({mode:'open'});shadow.innerHTML='<p>Shadow code: SHADOW-73</p>';
+document.querySelector('#visual').onclick=()=>{document.querySelector('#visual-result').textContent='Visual code: LEAF-82'};
+</script></html>

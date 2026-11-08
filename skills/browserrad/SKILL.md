@@ -32,6 +32,10 @@ Reach for `run` first; the granular tools are the fallback. One `run` script com
 
 Derive the page you work on inside the same script that uses it. When you do carry something between calls, carry the URL rather than the page id: an id is only good while that tab is open and still yours.
 
+
+For multiple questions, use one `run` with `page.evidence({over:'content',selector:'main',queries:[...]})` when available; return only needed evidence. Use `page.executePlan` for bounded authorized actions with fresh targets and postconditions. If helpers are unavailable use the base SDK.
+If a component reports a loading error, inspect it before waiting again. After one unmatched wait choose an evidenced recovery, such as toggling the failed disclosure or following a same-origin fallback link; don't just increase timeouts. Never replay an uncertain write.
+
 ## Writing a `run` script
 
 - **The sandbox is neither Node nor the page.** No `fetch`, `require` or `document` in scope; read the page through `page.snapshot`, `page.read` and `page.grep`, which run no script in it. `page.evaluateInPage` runs your own script inside the page, where page scripts can watch it; use it only when the user explicitly asks to run code in the page or those cannot answer.

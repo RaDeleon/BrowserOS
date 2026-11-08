@@ -1,65 +1,57 @@
+/**
+ * @license
+ * Copyright 2026 BrowserOS
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import { describe, expect, it } from 'bun:test'
-import type { CockpitStats, CockpitStatsWindow } from '@browseros/claw-api'
+import type { CockpitStats } from '@browseros/claw-api'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { SavingsCard } from './SavingsCard'
 
-const HOUR_MS = 3_600_000
-
-function window(
-  withNeo: number,
-  withoutNeo: number,
-  humanTimeSavedMs: number,
-): CockpitStatsWindow {
-  return {
-    browserClawTokenEstimate: withNeo,
-    screenshotFirstTokenEstimate: withoutNeo,
-    rawTokenSavingsEstimate: withoutNeo - withNeo,
-    humanTimeSavedMs,
-    sessionCount: 3_576,
-    toolCallCount: 183_180,
-  }
+const period = {
+  browserClawTokenEstimate: 100,
+  screenshotFirstTokenEstimate: 400,
+  rawTokenSavingsEstimate: 300,
+  humanTimeSavedMs: 60_000,
+  sessionCount: 2,
+  toolCallCount: 4,
 }
-
-function stats(allTime: CockpitStatsWindow, measured = true): CockpitStats {
-  return {
-    hasMeasuredStats: measured,
-    allTime,
-    last30Days: allTime,
-    last7Days: allTime,
-  }
+const stats: CockpitStats = {
+  hasMeasuredStats: true,
+  allTime: period,
+  last30Days: period,
+  last7Days: period,
 }
-
-// The visible words, without the tags and the `<!-- -->` React puts between text nodes.
-function strip(cockpitStats: CockpitStats): string {
-  return renderToStaticMarkup(<SavingsCard stats={cockpitStats} />)
+function text(value: CockpitStats) {
+  return renderToStaticMarkup(<SavingsCard stats={value} />)
     .replace(/<!-- -->/g, '')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
 }
-
-describe('SavingsCard', () => {
-  it('shows hours and tokens saved on one line, with what claude / codex would have used under the bar', () => {
-    const text = strip(stats(window(314_600_000, 573_900_000, 1_054 * HOUR_MS)))
-    expect(text).toContain('1,054 hours saved')
-    expect(text).toContain('259.3M AI tokens saved · 45% fewer')
-    expect(text).toContain('Details')
-    expect(text).toContain(
-      'claude / codex browser would have used 573.9M tokens',
+describe('SavingsCard evidence labels', () => {
+  it('labels modeled savings and missing Neo calibration honestly', () => {
+    const markup = renderToStaticMarkup(<SavingsCard stats={stats} />)
+    expect(markup).toContain('role="img"')
+    expect(markup).toContain('width:75%')
+    const output = text(stats)
+    expect(output).toContain('Human hours saved')
+    expect(output).toContain('0 tasks logged')
+    expect(output).toContain('browser work')
+    expect(output).toContain('estimated tokens avoided')
+    expect(output).toContain('75.0% fewer')
+    expect(output).toContain('BrowserOS Neo baseline:')
+    expect(output).toContain('not calibrated')
+    expect(output).not.toContain('would have used')
+    expect(renderToStaticMarkup(<SavingsCard stats={stats} />)).toContain(
+      'href="#/savings"',
     )
-    expect(text).not.toContain('neo used')
-    expect(text).not.toMatch(/without neo/i)
   })
-
-  it('shows hours alone until tokens are measured, and an invitation before the first minute', () => {
-    const unmeasured = strip(
-      stats(window(314_600_000, 573_900_000, 1_054 * HOUR_MS), false),
+  it('keeps regressions and unknowns visible', () => {
+    expect(
+      text({ ...stats, allTime: { ...period, browserClawTokenEstimate: 500 } }),
+    ).toContain('25.0% more')
+    expect(text({ ...stats, hasMeasuredStats: false })).toContain(
+      'Usage not yet measured',
     )
-    expect(unmeasured).toContain('hours saved')
-    expect(unmeasured).not.toContain('AI tokens')
-    expect(unmeasured).not.toContain('would have used')
-
-    const firstMinute = strip(stats(window(1, 5, 1_000), false))
-    expect(firstMinute).toContain('Your time saved starts here')
-    expect(firstMinute).not.toContain('AI tokens')
   })
 })

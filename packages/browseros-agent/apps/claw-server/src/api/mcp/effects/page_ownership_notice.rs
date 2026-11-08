@@ -50,6 +50,18 @@ pub fn apply(context: ToolEffectContext<'_>) -> BoxFuture<'_, anyhow::Result<Opt
         if context.result.is_error {
             return Ok(None);
         }
+        // A successful close releases the claim before effects run; absence then says
+        // nothing about who opened the now-closed tab.
+        if context.call.tool().name == "tabs"
+            && context
+                .call
+                .raw_args
+                .get("action")
+                .and_then(serde_json::Value::as_str)
+                == Some("close")
+        {
+            return Ok(None);
+        }
         let Some(identity) = &context.call.identity else {
             return Ok(None);
         };
@@ -194,6 +206,25 @@ mod tests {
         })
         .await
         .unwrap_or(None)
+    }
+
+    #[tokio::test]
+    async fn closed_tab_without_a_remaining_claim_gets_no_user_warning() -> anyhow::Result<()> {
+        let call = crate::api::mcp::test_support::tool_call(
+            "tabs",
+            serde_json::json!({"action":"close","page":7}),
+        )
+        .await?;
+        assert!(
+            run(&call, &ToolResult::text("closed page 7", None))
+                .await
+                .is_none()
+        );
+        let read =
+            crate::api::mcp::test_support::tool_call("read", serde_json::json!({"page":7})).await?;
+        let annotated = run(&read, &ToolResult::text("page text", None)).await;
+        assert!(annotated.is_some_and(|result| text_of(&result).contains("user's own tabs")));
+        Ok(())
     }
 
     /// A reconnect gives one client a new conversation, so an agent reading its

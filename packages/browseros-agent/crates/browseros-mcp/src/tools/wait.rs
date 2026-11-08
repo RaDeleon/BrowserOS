@@ -25,7 +25,7 @@ beat a blind pause. They poll until the page matches or the timeout elapses (def
 capped at 30000), then return { matched: true } or, on timeout, { matched: false } - they do NOT \
 throw, so check matched before trusting the page is ready. for=\"time\" (default) pauses value ms \
 (default 2000, honored up to 90000; an explicit timeout caps it lower, and a larger value is \
-rejected, not silently shortened) - last resort. Best of all: act and read the diff instead of waiting.";
+rejected, not silently shortened) - last resort. Best of all: act and read the diff instead of waiting. If the component already reports an error, inspect it and choose an evidenced recovery. After an unmatched wait, do not simply increase the timeout.";
 
 #[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
 #[serde(rename_all = "lowercase")]
@@ -133,7 +133,9 @@ fn handler<'a>(
                 "timed out after {timeout}ms waiting for {}",
                 wait_for_name(&args.wait_for)
             ),
-            Some(json!({ "matched": false })),
+            Some(
+                json!({ "matched": false, "timedOut": true, "recoveryHint": "Inspect current error/status evidence before another wait; change recovery strategy instead of increasing the timeout. Never replay an uncertain write." }),
+            ),
         )))
     })
 }

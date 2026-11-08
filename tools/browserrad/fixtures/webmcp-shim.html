@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>BrowserRAD WebMCP contract fixture</title>
+<main>
+  <h1>WebMCP contract fixture</h1>
+  <p>This page supplies a synthetic document.modelContext API for a guarded call-path test. It does not establish native WebMCP support.</p>
+  <output id="result" role="status">Not invoked</output>
+</main>
+<script>
+const tool = {
+  name: 'fixture.reveal',
+  description: 'Reveal a synthetic status on this page',
+  inputSchema: { type: 'object', properties: { value: { type: 'string' } } },
+  annotations: { readOnlyHint: false },
+  origin: location.origin,
+  window,
+};
+document.modelContext = {
+  async getTools() { return [tool]; },
+  async executeTool(selected, args) {
+    if (selected !== tool || args.value !== 'WEBMCP-61') throw Error('unexpected invocation');
+    document.querySelector('#result').textContent = 'Verified: WEBMCP-61';
+    return { verified: true };
+  },
+};
+</script>

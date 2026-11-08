@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BrowserRAD visual stress fixture</title>
+<style>
+body{font:16px system-ui;max-width:920px;margin:2rem auto;padding:0 1rem;color:#182436}
+section{border:1px solid #aab7c5;border-radius:12px;padding:1.2rem;margin:1.2rem 0}
+#grid{display:grid;grid-template-columns:repeat(4,74px);gap:24px;justify-content:start}
+.tile{width:74px;height:74px;background:#eef3f8;border:1px solid #9eacc0;border-radius:12px;cursor:pointer}
+.tile svg{width:42px;height:42px;display:block;margin:auto}
+#pixels{width:340px;height:86px;max-width:100%;border:1px solid #9eacc0}
+#late{width:120px;height:66px;background:#f60;border:0;border-radius:60% 20% 60% 20%;cursor:pointer}
+button{font:inherit}output{display:block;margin-top:1rem;min-height:1.5em}
+</style>
+<h1>Visual stress fixture</h1>
+<p>Use a screenshot to identify targets. Synthetic data only.</p>
+<section>
+<h2>Similar controls</h2>
+<p>Click the <strong>orange leaf with two veins</strong>. Other controls have similar color or shape.</p>
+<div id="grid"></div><output id="icon-result" role="status">No icon selected</output>
+</section>
+<section>
+<h2>Image-only text</h2>
+<p>Read the code drawn inside the image. It is not page text.</p>
+<canvas id="pixels" width="680" height="172"></canvas>
+</section>
+<section>
+<h2>Delayed visual target</h2>
+<p>Wait until the orange leaf appears, then click it once.</p>
+<button id="start" type="button">Show delayed target</button>
+<div id="late-slot"><p>Target is not ready.</p></div>
+<output id="late-result" role="status">No delayed selection</output>
+</section>
+<script>
+const params=new URLSearchParams(location.search);
+const nonce=params.get('nonce')||'unset';
+let seed=0;for(const char of nonce)seed=(seed*31+char.charCodeAt(0))>>>0;
+const variants=[
+  {key:'target',color:'#f47518',shape:'leaf',veins:2},
+  {key:'one-vein',color:'#f47518',shape:'leaf',veins:1},
+  {key:'green-two',color:'#469c55',shape:'leaf',veins:2},
+  {key:'round-two',color:'#f47518',shape:'round',veins:2},
+  {key:'plain',color:'#f47518',shape:'leaf',veins:0},
+  {key:'yellow-two',color:'#e7bc39',shape:'leaf',veins:2},
+  {key:'slim-two',color:'#f47518',shape:'slim',veins:2},
+  {key:'green-one',color:'#469c55',shape:'leaf',veins:1},
+];
+for(let i=variants.length-1;i>0;i--){const j=seed%(i+1);[variants[i],variants[j]]=[variants[j],variants[i]];seed=(seed*1664525+1013904223)>>>0}
+function svgFor(item){
+  const path=item.shape==='round'?'M8 21A13 13 0 1 0 34 21A13 13 0 1 0 8 21':item.shape==='slim'?'M18 40 Q4 15 28 2 Q37 17 18 40':'M4 36 Q6 7 38 4 Q36 34 4 36';
+  const veins=item.veins===0?'':`<path d="M10 32 Q20 20 34 10${item.veins===2?' M18 24 L14 14 M25 18 L33 24':''}" fill="none" stroke="#fff" stroke-width="2.3"/>`;
+  return `<svg viewBox="0 0 42 42" aria-hidden="true"><path d="${path}" fill="${item.color}"/>${veins}</svg>`;
+}
+for(const item of variants){const button=document.createElement('button');button.type='button';button.className='tile';button.innerHTML=svgFor(item);button.onclick=()=>{document.querySelector('#icon-result').textContent=item.key==='target'?'Correct: ICON-24':'Incorrect selection'};document.querySelector('#grid').append(button)}
+const canvas=document.querySelector('#pixels');const ctx=canvas.getContext('2d');ctx.fillStyle='#dce7f0';ctx.fillRect(0,0,680,172);ctx.fillStyle='#1d3555';ctx.font='bold 70px monospace';ctx.fillText('PIXEL-47',52,112);
+document.querySelector('#start').onclick=()=>{const slot=document.querySelector('#late-slot');slot.innerHTML='<p>Waiting for target…</p>';setTimeout(()=>{slot.innerHTML='<button id="late" type="button" aria-label="" title=""></button>';slot.querySelector('button').onclick=()=>{document.querySelector('#late-result').textContent='Correct: LATE-18'}},1100)};
+</script>
+</html>

@@ -888,10 +888,18 @@ async fn recompute_task<C: ConnectionTrait>(conn: &C, session_id: &str) -> AppRe
         .map(|site| format!("Browsed {site}"))
         .unwrap_or_else(|| format!("Session on {agent_label}"));
     let cursor_id = last_dispatch.map(|row| row.id).unwrap_or(0);
-    let last_at = last_dispatch
-        .map(|row| row.created_at)
-        .unwrap_or(started_at);
-    let duration_ms = ended_at.unwrap_or(last_at).saturating_sub(started_at);
+    // Session-end may be an idle timeout long after the work finished.
+    let first_call_at = dispatches.iter().map(|row| row.created_at).min();
+    let last_return_at = dispatches
+        .iter()
+        .map(|row| {
+            row.created_at
+                .saturating_add(row.duration_ms.unwrap_or(0).max(0))
+        })
+        .max();
+    let duration_ms = last_return_at
+        .zip(first_call_at)
+        .map_or(0, |(last, first)| last.saturating_sub(first).max(0));
     let error_count = dispatches
         .iter()
         .filter(|row| result_is_error(row.result_meta.as_deref()))
@@ -908,14 +916,18 @@ async fn recompute_task<C: ConnectionTrait>(conn: &C, session_id: &str) -> AppRe
     // Materialize the live-updating token totals so the audit surfaces read one field instead of
     // re-summing dispatches. `tokens_measured` matches the efficiency projection's eligibility, so a
     // legacy/unmeasured session reports absent rather than a misleading zero downstream.
-    let tokens_measured = !dispatches.is_empty()
-        && dispatches
+    let top_level: Vec<_> = dispatches
+        .iter()
+        .filter(|row| row.parent_dispatch_id.is_none())
+        .collect();
+    let tokens_measured = !top_level.is_empty()
+        && top_level
             .iter()
             .all(|row| row.token_estimator_version == ELIGIBLE_TOKEN_ESTIMATOR_VERSION);
-    let tool_input_token_estimate = dispatches.iter().fold(0i64, |total, row| {
+    let tool_input_token_estimate = top_level.iter().fold(0i64, |total, row| {
         total.saturating_add(row.tool_input_token_estimate.max(0))
     });
-    let tool_output_token_estimate = dispatches.iter().fold(0i64, |total, row| {
+    let tool_output_token_estimate = top_level.iter().fold(0i64, |total, row| {
         total.saturating_add(row.tool_output_token_estimate.max(0))
     });
     Tasks::insert(tasks::ActiveModel {
@@ -1244,6 +1256,13 @@ pub fn result_meta(
     {
         summary["fileChooserOpen"] = json!(true);
     }
+    // An unmatched readiness wait is a task-level failure even without a protocol error.
+    if let Some(matched) = structured_content
+        .get("matched")
+        .and_then(serde_json::Value::as_bool)
+    {
+        summary["matched"] = json!(matched);
+    }
     let serialized = summary.to_string();
     debug_assert!(serialized.len() <= RESULT_META_MAX);
     serialized
@@ -1462,6 +1481,50 @@ mod tests {
             tool_output_token_estimate: 22,
             token_estimator_version: 1,
         }
+    }
+
+    #[tokio::test]
+    async fn task_span_excludes_idle_tail_and_nested_tokens_are_not_counted_twice()
+    -> anyhow::Result<()> {
+        let dir = tempdir()?;
+        let audit = AuditLog::new(Database::open(dir.path().join(DATABASE_FILENAME)).await?);
+        audit
+            .record_session_start("a1", "agent-a", "agent", "Agent", "claude", "1")
+            .await?;
+        let mut outer = dispatch("a1", "https://example.com", false);
+        outer.created_at = Some(1_000);
+        outer.duration_ms = 500;
+        let outer_id = outer.dispatch_id.clone();
+        audit.record_tool_dispatch(outer).await?;
+        let mut inner = dispatch("a1", "https://example.com", false);
+        inner.created_at = Some(1_100);
+        inner.parent_dispatch_id = Some(outer_id);
+        audit.record_tool_dispatch(inner).await?;
+        audit
+            .record_session_end("a1", "idle", Some("idle timeout"))
+            .await?;
+        let task = audit
+            .get_task("a1")
+            .await?
+            .ok_or_else(|| anyhow::anyhow!("task missing"))?;
+        assert_eq!(task.summary.duration_ms, 500);
+        assert_eq!(task.summary.tool_input_token_estimate, 11);
+        assert_eq!(task.summary.tool_output_token_estimate, 22);
+        Ok(())
+    }
+
+    #[test]
+    fn readiness_outcome_is_preserved_without_page_content() -> anyhow::Result<()> {
+        let value: serde_json::Value = serde_json::from_str(&result_meta(
+            false,
+            false,
+            &json!({"matched":false,"privateText":"do not persist"}),
+            1,
+        ))?;
+        assert_eq!(value["matched"], false);
+        assert!(value.get("privateText").is_none());
+        assert_eq!(value["isError"], false);
+        Ok(())
     }
 
     #[test]

@@ -105,45 +105,11 @@ afterEach(async () => {
   Reflect.deleteProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT')
 })
 
-async function click(target: Element | null | undefined) {
-  if (!target) throw new Error('nothing to click')
-  await act(async () => {
-    target.dispatchEvent(
-      new globalThis.window.Event('click', { bubbles: true }),
-    )
-  })
-}
-
-function dialogText(): string {
-  const dialog = body.querySelector('[role="dialog"]')
-  return (dialog?.textContent ?? '').replace(/\s+/g, ' ')
-}
-
-describe('Savings details', () => {
-  it('draws one meter: saved first, then what neo used, with no "Without neo" row', async () => {
-    await click(body.querySelector('button[aria-haspopup="dialog"]'))
-    const text = dialogText()
-    expect(text).toContain('255.7M AI tokens saved')
-    expect(text).toContain('45% fewer')
-    expect(text.indexOf('saved', text.indexOf('fewer'))).toBeLessThan(
-      text.indexOf('neo used 313.7M'),
-    )
-    expect(text).not.toMatch(/without neo/i)
-    expect(text).not.toContain('With neo')
-  })
-
-  it('follows the period tabs and drops the meter when a period has no saving', async () => {
-    await click(body.querySelector('button[aria-haspopup="dialog"]'))
-    const tab = (label: string) =>
-      [...body.querySelectorAll('[role="tab"]')].find((node) =>
-        node.textContent?.includes(label),
-      )
-
-    await click(tab('30 days'))
-    expect(dialogText()).toContain('31M AI tokens saved')
-    expect(dialogText()).toContain('50% fewer')
-
-    await click(tab('7 days'))
-    expect(dialogText()).not.toContain('AI tokens saved')
+describe('Savings navigation', () => {
+  it('opens the full savings route instead of the old dialog', () => {
+    const link = body.querySelector('a[href="#/savings"]')
+    expect(link?.textContent).toContain('Details')
+    expect(body.querySelector('[role="dialog"]')).toBeNull()
+    expect(body.textContent).toContain('BrowserOS Neo baseline:')
   })
 })

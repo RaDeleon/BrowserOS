@@ -18,7 +18,18 @@ JavaScript script against the `browser` SDK: it composes the whole loop below
 (observe, act, navigate, read, wait, bulk extraction, and reusable helpers) in one
 call, and it is the only place saved helpers work. Use a single granular tool
 (tabs, navigate, snapshot, act, read, grep) directly only for a one-off
-step, step-by-step debugging, or when a run script genuinely cannot express it."#;
+step, step-by-step debugging, or when a run script genuinely cannot express it.
+
+For multiple questions on one page, use one run with page.evidence({over:'content',
+selector:'main',queries:[...]}) when available; return only the needed evidence.
+Use page.executePlan for bounded authorized forms/actions, with current targets and
+postconditions. These BrowserRAD helpers are optional; if unavailable use the base SDK.
+Do not split independent reads of a loaded page into separate planner round trips.
+If a component visibly reports a loading error, inspect it before waiting again.
+After one unsuccessful readiness wait, choose a different evidenced recovery rather
+than increasing the timeout: for example, toggle the failed disclosure if appropriate,
+or follow a same-origin fallback link. Never replay an uncertain write.
+"#;
 
 /// Taught only when the native browser implements profile targeting; older natives hide
 /// the profile tools, so instructions must not send agents to them.

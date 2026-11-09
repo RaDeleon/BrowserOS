@@ -62,7 +62,7 @@ export const actCases: ContractCase[] = [
     },
   },
   {
-    name: 'act: covered double click names the blocker without changing the gesture',
+    name: 'act: click on a covered element names the blocker',
     async run(ctx) {
       const page = await ctx.openPage(ctx.fixture('/overlay.html'))
       const snap = await snapshot(ctx, page)
@@ -70,9 +70,8 @@ export const actCases: ContractCase[] = [
         page,
         kind: 'click',
         ref: refFor(snap, 'Covered button'),
-        clickCount: 2,
       })
-      // DOM fallback cannot reproduce a double click; retain actionable coverage context.
+      // The click must be refused with enough context to identify the blocker.
       const text = textOf(result)
       const namesBlocker = /overlay|cover|intercept|obscur/i.test(text)
       const stillUntouched = (

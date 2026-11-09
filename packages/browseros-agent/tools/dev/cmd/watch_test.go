@@ -92,7 +92,7 @@ func TestBuildWatchEnvSelectsBrowserOSProduct(t *testing.T) {
 		CDP:       9012,
 		Server:    9123,
 		Extension: 9321,
-	}, "/tmp/browseros-dev", false, false)
+	}, "/tmp/browseros-dev", false)
 	if err != nil {
 		t.Fatalf("buildWatchEnv returned error: %v", err)
 	}
@@ -116,7 +116,7 @@ func TestBuildWatchEnvSelectsBrowserClawProduct(t *testing.T) {
 		CDP:       9012,
 		Server:    9123,
 		Extension: 9321,
-	}, "/tmp/browseros-dev", true, false, browser.BinaryResolution{
+	}, "/tmp/browseros-dev", true, browser.BinaryResolution{
 		Product:       browser.ProductBrowserClaw,
 		Path:          browser.BrowserClawBinaryPath,
 		PreferredPath: browser.BrowserClawBinaryPath,
@@ -163,7 +163,7 @@ func TestBuildWatchEnvUsesFallbackBrowserBinaryForClaw(t *testing.T) {
 	env, err := buildWatchEnvWithBinaryResolution(proc.Ports{
 		CDP:    9012,
 		Server: 9123,
-	}, "/tmp/browseros-dev", true, false, browser.BinaryResolution{
+	}, "/tmp/browseros-dev", true, browser.BinaryResolution{
 		Product:       browser.ProductBrowserClaw,
 		Path:          browser.BrowserOSBinaryPath,
 		PreferredPath: browser.BrowserClawBinaryPath,
@@ -181,7 +181,7 @@ func TestBuildWatchEnvUsesFallbackBrowserBinaryForClaw(t *testing.T) {
 func TestBuildWatchEnvHonorsAndNormalizesProductStateOverrides(t *testing.T) {
 	browserosRoot := filepath.Join(t.TempDir(), "browseros-state")
 	t.Setenv("BROWSEROS_DIR", browserosRoot)
-	browserosEnv, err := buildWatchEnv(proc.Ports{CDP: 9012, Server: 9123}, "/tmp/profile", false, false)
+	browserosEnv, err := buildWatchEnv(proc.Ports{CDP: 9012, Server: 9123}, "/tmp/profile", false)
 	if err != nil {
 		t.Fatalf("buildWatchEnv returned error: %v", err)
 	}
@@ -195,7 +195,6 @@ func TestBuildWatchEnvHonorsAndNormalizesProductStateOverrides(t *testing.T) {
 		proc.Ports{CDP: 9012, Server: 9123},
 		"/tmp/profile",
 		true,
-		false,
 		browser.BinaryResolution{Path: browser.BrowserClawBinaryPath},
 	)
 	if err != nil {
@@ -229,7 +228,7 @@ func TestClawRustServerProcConfigPassesSidecarAndDevEnv(t *testing.T) {
 		Server:    9123,
 		Extension: 9321,
 	}
-	env, err := buildWatchEnv(ports, userDataDir, true, false)
+	env, err := buildWatchEnv(ports, userDataDir, true)
 	if err != nil {
 		t.Fatalf("buildWatchEnv returned error: %v", err)
 	}

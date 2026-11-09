@@ -69,7 +69,6 @@ function launchArgs(
   cdpPort: number,
   userDataDir: string,
   extraArgs: string[],
-  headless: boolean,
 ): string[] {
   const args = [
     '--no-first-run',
@@ -81,7 +80,7 @@ function launchArgs(
     '--browseros-dock-icon=dev',
     '--enable-logging=stderr',
   ]
-  if (headless) {
+  if (process.env.BROWSEROS_TEST_HEADLESS !== 'false') {
     args.push('--headless=new')
   }
   const extra = process.env.BROWSEROS_TEST_EXTRA_ARGS
@@ -97,6 +96,11 @@ function launchArgs(
   return args
 }
 
+/**
+ * Spawns a fresh headless BrowserOS with its own profile and CDP port.
+ * Every call is a cold start on purpose: each server pass in the
+ * conformance suite gets a browser no other server has touched.
+ */
 /**
  * Points the profile's download folder inside itself.
  *
@@ -120,10 +124,8 @@ async function seedDownloadDirectory(userDataDir: string): Promise<void> {
   )
 }
 
-/** Launch an isolated profile and CDP port, using the requested display mode. */
 export async function launchBrowser(
   extraArgs: string[] = [],
-  headless = process.env.BROWSEROS_TEST_HEADLESS !== 'false',
 ): Promise<BrowserHandle> {
   const binary = browserBinary()
   const userDataDir = await mkdtemp(
@@ -132,10 +134,7 @@ export async function launchBrowser(
   await seedDownloadDirectory(userDataDir)
   const cdpPort = await findFreePort()
   const child = Bun.spawn({
-    cmd: [binary, ...launchArgs(cdpPort, userDataDir, extraArgs, headless)],
-    // CI's wrapper starts Xvfb from this same value. Keep its display setup and
-    // the browser's actual --headless flag in agreement for per-case overrides.
-    env: { ...process.env, BROWSEROS_TEST_HEADLESS: String(headless) },
+    cmd: [binary, ...launchArgs(cdpPort, userDataDir, extraArgs)],
     stdout: process.env.BROWSEROS_TEST_DEBUG === 'true' ? 'inherit' : 'ignore',
     stderr: process.env.BROWSEROS_TEST_DEBUG === 'true' ? 'inherit' : 'ignore',
     detached: process.platform !== 'win32',

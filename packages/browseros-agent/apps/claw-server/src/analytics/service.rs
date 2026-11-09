@@ -4,10 +4,7 @@ use super::{
     events::{self, EventDefinition},
     state::{AnalyticsState, TelemetryState, load_or_create_state, persist_state, state_path},
 };
-use crate::{
-    config::ServerMode,
-    error::{AppError, AppResult},
-};
+use crate::error::{AppError, AppResult};
 use posthog_rs::{Client, ClientOptionsBuilder, Event};
 use serde_json::Value;
 use std::{
@@ -41,31 +38,28 @@ const SURFACE_SERVER: &str = "server";
 struct AnalyticsConfig {
     project_key: Option<String>,
     host: String,
-    delivery_enabled: bool,
+    environment_enabled: bool,
 }
 
 impl AnalyticsConfig {
-    fn from_env(mode: ServerMode) -> Self {
+    fn from_env() -> Self {
         let runtime_project_key = env::var("CLAW_POSTHOG_KEY").ok();
         let runtime_host = env::var("CLAW_POSTHOG_HOST").ok();
         let project_key = configured_value(runtime_project_key.as_deref(), BUILD_POSTHOG_KEY);
         let host = configured_value(runtime_host.as_deref(), BUILD_POSTHOG_HOST)
             .unwrap_or_else(|| DEFAULT_POSTHOG_HOST.to_string());
-        // Hosted instances must stay out of the desktop PostHog project. Gate delivery here
-        // so an inherited key or a later consent update cannot enable it for this process.
-        let delivery_enabled = !mode.is_hosted()
-            && env::var("CLAW_ANALYTICS_ENABLED").ok().is_none_or(|value| {
-                !matches!(value.trim().to_ascii_lowercase().as_str(), "0" | "false")
-            });
+        let environment_enabled = env::var("CLAW_ANALYTICS_ENABLED").ok().is_none_or(|value| {
+            !matches!(value.trim().to_ascii_lowercase().as_str(), "0" | "false")
+        });
         Self {
             project_key,
             host,
-            delivery_enabled,
+            environment_enabled,
         }
     }
 
     fn is_configured(&self) -> bool {
-        self.project_key.is_some() && self.delivery_enabled
+        self.project_key.is_some() && self.environment_enabled
     }
 }
 
@@ -93,7 +87,6 @@ struct ActiveClient {
 
 /// Owns the persisted analytics identity shared with the cockpit and the
 /// consent-gated clients for product events and historical identity links.
-/// Hosted mode disables delivery without changing the saved desktop consent.
 pub struct AnalyticsService {
     path: PathBuf,
     distinct_id: Option<String>,
@@ -105,8 +98,8 @@ pub struct AnalyticsService {
 }
 
 impl AnalyticsService {
-    pub async fn new(browserclaw_dir: impl AsRef<Path>, mode: ServerMode) -> AppResult<Self> {
-        Self::new_with_config(browserclaw_dir.as_ref(), AnalyticsConfig::from_env(mode)).await
+    pub async fn new(browserclaw_dir: impl AsRef<Path>) -> AppResult<Self> {
+        Self::new_with_config(browserclaw_dir.as_ref(), AnalyticsConfig::from_env()).await
     }
 
     async fn new_with_config(browserclaw_dir: &Path, config: AnalyticsConfig) -> AppResult<Self> {
@@ -137,14 +130,14 @@ impl AnalyticsService {
         browserclaw_dir: &Path,
         project_key: Option<&str>,
         host: String,
-        delivery_enabled: bool,
+        environment_enabled: bool,
     ) -> AppResult<Self> {
         Self::new_with_config(
             browserclaw_dir,
             AnalyticsConfig {
                 project_key: project_key.map(str::to_string),
                 host,
-                delivery_enabled,
+                environment_enabled,
             },
         )
         .await
@@ -424,7 +417,7 @@ mod tests {
         AnalyticsConfig {
             project_key: Some("test-project-key".to_string()),
             host,
-            delivery_enabled: enabled,
+            environment_enabled: enabled,
         }
     }
 
@@ -632,7 +625,7 @@ mod tests {
         let no_key = AnalyticsConfig {
             project_key: None,
             host: DEFAULT_POSTHOG_HOST.to_string(),
-            delivery_enabled: true,
+            environment_enabled: true,
         };
         let gated = AnalyticsService::new_with_config(directory.path(), no_key).await?;
         let state = gated.get_state().await;
@@ -838,7 +831,7 @@ mod tests {
             let config = AnalyticsConfig {
                 project_key: (!missing_key).then(|| "test-project-key".to_owned()),
                 host,
-                delivery_enabled: missing_key,
+                environment_enabled: missing_key,
             };
             let service = AnalyticsService::new_with_config(directory.path(), config).await?;
             assert!(!service.set_consent(true).await?.enabled);

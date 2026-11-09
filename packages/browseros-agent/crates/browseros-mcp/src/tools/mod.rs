@@ -1,14 +1,10 @@
-use crate::framework::{
-    BrowserToolHandler, FeatureNote, OutputToolHandler, ToolDef, ToolHandler, ToolMetadata,
-    input_schema, output_schema,
-};
+use crate::framework::{FeatureNote, ToolDef, ToolMetadata, input_schema, output_schema};
 use browseros_core::NativeFeature;
 use rmcp::model::ToolAnnotations;
 
 pub mod act;
 pub mod browser_profiles;
 pub mod browser_target;
-mod click_feedback;
 pub mod credentials;
 pub mod diff;
 pub mod download;
@@ -20,7 +16,6 @@ mod page_creation;
 pub mod payment_cards;
 pub mod pdf;
 pub mod read;
-pub mod read_output;
 pub mod run;
 pub mod screenshot;
 pub mod sensitive;
@@ -50,7 +45,6 @@ pub fn catalog() -> Vec<ToolDef> {
         download::definition(),
         upload::definition(),
         read::definition(),
-        read_output::definition(),
         grep::definition(),
         screenshot::definition(),
         pdf::definition(),
@@ -73,34 +67,11 @@ fn def<T>(
     name: &'static str,
     description: &'static str,
     annotations: Option<ToolAnnotations>,
-    handler: BrowserToolHandler,
+    handler: crate::framework::ToolHandler,
 ) -> ToolDef
 where
     T: schemars::JsonSchema + std::any::Any,
 {
-    definition_with_handler::<T>(
-        name,
-        description,
-        annotations,
-        ToolHandler::Browser(handler),
-    )
-}
-
-fn output_def<T: schemars::JsonSchema + std::any::Any>(
-    name: &'static str,
-    description: &'static str,
-    annotations: Option<ToolAnnotations>,
-    handler: OutputToolHandler,
-) -> ToolDef {
-    definition_with_handler::<T>(name, description, annotations, ToolHandler::Output(handler))
-}
-
-fn definition_with_handler<T: schemars::JsonSchema + std::any::Any>(
-    name: &'static str,
-    description: &'static str,
-    annotations: Option<ToolAnnotations>,
-    handler: ToolHandler,
-) -> ToolDef {
     ToolDef {
         name,
         description,
@@ -117,15 +88,21 @@ fn def_with_output<T, O>(
     name: &'static str,
     description: &'static str,
     annotations: Option<ToolAnnotations>,
-    handler: BrowserToolHandler,
+    handler: crate::framework::ToolHandler,
 ) -> ToolDef
 where
     T: schemars::JsonSchema + std::any::Any,
     O: schemars::JsonSchema + std::any::Any,
 {
     ToolDef {
+        name,
+        description,
+        input_schema: input_schema::<T>(),
         output_schema: Some(output_schema::<O>()),
-        ..def::<T>(name, description, annotations, handler)
+        annotations,
+        metadata: metadata_for_tool(name),
+        feature_note: None,
+        handler,
     }
 }
 

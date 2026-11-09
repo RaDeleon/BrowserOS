@@ -86,7 +86,7 @@ async function readSseResponse(
   )
 }
 
-export async function readRpcResponse(
+async function readRpcResponse(
   response: Response,
   requestId: number,
 ): Promise<JsonRpcResponse> {

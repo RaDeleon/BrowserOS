@@ -15,7 +15,7 @@ use crate::{
         flow::{
             self, FlowExec, FlowStatus,
             brief::{self, CallTrace, RunTrace},
-            compose::{self, Mode},
+            compose::{self, Mode, RUN_TIMEOUT_MS},
             journal as run_journal,
             lifecycle::{self, Cause, Event},
             outcome::{self, Outcome},
@@ -24,7 +24,7 @@ use crate::{
             triage, verify,
         },
         sessions::ClawTargetStore,
-        skills::{Publish, RunItFast, SkillMd, neo_prefixed},
+        skills::{RunItFast, SkillMd, neo_prefixed},
     },
 };
 use browseros_core::target::BrowserView;
@@ -111,10 +111,6 @@ pub(super) struct SessionFlowExec<'s> {
 }
 
 impl FlowExec for SessionFlowExec<'_> {
-    fn run_policy(&self) -> browseros_mcp::RunPolicy {
-        self.service.state.config.behavior.run_policy
-    }
-
     fn exec<'a>(
         &'a self,
         doc: &'a FlowDoc,
@@ -123,7 +119,7 @@ impl FlowExec for SessionFlowExec<'_> {
         stop_after: Option<u32>,
     ) -> BoxFuture<'a, Outcome> {
         Box::pin(async move {
-            let code = compose::compose(doc, inputs, mode, stop_after, self.run_policy());
+            let code = compose::compose(doc, inputs, mode, stop_after);
             match self
                 .service
                 .internal_run(self.started, code, self.cancel.clone())
@@ -205,7 +201,7 @@ impl ClawMcpService {
         let call = ToolCall::new(
             self.catalog.clone(),
             tool_index,
-            json!({ "code": code }),
+            json!({ "code": code, "timeout": RUN_TIMEOUT_MS }),
             started.session.id().clone(),
             Some(identity),
             browser_session,
@@ -221,7 +217,7 @@ impl ClawMcpService {
         let result: CallToolResult = dispatch_tool_call(call)
             .await
             .map_err(|error| error.to_string())?;
-        let mut structured = result.structured_content.clone().unwrap_or(Value::Null);
+        let structured = result.structured_content.clone().unwrap_or(Value::Null);
         if result.is_error.unwrap_or(false) {
             let message = structured
                 .get("error")
@@ -236,45 +232,6 @@ impl ClawMcpService {
                 })
                 .unwrap_or_else(|| "the flow's run call failed".to_string());
             return Err(message);
-        }
-        if structured.get("writtenToFile").and_then(Value::as_bool) == Some(true) {
-            // Internal flows consume the complete typed value, not the model's preview.
-            // Recover it from the same saved call rather than rerunning browser effects
-            // or silently turning an oversized successful return into null.
-            let id = structured
-                .pointer("/output/id")
-                .and_then(Value::as_str)
-                .ok_or_else(|| "the flow's complete output could not be published".to_string())?;
-            let task = self
-                .state
-                .targets
-                .canonical_task(started.session.id())
-                .await;
-            let store = self.output_files.for_session(task.as_str());
-            let mut bytes = Vec::new();
-            let mut offset = 0;
-            loop {
-                let chunk = store
-                    .read_bytes(
-                        id,
-                        "result.json",
-                        offset,
-                        browseros_mcp::output_store::MAX_READ_BYTES,
-                    )
-                    .await
-                    .map_err(|error| error.to_string())?;
-                bytes.extend(chunk.bytes);
-                match chunk.next_offset {
-                    Some(next) => offset = next,
-                    None => break,
-                }
-            }
-            let complete: Value =
-                serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
-            structured = complete
-                .get("structuredContent")
-                .cloned()
-                .ok_or_else(|| "the flow's saved output has no typed result".to_string())?;
         }
         Ok(structured.get("value").cloned().unwrap_or(Value::Null))
     }
@@ -415,7 +372,7 @@ impl ClawMcpService {
                     &RunMode::handed_back(i64::from(step), cause.as_str()),
                 )
                 .await;
-                self.remember_input(&name, &inputs, cause).await;
+                self.remember_input(&name, &doc, &inputs, cause);
                 self.apply_event(&name, Event::Handover(cause), Some(&doc))
                     .await;
                 let source = handover
@@ -451,9 +408,9 @@ impl ClawMcpService {
                 }
                 handover_result(packet)
             }
-            Outcome::RunFailed(message) => {
-                ToolResult::error(run_failed_next(&doc, &name, &message))
-            }
+            Outcome::RunFailed(message) => ToolResult::error(format!(
+                "the flow could not run: {message}. Call mark_skill_run with name {name} and follow the skill's steps."
+            )),
             other => ToolResult::error(format!("unexpected flow outcome in a live run: {other:?}")),
         }
     }
@@ -463,25 +420,6 @@ impl ClawMcpService {
             warn!(error = %error, "recording the ultrafast run failed");
         }
     }
-}
-
-/// What the agent does after a flow run failed without reporting how far it got. A write flow
-/// may have finished its write before the failure, so redoing every step could repeat it.
-fn run_failed_next(doc: &FlowDoc, name: &str, message: &str) -> String {
-    let mut text = format!("the flow could not run: {message}.");
-    if let Some(commit) = doc
-        .commit_step()
-        .filter(|_| doc.meta.effects == Effects::Write)
-    {
-        text.push_str(&format!(
-            " It stopped without reporting how far it got, so its write (step {commit}) may already have happened. Check the page or the site's own record first, and never repeat that write if it took effect. Then call mark_skill_run with name {name} and finish whatever steps are still undone."
-        ));
-    } else {
-        text.push_str(&format!(
-            " Call mark_skill_run with name {name} and follow the skill's steps."
-        ));
-    }
-    text
 }
 
 pub(super) fn handover_result(packet: Value) -> ToolResult {
@@ -622,7 +560,6 @@ fn candidate_flow(raw_args: &Value, name: &str, session: &str) -> Result<FlowDoc
             output: types("output")?,
             examples,
             source_session: Some(session.to_string()),
-            prose_hash: None,
         },
         steps,
     })
@@ -808,7 +745,7 @@ impl ClawMcpService {
         };
         let session_id = started.session.id().as_str().to_string();
         let is_patch = raw_args.get("patch").is_some();
-        let mut doc = if let Some(patch) = raw_args.get("patch") {
+        let doc = if let Some(patch) = raw_args.get("patch") {
             let patches = match parse_patches(patch) {
                 Ok(patches) => patches,
                 Err(message) => return ToolResult::error(message),
@@ -837,7 +774,6 @@ impl ClawMcpService {
             }
         };
         let labels = prose::prose_steps(&detail.body);
-        doc.meta.prose_hash = Some(prose::fingerprint(&labels));
         let exec = SessionFlowExec {
             service: self,
             started,
@@ -872,6 +808,9 @@ impl ClawMcpService {
             Ok(pass) => {
                 let next = lifecycle::next(state, Event::FlowPassed);
                 doc.meta.flow_version = row.flow_version + 1;
+                if let Err(error) = store::write(&self.state.skills.skill_dir(name), &doc) {
+                    return ToolResult::error(format!("saving the flow failed: {error}"));
+                }
                 let same_effects = row.effects.as_deref() == Some(doc.meta.effects.as_str());
                 row.write_approved = row.write_approved && same_effects;
                 row.status = next.status.as_str().to_string();
@@ -887,21 +826,8 @@ impl ClawMcpService {
                 row.verified_at = Some(now);
                 row.source_session_id = Some(session_id.to_string());
                 row.updated_at = now;
-                match self
-                    .state
-                    .skills
-                    .publish_flow(name, &mut doc, row.clone(), is_patch)
-                    .await
-                {
-                    Ok(Publish::Saved) => {}
-                    Ok(Publish::StepsChanged) => {
-                        return ToolResult::error(
-                            "ultrafast: the skill's steps were edited while this flow was being verified, so it was not saved. Read the skill again and call save_skill with a flow for its current steps.",
-                        );
-                    }
-                    Err(error) => {
-                        return ToolResult::error(format!("saving the flow failed: {error}"));
-                    }
+                if let Err(error) = self.state.skills.put_flow_row(row.clone()).await {
+                    return ToolResult::error(error.to_string());
                 }
                 if let Err(error) = self
                     .state
@@ -1055,18 +981,21 @@ impl ClawMcpService {
     }
 
     /// Keeps an input that made the flow hand back, so every later repair must handle it.
-    async fn remember_input(&self, name: &str, inputs: &Map<String, Value>, cause: Cause) {
+    fn remember_input(&self, name: &str, doc: &FlowDoc, inputs: &Map<String, Value>, cause: Cause) {
         let expect = match cause {
             Cause::SiteChanged => "done",
             Cause::InputOnly => "either",
             Cause::Transient => return,
         };
-        let example = store::Example {
+        let mut updated = doc.clone();
+        updated.push_example(store::Example {
             input: inputs.clone(),
             source: "handover".to_string(),
             expect: expect.to_string(),
-        };
-        if let Err(error) = self.state.skills.add_flow_example(name, example).await {
+        });
+        if updated.meta.examples != doc.meta.examples
+            && let Err(error) = store::write(&self.state.skills.skill_dir(name), &updated)
+        {
             warn!(error = %error, "saving the handover example failed");
         }
     }
@@ -1188,48 +1117,5 @@ impl ClawMcpService {
         } else {
             self.save_skill_tool.clone()
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn flow(effects: Effects, commit: Option<u32>) -> FlowDoc {
-        FlowDoc {
-            meta: store::FlowMeta {
-                name: "neo-shop-add".to_string(),
-                flow_version: 1,
-                effects,
-                hosts: vec![],
-                inputs: Default::default(),
-                output: Default::default(),
-                examples: vec![],
-                source_session: None,
-                prose_hash: None,
-            },
-            steps: (1..=4)
-                .map(|n| store::FlowStep {
-                    n,
-                    commit: Some(n) == commit,
-                    src: "async () => {}".to_string(),
-                })
-                .collect(),
-        }
-    }
-
-    #[test]
-    fn a_failed_write_flow_says_the_write_may_have_happened() {
-        let text = run_failed_next(&flow(Effects::Write, Some(3)), "neo-shop-add", "timed out");
-        assert!(
-            text.contains("its write (step 3) may already have happened"),
-            "{text}"
-        );
-        assert!(text.contains("never repeat that write"), "{text}");
-        assert!(!text.contains("follow the skill's steps"), "{text}");
-
-        let text = run_failed_next(&flow(Effects::Read, None), "neo-shop-add", "timed out");
-        assert!(text.contains("follow the skill's steps"), "{text}");
-        assert!(!text.contains("write"), "{text}");
     }
 }

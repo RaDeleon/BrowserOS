@@ -12,7 +12,6 @@ import {
 
 const EXPECTED_PAGES = [
   'checkout.html',
-  'click-recovery.html',
   'console.html',
   'cursor.html',
   'dialog.html',
@@ -27,7 +26,6 @@ const EXPECTED_PAGES = [
   'labels.html',
   'links.html',
   'media.html',
-  'output-large.html',
   'overlay.html',
   'script-isolation.html',
   'scroll.html',

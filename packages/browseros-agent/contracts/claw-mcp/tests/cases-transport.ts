@@ -23,7 +23,6 @@ const EXPECTED_TOOLS = [
   'navigate',
   'pdf',
   'read',
-  'read_output',
   'request_human_help',
   'run',
   'run_skill',

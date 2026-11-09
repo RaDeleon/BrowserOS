@@ -127,11 +127,11 @@ The initial BrowserRAD implementation lives on `codex/browserrad`, including its
 
 After that initial merge, use our `main` for the stable BrowserRAD line and create short feature branches such as `codex/shared-evidence` for new work. Commit and push those branches to `origin`; review and merge them through pull requests targeting our fork. No new fork or copied repository is needed for each feature.
 
-For upstream updates, fetch `upstream` and merge its chosen commit or branch on a dedicated integration branch based on our current BrowserRAD line. Review conflicts, preserve fork identities and rerun relevant checks before merging into our main. Prefer merges over rebasing already published shared history. Never force-sync the fork by discarding its custom commits.
+For upstream updates, check official release records before source integration. Accept an upstream change only after it is on official `main` and included in a published Neo browser, Claw server or Neo extension version. Verify the release tag or versioned maintenance assets, their source/promotion commit, and the ancestry from the last adopted release cutoff. Do not merge ordinary newer `main` commits merely because they are available. Integrate through the release boundary on a dedicated branch; review conflicts, preserve RAD identities and rerun relevant checks. Prefer corrective commits over rebasing published shared history. Never force-sync the fork by discarding its custom commits.
 
 ## Upstream maintenance
 
-Keep `origin` on the fork and `upstream` on BrowserOS. Fetch and review changes on a separate branch; merge or rebase only with a clean, understood working tree. Re-run identity/coexistence, patch integrity, API, and benchmark checks after changes to the browser or execution layer. Do not enable upstream binary feeds as a substitute for merging source.
+Keep `origin` on the fork and `upstream` on BrowserOS. The current adopted official source cutoff is `e35f20e` (Neo 0.52.1.1 maintenance promotion). The later `9e07439` main merge was reversed because it had no newer published version. That merge remains in Git history: when a later official version ships, inspect effective file changes and use a reviewed replay or selective application rather than assuming a plain merge will restore the reverted code. Re-run identity/coexistence, patch integrity, API and benchmark checks after changes to the browser or execution layer. Do not enable upstream binary feeds as a substitute for merging source.
 
 ## Local installation and Spotlight
 

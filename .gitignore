@@ -46,4 +46,3 @@ packages/browseros/build/extensions/
 .browserrad/
 .browserrad-dev/
 tools/browserrad/results/
-target

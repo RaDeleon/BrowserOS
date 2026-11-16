@@ -1,9 +1,9 @@
 diff --git a/chrome/browser/browseros/core/browseros_prefs.h b/chrome/browser/browseros/core/browseros_prefs.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..19e8b58261088485efa15d05db4819df283d81a7
+index 0000000000000000000000000000000000000000..45ac7f4b3e9aab61e05a1b5e071e3175a57d17f7
 --- /dev/null
 +++ b/chrome/browser/browseros/core/browseros_prefs.h
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,135 @@
 +// Copyright 2025 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -110,7 +110,8 @@ index 0000000000000000000000000000000000000000..19e8b58261088485efa15d05db4819df
 +// pref only while the upstream pref is still at its default value.
 +void SyncShowTabGroupsInBookmarkBarPref(PrefService* pref_service);
 +
-+// Sets the default BrowserOS theme (blue tonal spot) on first run
++// Seeds the BrowserAI DUO sea-glass theme for the browserclaw product
++// and preserves the upstream default for the other product.
 +// when the user hasn't customized the theme yet.
 +void SyncDefaultTheme(PrefService* pref_service);
 +

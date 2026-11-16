@@ -47,7 +47,8 @@ export function RecentActivity() {
           <RowsSkeleton />
         ) : query.isError ? (
           <p className="px-5 py-6 text-[14.5px] text-ink-2">
-            Couldn’t load your recent tasks. Check that BrowserOS is running.
+            Couldn’t load your recent tasks. Check that BrowserAI DUO is
+            running.
           </p>
         ) : tasks.length === 0 ? (
           <p className="px-5 py-6 text-[14.5px] text-ink-2">

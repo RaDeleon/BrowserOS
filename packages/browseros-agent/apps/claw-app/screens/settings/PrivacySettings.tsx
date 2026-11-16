@@ -100,7 +100,7 @@ export function PrivacySettings() {
       <SettingRow
         id={SHARE_ID}
         title="Share anonymous usage"
-        description="Helps us improve neo. We never see the pages you visit, what you ask, or what’s on a page."
+        description="Helps us improve BrowserAI DUO. We never see the pages you visit, what you ask, or what’s on a page."
         control={
           <Switch
             ariaLabel="Share anonymous usage"

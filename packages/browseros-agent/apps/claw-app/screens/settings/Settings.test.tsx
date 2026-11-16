@@ -395,7 +395,7 @@ describe('Settings screen interactions', () => {
     await mount()
 
     expect(container.textContent).toContain(
-      'Couldn’t load these settings. Check that BrowserOS is running, then open this page again.',
+      'Couldn’t load these settings. Check that BrowserAI DUO is running, then open this page again.',
     )
     expect(
       container.querySelector('[aria-label="Ask me when it gets stuck"]'),

@@ -4,26 +4,9 @@
  */
 @custom-variant dark (&:is(.dark *));
 
-/*
- * The shadcn base-vega primitives we installed all read --color-background,
- * --color-foreground, --color-primary etc. We re-point those at the app
- * palette via variables so `.dark` can flip the whole system by re-declaring
- * plain variables.
- *
- * Palette: Wiz (stylecn/wiz PR #16). Signal Blue #0254ec is the sole
- * saturated color, applied to primary CTAs, links, focus rings, and
- * accent-card borders on Sky Tint #eaf1ff surfaces; Wiz Steel #393f49
- * is the editorial charcoal-navy for headings and body ink; Slate
- * Border #cbd5e1 is the hairline divider.
- *
- * `accent` deliberately equals `primary` in this app: the codebase
- * uses accent as the vivid brand color (pulse dots, emphasis text,
- * gradients), not as shadcn's pale hover tint. Where a pale
- * hover-tint surface is needed, the code uses --secondary or the
- * bespoke --accent-tint / --accent-tint-2. Keeping accent equal to
- * primary preserves every existing text-accent / bg-accent site
- * without touching component code.
- */
+/* Shared semantic colors feed both light and dark cockpit surfaces.
+   Accent follows primary because components use it for links and emphasis;
+   orange is reserved for trim and highlights, not small body text. */
 @theme inline {
   /* shadcn primitives: re-pointed through app palette variables */
   --color-background: var(--background);
@@ -32,6 +15,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-wave-orange: var(--wave-orange);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -58,7 +42,7 @@
   --color-bg-sunken: var(--bg-sunken);
   --color-card-tint: var(--card-tint);
   --color-ink-deep: var(--ink-deep);
-  /* MCP endpoint strip's brand-blue chip; keep separate from ink-deep. */
+  /* MCP endpoint strip uses the dark teal brand chip. */
   --color-mcp-endpoint: var(--mcp-endpoint);
   --color-border-2: var(--border-2);
   --color-border-strong: var(--border-strong);
@@ -83,7 +67,7 @@
   --color-accent-tint-2: var(--accent-tint-2);
 
   /* Cyanotype activity surface. --on-cyanotype / --on-cyanotype-2 are the
-     ink pair for the saturated cobalt plate (live-activity captions, the MCP
+     ink pair for the saturated deep-teal plate (live-activity captions, the MCP
      endpoint strip). They are mapped EXPLICITLY: a plain custom property is
      not a Tailwind utility, and that failure is silent — `text-on-cyanotype`
      would simply not exist and the class would drop, in light mode, on a
@@ -104,7 +88,7 @@
   --color-cyanotype-live-text: var(--cyanotype-live-text);
   --color-cyanotype-error: var(--cyanotype-error);
 
-  /* Ledger surfaces: the cobalt-headed data table on the audit screen.
+  /* Ledger surfaces: the deep-teal data table on the audit screen.
      The palette is shared with the cyanotype set above — same hexes, one
      design system — but kept under its own role names for now; folding
      the two vocabularies into one is a follow-up, not a merge-time
@@ -141,15 +125,7 @@
   --font-serif: "Newsreader", Georgia, serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 
-  /* Shadows, via variable indirection — the structural bit.
-     `@theme` values are resolved at BUILD time, so a literal colour here is
-     baked into `.shadow-card` and no runtime `.dark {}` declaration can ever
-     reach it. Both tokens used to carry a literal Wiz navy `hsl()`; in gray
-     mode a 4-5% navy over an L* 11 page is invisible and every elevated
-     surface silently loses its lift. Routing the colour through a plain
-     custom property keeps the `var()` in the compiled utility, so the
-     cascade — and therefore `.dark` — can reach it. Light values are
-     declared in `:root` and are the same navy as before. */
+  /* Runtime variables keep shadow depth legible in both themes. */
   --shadow-card: 0 1px 2px var(--shadow-key), 0 1px 3px var(--shadow-ambient);
   --shadow-pop:
     0 8px 30px var(--shadow-pop-key), 0 2px 8px var(--shadow-pop-ambient);
@@ -289,51 +265,24 @@ body,
 body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
-  /* background-attachment: fixed anchors the gradient to the viewport
-     instead of the body box. Without it, the gradient is sized to body
-     height (== viewport since `html, body { height: 100% }`) and scrolls
-     away when content overflows; the user sees the gradient stop mid
-     scroll and bare white below. With fixed, the gradient stays anchored
-     to the viewport regardless of how tall the scrolled content is. */
-  /* Wash: two Sky Tint radials (matched to --muted #eaf1ff) with a
-     warm-to-cool linear beneath. Anchors the cockpit chrome as the
-     Wiz palette, not a bare white page. */
+  /* Warm cream with a restrained sea-glass wash; fixed so scrolling keeps
+     one continuous canvas behind the dashboard. */
   background:
-    radial-gradient(
-      1200px 700px at 18% -8%,
-      hsl(220 100% 96%) 0%,
-      hsl(220 100% 96% / 0) 60%
-    ),
-    radial-gradient(
-      1000px 800px at 100% 110%,
-      hsl(215 100% 97%) 0%,
-      hsl(215 100% 97% / 0) 55%
-    ),
-    linear-gradient(155deg, hsl(220 60% 98%) 0%, hsl(210 50% 98%) 100%);
+    radial-gradient(1000px 600px at 12% -10%, #ddeae1 0%, transparent 64%),
+    radial-gradient(900px 700px at 100% 110%, #f5dfc9 0%, transparent 62%),
+    linear-gradient(155deg, #eeebdd 0%, #f4f1e8 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Gray wash: flat. The light page needs a wash because bare white reads as
-   unfinished; a deep neutral already reads as deliberate, and darkness is its
-   own finish. Three more reasons the two navy radials had to go: they were the
-   loudest possible carrier of "navy", re-tinting them gray would keep exactly
-   the gesture being rejected; `background-attachment: fixed` on a 1200x700
-   radial repaints on every scroll, and this is the first paint of every new
-   tab; and an 8-bit radial spanning L* 11 -> L* 15 bands visibly on some
-   panels. `initial` is declared explicitly so the light rule's `fixed` does
-   not leak in through the cascade.
-
-   If the seam where the page meets the browser toolbar ever reads too flat,
-   the escape hatch is one linear, three L* points, no radials and no `fixed`:
-   `linear-gradient(180deg, #1f2222 0%, #1b1e1e 220px)`. */
+/* Dark mode uses one solid deep-teal canvas for calm, low-glare reading. */
 .dark body {
   background: var(--background);
   background-attachment: initial;
 }
 
-/* Selection: tint with the accent so it reads as BrowserOS, not chrome blue.
+/* Selection: tint with sea-glass so it reads as BrowserAI DUO.
    Foreground is pinned to ink so light-on-dark surfaces (the MCP URL block,
    for example) stay readable when selected. */
 ::selection {
@@ -362,240 +311,160 @@ body {
 /*
  ---break---
  */
+/* Wave Runner light: cream upper, graphite text, teal actions, orange trim. */
 :root {
   color-scheme: light;
 
-  /* Shadcn tokens from stylecn/wiz (PR #16). One electric Signal Blue
-     CTA on warm white, Wiz Steel foreground, Sky Tint secondary/muted/
-     accent surface, Slate Border hairlines. */
-  --background: #ffffff;
-  --foreground: #393f49;
-  --card: #ffffff;
-  --card-foreground: #393f49;
-  --popover: #ffffff;
-  --popover-foreground: #393f49;
-  --primary: #0254ec;
+  --background: #eeebdd;
+  --foreground: #22292c;
+  --card: #f8f6ed;
+  --card-foreground: #22292c;
+  --popover: #fffcf4;
+  --popover-foreground: #22292c;
+  --wave-orange: #ff6a35;
+  --primary: #246c69;
   --primary-foreground: #ffffff;
-  --secondary: #eaf1ff;
-  --secondary-foreground: #0254ec;
-  --muted: #eaf1ff;
-  --muted-foreground: #717783;
-  --accent: #0254ec;
+  --secondary: #e0e8df;
+  --secondary-foreground: #1d5754;
+  --muted: #e6e6da;
+  --muted-foreground: #596365;
+  --accent: #246c69;
   --accent-foreground: #ffffff;
   --destructive: #e11d48;
   --destructive-foreground: #ffffff;
-  --border: #cbd5e1;
-  --input: #cbd5e1;
-  --ring: #0254ec;
-  --chart-1: #0254ec;
-  --chart-2: #0042ca;
-  --chart-3: #f5b957;
-  --chart-4: #f7cad5;
-  --chart-5: #717783;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #393f49;
-  --sidebar-primary: #0254ec;
+  --border: #c8d0c7;
+  --input: #b9c7bc;
+  --ring: #246c69;
+  --chart-1: #246c69;
+  --chart-2: #ff6a35;
+  --chart-3: #92999a;
+  --chart-4: #b7d0c3;
+  --chart-5: #596365;
+  --sidebar: #dde2d9;
+  --sidebar-foreground: #22292c;
+  --sidebar-primary: #246c69;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eaf1ff;
-  --sidebar-accent-foreground: #0254ec;
-  --sidebar-border: #cbd5e1;
-  --sidebar-ring: #0254ec;
+  --sidebar-accent: #c8ddd2;
+  --sidebar-accent-foreground: #1d5754;
+  --sidebar-border: #bbc8be;
+  --sidebar-ring: #246c69;
 
-  /* shadcn's base radius, read only by vendored calc() offsets. Every
-     rounded-* class comes from the explicit ramp in @theme instead. */
   --radius: 0.75rem;
 
-  /* Shadow colours for the indirection set up in @theme inline. These four
-     reproduce the previous literal Wiz-navy `hsl()` values exactly, so light
-     mode renders the same shadows it always did. */
-  --shadow-key: hsl(224 97% 13% / 0.05);
-  --shadow-ambient: hsl(224 97% 13% / 0.04);
-  --shadow-pop-key: hsl(224 97% 13% / 0.14);
-  --shadow-pop-ambient: hsl(224 97% 13% / 0.08);
-  --shot-ring: hsl(224 60% 40% / 0.12);
-  --shot-key: hsl(224 97% 13% / 0.45);
-  --shot-ambient: hsl(224 97% 13% / 0.12);
-  /* Tailwind's three stock shadow alphas, verbatim, so overriding the stock
-     scale in @theme is a no-op in light mode. */
+  --shadow-key: rgb(22 36 39 / 0.08);
+  --shadow-ambient: rgb(22 36 39 / 0.05);
+  --shadow-pop-key: rgb(22 36 39 / 0.18);
+  --shadow-pop-ambient: rgb(22 36 39 / 0.1);
+  --shot-ring: rgb(36 108 105 / 0.14);
+  --shot-key: rgb(22 36 39 / 0.45);
+  --shot-ambient: rgb(22 36 39 / 0.14);
+
   --shadow-tint-1: rgb(0 0 0 / 0.05);
   --shadow-tint-2: rgb(0 0 0 / 0.1);
   --shadow-tint-3: rgb(0 0 0 / 0.25);
 
-  /* BrowserOS bespoke tokens re-derived against the Wiz palette. Wiz
-     Steel (#393f49) becomes the ink scale anchor; Signal Blue and
-     Sapphire Deep drive the accent ink; Sky Tint is the accent tint;
-     Slate Border stays the divider. ink-deep keeps the deep navy so
-     dark-strip surfaces (terminal blocks, viewport pills) still read
-     as one unified elevated chip in both themes. */
-  --bg-canvas: #f9fbff;
-  --bg-sunken: #dae5ff;
-  --card-tint: #f5f8ff;
-  --ink-deep: #01123f;
-  --mcp-endpoint: #0454ec;
-  --border-2: #dae5ff;
-  /* --border-strong is a real step deeper than --border so it has
-     visual weight when used on elevated panels, focused inputs, or
-     section separators. Was #cbd5e1 (identical to --border) after
-     the wiz palette adoption; restored the two-step border chain. */
-  --border-strong: #94a3b8;
+  --bg-canvas: #e9ebe1;
+  --bg-sunken: #d8ded4;
+  --card-tint: #f0f1e7;
+  --ink-deep: #162427;
+  --mcp-endpoint: #246c69;
+  --border-2: #cfd8cd;
 
-  /* Elevated Sky Tint step so alternate rows, section rails, hover
-     states, and bg-sunken can differentiate from the base --muted
-     value. Without this, five semantic layers collapse into one
-     Sky Tint plateau. */
-  --sky-tint-2: #dae5ff;
+  --border-strong: #9dafa3;
 
-  /* Consistent surround for embedded media (thumbnails of real
-     websites, replay viewport). Transparent in light so nothing
-     changes; dark mode paints a scrim behind media so bright
-     embedded content does not dominate. */
+  --sky-tint-2: #d5e4d8;
+
   --media-scrim: transparent;
-  --ink: #393f49;
-  --ink-2: #575d69;
-  --ink-3: #717783;
-  --ink-4: #9aa1ae;
-  --accent-2: #0042ca;
-  --accent-ink: #0143c4;
-  --accent-tint: #eaf1ff;
-  --accent-tint-2: #d3e2ff;
-  --cyanotype-blue: #0043cd;
-  --cyanotype-blue-hover: #0036a6;
-  /* Ink pair for the saturated cobalt plate. Same value in both themes: the
-     plate is dark in both, so its ink does not invert. The subdued step is
-     84% rather than the 72% first proposed because 72% is only 3.84:1 on the
-     MCP endpoint blue #0454ec; 84% clears 4.5:1 on all three plates this pair
-     has to survive (#0043cd 5.95:1, #1a3fa8 6.86:1, #0454ec 4.70:1).
-     No consumers yet — these exist so the hardcoded-white sweep has a correct
-     token to land on rather than a failing opacity to tokenise. */
+  --ink: #22292c;
+  --ink-2: #414d4d;
+  --ink-3: #596365;
+  --ink-4: #6e7978;
+  --accent-2: #1d5754;
+  --accent-ink: #1d5754;
+  --accent-tint: #ddeae1;
+  --accent-tint-2: #c8dfd5;
+  --cyanotype-blue: #1b5957;
+  --cyanotype-blue-hover: #174b49;
+
   --on-cyanotype: #ffffff;
   --on-cyanotype-2: rgba(255, 255, 255, 0.84);
-  --cyanotype-well: #e3eaf1;
-  --cyanotype-border: #c8d4e0;
-  --cyanotype-ink: #0c2742;
-  --cyanotype-muted: #4a6480;
-  --cyanotype-soft: #5f7794;
-  --cyanotype-rule: #dfe7ee;
-  --cyanotype-hover: #f3f6f9;
+  --cyanotype-well: #e1e9e0;
+  --cyanotype-border: #b9c9bd;
+  --cyanotype-ink: #183a38;
+  --cyanotype-muted: #496863;
+  --cyanotype-soft: #5b7770;
+  --cyanotype-rule: #cbd9cd;
+  --cyanotype-hover: #f0f4eb;
   --cyanotype-live: #2fe08c;
   --cyanotype-live-ink: #04331d;
-  --cyanotype-live-text: #00713e;
+  --cyanotype-live-text: #176f47;
   --cyanotype-error: #c2123c;
   --green: #16a34a;
   --green-tint: #e6f6ec;
-  --amber: hsl(35 85% 42%);
-  --amber-tint: hsl(42 90% 94%);
+  --amber: #a4421c;
+  --amber-tint: #fbe5d7;
   --red: #e11d48;
   --red-tint: hsl(4 65% 95%);
   --green-ink: #13793a;
-  --amber-ink: #8a5300;
+  --amber-ink: #a4421c;
   --red-ink: #b8123b;
-  --blue: #0e7490;
+  --blue: #246c69;
 
-  /* Ledger table. The header is a quiet cool-tint strip with muted
-     labels and a hairline underline, not a filled cobalt bar: the loud
-     solid header fought the cool-blue page. The three ledger inks are a
-     blue-shifted parallel of the neutral ink scale, so column text reads
-     as one family with the chrome rather than as grey on blue. */
-  --ledger-head: #eef2f9;
-  --ledger-head-ink: #5f7794;
-  --ledger-band: #eaf1fd;
-  --ledger-band-ink: #3f5d86;
-  --ledger-border: #c8d4e0;
-  --ledger-divider: #dfe7ee;
-  --ledger-link: #155da8;
-  --ledger-ink: #0c2742;
-  --ledger-ink-2: #4a6480;
-  --ledger-ink-3: #5f7794;
+  --ledger-head: #e3e9df;
+  --ledger-head-ink: #496863;
+  --ledger-band: #e9eee4;
+  --ledger-band-ink: #315c56;
+  --ledger-border: #b9c9bd;
+  --ledger-divider: #cbd9cd;
+  --ledger-link: #1d5754;
+  --ledger-ink: #183a38;
+  --ledger-ink-2: #496863;
+  --ledger-ink-3: #5b7770;
 }
-/* Gray theme values — the product calls this "Gray", the stored value and the
-   compiled seam stay `dark`. The neutral chain is measured, not eyeballed:
-   BrowserOS paints its own chrome from `chrome://theme/colors.css?sets=ui,chrome`
-   at frame #182123, toolbar/active-tab/NTP #343d3f (L* 25), omnibox #1e2729.
-   This app sits ONE PLANE BELOW that toolbar rather than seamless with it —
-   going seamless at L* 25 burns the whole surface budget and collapses the
-   chrome/content boundary on a dense app — and its own ladder climbs back up
-   to land just under the toolbar (--popover at L* 21.7). The sidebar rail
-   inverts relative to the old navy block and sits BELOW the page, playing the
-   role the browser's frame plays against its own toolbar.
 
-   Surface family shape is (v, v+3, v+3), lifted from the browser's
-   --color-sys-surface2 #272a2a: gray with a whisper of the chrome's cool
-   cast, not a dead neutral and not navy. Only the neutrals move; every
-   chromatic token (primary/accent, cobalt, the #2fe08c LIVE green, status
-   colours) keeps its role, and the whole token structure is unchanged.
-
-   Contrast ratios in the comments are WCAG 2.x. Every text token here clears
-   AA (4.5:1) against --background, --card and --sidebar. */
+/* Wave Runner dark: deep teal shell, warm cream text, sea-glass controls. */
 .dark {
   color-scheme: dark;
-  --background: #1b1e1e;
-  --foreground: #e3e2e2;
-  --card: #222525;
-  --card-foreground: #e3e2e2;
-  /* --popover is a REAL elevation step above --card, not equal to it.
-     dropdown-menu.tsx and select.tsx render `bg-popover/70` behind a
-     backdrop-blur; at 70% a #222525 popover composites to #202323 — one L*
-     point above the page — and the menu dissolves into the page it is
-     floating over. #333438 composites to #2c2d30 (L* 18.5 vs the page's 11)
-     and stays a distinct plane. */
-  --popover: #333438;
-  --popover-foreground: #e3e2e2;
-  --primary: #5290ff;
-  --primary-foreground: #101212;
-  --secondary: #292c2c;
-  --secondary-foreground: #e3e2e2;
-  --muted: #292c2c;
-  --muted-foreground: #a3a5a5;
-  /* accent == primary is the house convention (see the header comment). */
-  --accent: #5290ff;
-  --accent-foreground: #101212;
+  --background: #162427;
+  --foreground: #f1eedf;
+  --card: #1e3031;
+  --card-foreground: #f1eedf;
+
+  --popover: #2b4041;
+  --popover-foreground: #f1eedf;
+  --wave-orange: #ff6a35;
+  --primary: #359e99;
+  --primary-foreground: #101c1e;
+  --secondary: #263b3b;
+  --secondary-foreground: #e0e9db;
+  --muted: #263b3b;
+  --muted-foreground: #bac9c2;
+
+  --accent: #359e99;
+  --accent-foreground: #101c1e;
   --destructive: #ff6b81;
   --destructive-foreground: #1b1e1e;
-  /* Hairlines stay opacity-based so they follow whatever surface they land
-     on. The browser independently agrees: its --cr-hairline is the same
-     rgba(255,255,255,.14). */
-  --border: rgba(255, 255, 255, 0.14);
-  --input: rgba(255, 255, 255, 0.18);
-  /* THE FOCUS RING IS A COLOUR PAIR, and that is why it is not --primary.
-     Every focus site in this app is `focus-visible:border-ring` (1px, on the
-     control's own edge) plus `focus-visible:ring-ring/50` (3px halo, over
-     whatever is behind the control) — 14 call sites, all the same shape. Both
-     read this one token, so it has to survive against two very different
-     backings at once. A blue ring equal to --primary scores exactly 1.00:1 on
-     a filled primary button (the border is the same colour as the button) and
-     2.29:1 for the halo on the page: keyboard focus is invisible on every
-     primary control. White is the only value that clears 3:1 in both
-     directions from a mid-lightness blue — 3.09:1 as the border on the
-     primary pill, and 4.41-5.26:1 as the halo over every surface in this
-     palette. Anything darker fails on the page; anything bluer fails on the
-     button. */
+
+  --border: rgba(241, 238, 223, 0.17);
+  --input: rgba(241, 238, 223, 0.23);
+
   --ring: #ffffff;
-  --chart-1: #5290ff;
-  --chart-2: #8fb4ff;
-  --chart-3: #e8a33d;
-  --chart-4: #f7cad5;
-  --chart-5: #a3a5a5;
-  /* The rail is the app's own frame, so it takes the frame role and sits
-     BELOW the page — mirroring the browser, whose frame #182123 sits below
-     its toolbar #343d3f. This is inverted from the navy block, where the rail
-     was a step above the body. */
-  --sidebar: #141616;
-  --sidebar-foreground: #e3e2e2;
-  --sidebar-primary: #5290ff;
-  --sidebar-primary-foreground: #101212;
-  --sidebar-accent: rgba(255, 255, 255, 0.1);
-  --sidebar-accent-foreground: #e3e2e2;
-  /* Carries the rail/page seam, which is only 4 L* points. */
-  --sidebar-border: rgba(255, 255, 255, 0.14);
+  --chart-1: #359e99;
+  --chart-2: #ff6a35;
+  --chart-3: #d7c8af;
+  --chart-4: #92999a;
+  --chart-5: #bac9c2;
+
+  --sidebar: #101c1e;
+  --sidebar-foreground: #f1eedf;
+  --sidebar-primary: #359e99;
+  --sidebar-primary-foreground: #101c1e;
+  --sidebar-accent: rgba(53, 158, 153, 0.17);
+  --sidebar-accent-foreground: #f1eedf;
+
+  --sidebar-border: rgba(241, 238, 223, 0.17);
   --sidebar-ring: #ffffff;
 
-  /* Shadow colours. These are only reachable because @theme inline routes
-     --shadow-card / --shadow-pop / the stock scale through variables; a
-     literal value up there is baked at build time and nothing declared in
-     this block could touch it. Neutral surface separation is deliberately
-     tiny here (card/page is 1.09:1, muted/page 1.19:1), so shadow and border
-     are carrying the hierarchy — this is the block that keeps the UI from
-     reading flat. */
   --shadow-key: rgb(0 0 0 / 0.4);
   --shadow-ambient: rgb(0 0 0 / 0.28);
   --shadow-pop-key: rgb(0 0 0 / 0.55);
@@ -603,90 +472,67 @@ body {
   --shot-ring: rgb(255 255 255 / 0.08);
   --shot-key: rgb(0 0 0 / 0.7);
   --shot-ambient: rgb(0 0 0 / 0.3);
-  /* Tailwind's stock scale at 5-10% black is invisible on an L* 11 page.
-     Same geometry, enough alpha to actually read. */
+
   --shadow-tint-1: rgb(0 0 0 / 0.3);
   --shadow-tint-2: rgb(0 0 0 / 0.5);
   --shadow-tint-3: rgb(0 0 0 / 0.65);
 
-  /* BrowserOS bespoke tokens, re-derived on the neutral chain. --ink-deep
-     keeps its "pressed dark chrome" semantic and stays deeper than
-     everything else; its only live consumer is now the Replay viewport pill
-     (ReplayViewport.tsx). --mcp-endpoint stays #0454ec in BOTH themes: it is
-     a deliberate brand chip on a permanently saturated surface (#2396), not a
-     neutral, and it must not be harmonised into the gray ramp. */
-  --bg-canvas: #171a1a;
-  --bg-sunken: #101212;
-  --card-tint: #292c2c;
-  --ink-deep: #0b0d0d;
-  --mcp-endpoint: #0454ec;
-  --border-2: #383b3b;
-  --border-strong: #4a4d4d;
+  --bg-canvas: #132124;
+  --bg-sunken: #0c1719;
+  --card-tint: #263b3b;
+  --ink-deep: #091315;
+  --mcp-endpoint: #246c69;
+  --border-2: #3b5150;
+  --border-strong: #58716c;
 
-  /* The elevated tint. Lands at L* 21 against the toolbar's 25, so the app's
-     top plane rhymes with the chrome without merging into it. */
-  --sky-tint-2: #303333;
+  --sky-tint-2: #2c4442;
 
-  /* Scrim for embedded media. Held at 0.5, not raised: this token still has
-     no --color-media-scrim consumer, so it paints nothing today, and the
-     0.70 figure in the design doc came from a miscomputed composite (50%
-     black over white is L* 53.6, not 76; 70% is L* 32.7, not 62 — 0.70
-     crushes screenshot detail). Whoever wires the first real consumer should
-     approve the value from screenshots in both themes. */
   --media-scrim: rgba(0, 0, 0, 0.5);
-  --ink: #e3e2e2;
-  --ink-2: #c7c6c6;
-  --ink-3: #a3a5a5;
-  /* --ink-4 is MEANINGFUL TEXT, not disabled decoration: 11px activity
-     timestamps (ActivityRow.tsx) and 10px replay stat labels (Replay.tsx),
-     both on --card. The neutral chain's own value for this slot, #7c7f7f,
-     is 4.16:1 on the page and 3.82:1 on a card — both fail AA. #8c8f8f is
-     5.15:1 on the page, 4.74:1 on a card, and still a clear step below
-     --ink-3 (L* 59.2 vs 67.6). */
-  --ink-4: #8c8f8f;
-  --accent-2: #8fb4ff;
-  --accent-ink: #9cc0ff;
-  --accent-tint: #292c2c;
-  --accent-tint-2: #303333;
-  /* Cobalt pulled darker and calmer than in light mode: on a gray page it
-     pops harder than it did on navy. White on it is 9.05:1. */
-  --cyanotype-blue: #1a3fa8;
-  --cyanotype-blue-hover: #224cc4;
+  --ink: #f1eedf;
+  --ink-2: #d5ddd4;
+  --ink-3: #bac9c2;
+
+  --ink-4: #a3b7ad;
+  --accent-2: #77d0c6;
+  --accent-ink: #77d0c6;
+  --accent-tint: #263b3b;
+  --accent-tint-2: #2c4442;
+
+  --cyanotype-blue: #246c69;
+  --cyanotype-blue-hover: #2d807b;
   --on-cyanotype: #ffffff;
   --on-cyanotype-2: rgba(255, 255, 255, 0.84);
-  --cyanotype-well: #292c2c;
-  --cyanotype-border: #383b3b;
-  --cyanotype-ink: #e3e2e2;
-  --cyanotype-muted: #c7c6c6;
-  --cyanotype-soft: #a3a5a5;
-  --cyanotype-rule: #2f3232;
-  --cyanotype-hover: #303333;
-  /* The LIVE pill is the app's signature green; unchanged in every theme. */
+  --cyanotype-well: #263b3b;
+  --cyanotype-border: #3b5150;
+  --cyanotype-ink: #f1eedf;
+  --cyanotype-muted: #d5ddd4;
+  --cyanotype-soft: #bac9c2;
+  --cyanotype-rule: #334b49;
+  --cyanotype-hover: #2c4442;
+
   --cyanotype-live: #2fe08c;
   --cyanotype-live-ink: #04331d;
   --cyanotype-live-text: #3ecf8e;
   --cyanotype-error: #ff6b81;
   --green: #3ecf8e;
   --green-tint: #12251d;
-  --amber: #e8a33d;
-  --amber-tint: #2a2113;
+  --amber: #ff8a55;
+  --amber-tint: #3b2a23;
   --red: #ff6b81;
   --red-tint: #2b1618;
   --green-ink: #3ecf8e;
-  --amber-ink: #f0b65c;
+  --amber-ink: #ff9a6a;
   --red-ink: #ff8a9b;
-  --blue: #6cc6e2;
+  --blue: #77d0c6;
 
-  /* Ledger table, gray. Header and band are quiet steps between --card and
-     --muted; the link / ink roles ride the light end of the blue ramp. */
-  --ledger-head: #252828;
-  --ledger-head-ink: #a3a5a5;
-  --ledger-band: #242727;
-  --ledger-band-ink: #b0b2b2;
-  --ledger-border: #383b3b;
-  --ledger-divider: #2f3232;
-  --ledger-link: #9cc0ff;
-  --ledger-ink: #e3e2e2;
-  --ledger-ink-2: #c7c6c6;
-  --ledger-ink-3: #a3a5a5;
+  --ledger-head: #223737;
+  --ledger-head-ink: #bac9c2;
+  --ledger-band: #263b3b;
+  --ledger-band-ink: #d5ddd4;
+  --ledger-border: #3b5150;
+  --ledger-divider: #334b49;
+  --ledger-link: #77d0c6;
+  --ledger-ink: #f1eedf;
+  --ledger-ink-2: #d5ddd4;
+  --ledger-ink-3: #bac9c2;
 }

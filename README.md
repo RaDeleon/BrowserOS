@@ -21,6 +21,8 @@
 
 We start close to the browser: remove avoidable animation waits, ask several questions of one fresh capture, execute bounded actions, and reuse procedures only while their targets and outcomes still hold.
 
+The cockpit's **Wave Runner palette** uses warm cream and graphite with sea-glass teal controls and a restrained orange accent, drawing from the approved OG Wave and Deep Teal colors used in AngeloDeLeon.com artwork. Light and dark modes share the same visual identity. The tattoo-style banner remains an illustrated concept.
+
 > **Local preview, no BrowserAI DUO release yet.** The published Apple Silicon alpha still installs as **BrowserRAD**. A BrowserAI DUO app was built, ad-hoc signed, smoke-tested and installed locally on November 16, 2026; the final cockpit resource update was repacked into that tested Chromium binary. This local install is not a downloadable release or notarized build. The banner is concept art: desktop, vault, and remote features shown there are not release claims.
 
 [**Previous BrowserRAD 0.0.1-alpha.2 release for Apple Silicon macOS →**](https://github.com/RaDeleon/BrowserOS/releases/tag/v0.0.1-alpha.2) · [Release notes and remaining checks](docs/browserrad/release-notes/v0.0.1-alpha.2.md). Its ZIP contains `BrowserRAD.app`.

@@ -44,7 +44,7 @@ const MOCK_ACTIVITY: ActivityRow[] = [
   {
     id: 'ac2',
     agentLabel: 'Cowork . Add to cart',
-    color: '#0254ec',
+    color: '#246C69',
     status: 'blocked',
     action: 'Add-to-cart blocked by your ACL rule on this site',
     site: 'amazon.com',

@@ -32,7 +32,7 @@ import {
 
 export function SidebarBrand() {
   return (
-    <div className="flex items-center gap-2.5 px-1.5">
+    <div className="flex items-center gap-2.5 border-wave-orange border-l-[3px] py-0.5 pl-3">
       <img
         src="/icons/browserclaw.svg"
         alt=""

@@ -31,7 +31,7 @@ export function AuditEmpty(props: AuditEmptyProps) {
         tone="error"
         icon={<TriangleAlert className="size-5" />}
         title="Couldn’t load your history"
-        hint="Check that BrowserOS is running, then open this page again."
+        hint="Check that BrowserAI DUO is running, then open this page again."
       />
     )
   }

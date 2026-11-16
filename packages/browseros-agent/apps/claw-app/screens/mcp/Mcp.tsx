@@ -45,7 +45,7 @@ export function Mcp() {
               Couldn’t check your agents
             </span>
             <span className="text-[14.5px] text-ink-2">
-              Check that BrowserAI DUO is running, then open this page again.
+              Check that BrowserOS is running, then open this page again.
             </span>
           </span>
         </Card>

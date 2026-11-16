@@ -1,9 +1,9 @@
 diff --git a/chrome/browser/browseros/core/browseros_prefs.cc b/chrome/browser/browseros/core/browseros_prefs.cc
 new file mode 100644
-index 0000000000000000000000000000000000000000..49dc731a544b1de0061593401623d819d43c9a8d
+index 0000000000000000000000000000000000000000..f09b13c6c45676dc7ed83f51ff28aaa8bd202b50
 --- /dev/null
 +++ b/chrome/browser/browseros/core/browseros_prefs.cc
-@@ -0,0 +1,137 @@
+@@ -0,0 +1,134 @@
 +// Copyright 2025 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -96,11 +96,8 @@ index 0000000000000000000000000000000000000000..49dc731a544b1de0061593401623d819
 +  const PrefService::Preference* user_color_pref =
 +      pref_service->FindPreference(::prefs::kUserColor);
 +  if (user_color_pref && user_color_pref->IsDefaultValue()) {
-+    const SkColor default_color = IsBrowserClawProduct()
-+                                      ? SkColorSetRGB(36, 108, 105)
-+                                      : SkColorSetRGB(136, 136, 136);
 +    pref_service->SetInteger(::prefs::kUserColor,
-+                             static_cast<int>(default_color));
++                             static_cast<int>(SkColorSetRGB(136, 136, 136)));
 +    pref_service->SetString(::prefs::kCurrentThemeID, "user_color_theme_id");
 +    pref_service->SetInteger(
 +        ::prefs::kBrowserColorVariant,

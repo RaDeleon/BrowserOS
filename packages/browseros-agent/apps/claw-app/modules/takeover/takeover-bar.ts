@@ -6,7 +6,7 @@
  * The in-page takeover bar: a shadow-DOM control the human uses to hand control
  * back to a parked agent without leaving the blocked page. Built with plain DOM
  * (no framework) so the content script stays small. Leads with BrowserAI DUO
- * branding (the app mark and Wave Runner teal) because it rides a third-party page
+ * branding (the dog mark and Signal Blue) because it rides a third-party page
  * where provenance matters; the needs-you urgency is the secondary amber accent.
  */
 
@@ -23,7 +23,7 @@ export interface TakeoverBar {
   destroy: () => void
 }
 
-// Wave Runner teal leads; orange carries the needs-you signal. The
+// Signal Blue (--accent) leads; burnt orange (#b85c10) carries needs-you. The
 // shadow root resets inherited styles, so fonts and colors are set explicitly.
 export const TAKEOVER_BAR_CSS = `
 :host { all: initial; }
@@ -31,35 +31,35 @@ export const TAKEOVER_BAR_CSS = `
    [hidden] default, so force it or minimize leaves both states on screen. */
 [hidden] { display: none !important; }
 .nt-root { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 2147483000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: #22292C; }
-.nt-bar { background: #fff; border: 1px solid rgba(36,108,105,0.18); border-top: 3px solid #FF6A35;
-  border-radius: 12px; box-shadow: 0 10px 30px rgba(22,36,39,0.30); overflow: hidden; max-width: 760px; margin: 0 auto; }
-.nt-head { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #DDEAE1; border-bottom: 1px solid rgba(36,108,105,0.18); }
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: #0b1b33; }
+.nt-bar { background: #fff; border: 1px solid rgba(2,84,236,0.18); border-top: 3px solid #0254ec;
+  border-radius: 12px; box-shadow: 0 10px 30px rgba(2,22,51,0.30); overflow: hidden; max-width: 760px; margin: 0 auto; }
+.nt-head { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #eaf1ff; border-bottom: 1px solid rgba(2,84,236,0.18); }
 .nt-dog { width: 22px; height: 22px; flex: 0 0 auto; display: block; }
 .nt-dog svg { width: 22px; height: 22px; border-radius: 6px; display: block; }
-.nt-brand { font-weight: 800; font-size: 12.5px; letter-spacing: -0.01em; color: #246C69; }
+.nt-brand { font-weight: 800; font-size: 12.5px; letter-spacing: -0.01em; color: #0254ec; }
 .nt-spacer { flex: 1 1 auto; }
-.nt-pill { display: inline-flex; align-items: center; gap: 6px; background: #A4421C; color: #fff; white-space: nowrap;
+.nt-pill { display: inline-flex; align-items: center; gap: 6px; background: #b85c10; color: #fff; white-space: nowrap;
   border-radius: 8px; padding: 3px 9px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 .nt-pill .nt-timer { font-weight: 600; letter-spacing: 0; font-variant-numeric: tabular-nums; }
-.nt-min { width: 26px; height: 26px; border: 1px solid rgba(36,108,105,0.18); border-radius: 8px; background: #fff;
+.nt-min { width: 26px; height: 26px; border: 1px solid rgba(2,84,236,0.18); border-radius: 8px; background: #fff;
   color: #6b7b85; cursor: pointer; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0; }
 .nt-min:hover { background: #f2f5fb; }
 .nt-body { padding: 12px 14px 14px; }
 .nt-title { font-weight: 700; font-size: 14px; }
-.nt-title .nt-agent { color: #22292C; }
-.nt-title .nt-site { color: #246C69; }
+.nt-title .nt-agent { color: #0b1b33; }
+.nt-title .nt-site { color: #0254ec; }
 .nt-reason { font-size: 13px; color: #41525c; margin-top: 3px; }
 .nt-resume { font-size: 12.5px; color: #6b7b85; margin-top: 2px; }
 .nt-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
-.nt-note { flex: 1 1 200px; min-width: 150px; height: 36px; border: 1px solid rgba(36,108,105,0.18); border-radius: 10px;
-  padding: 0 10px; font: inherit; font-size: 13px; color: #22292C; background: #fff; }
+.nt-note { flex: 1 1 200px; min-width: 150px; height: 36px; border: 1px solid rgba(2,84,236,0.18); border-radius: 10px;
+  padding: 0 10px; font: inherit; font-size: 13px; color: #0b1b33; background: #fff; }
 .nt-note::placeholder { color: #6b7b85; }
-.nt-handback { height: 36px; padding: 0 16px; border: 0; border-radius: 8px; background: #246C69; color: #fff;
+.nt-handback { height: 36px; padding: 0 16px; border: 0; border-radius: 8px; background: #0254ec; color: #fff;
   font: inherit; font-weight: 600; font-size: 13px; cursor: pointer; }
 .nt-handback:hover { background: #0246c6; }
 .nt-handback:disabled { opacity: 0.6; cursor: default; }
-.nt-pill-btn { display: inline-flex; align-items: center; gap: 9px; background: #246C69; color: #fff; border: 0;
+.nt-pill-btn { display: inline-flex; align-items: center; gap: 9px; background: #0254ec; color: #fff; border: 0;
   border-radius: 8px; padding: 7px 13px 7px 7px; box-shadow: 0 8px 22px rgba(2,22,51,0.4); font: inherit;
   font-size: 13px; font-weight: 600; cursor: pointer; float: right; }
 .nt-chip { width: 24px; height: 24px; border-radius: 6px; background: #fff; display: flex; align-items: center; justify-content: center; }

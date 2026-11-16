@@ -81,8 +81,8 @@ function AgentSwitches() {
     return (
       <SettingsSection title="While your AI works">
         <p role="alert" className="px-5 py-4 text-[14.5px] text-ink-2">
-          Couldn’t load these settings. Check that BrowserAI DUO is running,
-          then open this page again.
+          Couldn’t load these settings. Check that BrowserOS is running, then
+          open this page again.
         </p>
       </SettingsSection>
     )
@@ -183,7 +183,7 @@ function Appearance() {
       <SettingRow
         id={THEME_ID}
         title="Theme"
-        description="Match browser follows your BrowserAI DUO appearance setting."
+        description="Match browser follows your BrowserOS appearance setting."
         control={
           <Tabs
             variant="segment"

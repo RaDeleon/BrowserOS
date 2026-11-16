@@ -21,7 +21,7 @@
 
 We start close to the browser: remove avoidable animation waits, ask several questions of one fresh capture, execute bounded actions, and reuse procedures only while their targets and outcomes still hold.
 
-> **Brand transition in progress.** The published Apple Silicon alpha still installs as **BrowserRAD**. Its ad-hoc signature is not notarized. The BrowserAI DUO name and art are in source; a newly built, signed and validated BrowserAI DUO app is pending. The banner is concept art: desktop, vault, and remote features shown there are not release claims.
+> **Local preview, no BrowserAI DUO release yet.** The published Apple Silicon alpha still installs as **BrowserRAD**. A BrowserAI DUO app was built, ad-hoc signed, smoke-tested and installed locally on November 16, 2026; the final cockpit resource update was repacked into that tested Chromium binary. This local install is not a downloadable release or notarized build. The banner is concept art: desktop, vault, and remote features shown there are not release claims.
 
 [**Previous BrowserRAD 0.0.1-alpha.2 release for Apple Silicon macOS →**](https://github.com/RaDeleon/BrowserOS/releases/tag/v0.0.1-alpha.2) · [Release notes and remaining checks](docs/browserrad/release-notes/v0.0.1-alpha.2.md). Its ZIP contains `BrowserRAD.app`.
 
@@ -37,7 +37,7 @@ We start close to the browser: remove avoidable animation waits, ask several que
 | Selective vision | DOM first; return unresolved evidence to the planner; no mandatory vision pass | No new provider dependency |
 | Direct retrieval | Opt-in same-origin GET in the existing browser context | Experimental; no cookie export |
 | Site-provided tools | Opt-in current WebMCP discovery/invocation with origin checks | Experimental; browser/site support required |
-| Separate installation | Distinct from upstream Neo; legacy BrowserRAD profile and secrets remain compatible | BrowserAI DUO bundle pending build and validation |
+| Separate installation | Distinct from upstream Neo; legacy BrowserRAD profile and secrets remain compatible | Local macOS preview installed and verified; public release pending |
 | Desktop control | Planned opt-in local desktop surface | Not in the published alpha |
 
 Implementation and rollout details live in the [development guide](docs/browserrad/DEVELOPMENT.md). A feature in source is not a claim that an installed build has passed live acceptance.

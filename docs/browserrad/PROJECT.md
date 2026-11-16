@@ -8,18 +8,18 @@ BrowserOS Neo remains the foundation and the comparison. BrowserAI DUO gets its 
 
 ## Current status
 
-**BrowserAI DUO rebrand is in source and artwork as of November 16, 2026. The installed app and published alpha.2 are still branded BrowserRAD until a new native build, migration check, and installation pass. Desktop control remains in development.** No later official Neo version has been integrated. Five paired scripted shakedowns and two recovery probes passed under the earlier BrowserRAD name; model-driven matched benchmarks, client token usage and total cost remain open. The fork's official Neo source cutoff is `e35f20e54679936fba79b3a649de34fb17032dd6`, the 0.52.1.1 maintenance promotion. Internal build selector `browserclaw` remains to limit merge churn.
+**BrowserAI DUO is installed locally as of November 16, 2026; the published alpha.2 is still BrowserRAD. Desktop control remains in development.** The signed preview uses the existing BrowserRAD profile and upgraded its cockpit extension to 0.2.60.0. Claude Desktop reconnected and listed tools through the renamed `browserai-duo` entry; Claude Code and Codex configuration keys were updated but fresh client sessions have not been tested. No later official Neo version has been integrated. Five paired scripted shakedowns and two recovery probes passed under the earlier BrowserRAD name; model-driven matched benchmarks, client token usage and total cost remain open. The fork's official Neo source cutoff is `e35f20e54679936fba79b3a649de34fb17032dd6`, the 0.52.1.1 maintenance promotion. Internal build selector `browserclaw` remains to limit merge churn.
 
 | Workstream | Status | Next evidence |
 | --- | --- | --- |
-| Separate BrowserAI DUO identity | Name and art changed in source; legacy profile and bundle ID preserved | Native build, profile and connection coexistence test |
+| Separate BrowserAI DUO identity | Local app installed; legacy profile and bundle ID preserved; Neo untouched | Fresh Claude Code/Codex invocation and broader coexistence trial |
 | Pointer and journal latency | Relevant Rust tests pass; debug phase timings added | Visible/background matched trials |
 | Shared observation and bounded plans | 21 helper tests, 2 embedded-engine tests, live synthetic plan pass | Broader dynamic-page and matched native verification |
 | Local procedure reuse | Upstream saved-flow machinery retained | Stale route, partial write and learned-repeat trials |
 | Same-origin retrieval / WebMCP | Retrieval works on fixture; unsupported WebMCP reported honestly | Real supported-site invocation and cancellation |
-| README / Claude / Codex guidance | Rebrand in progress; new command-center art inspected | Verify links and client instructions after build |
+| README / Claude / Codex guidance | Branded docs and website live; local connector keys and Claude routing file updated | Fresh Claude Code/Codex discovery and Claude account-level instruction review |
 | Baseline | Five synthetic Neo runs recorded | Larger matched client-reported workload |
-| Toolchain / packaging | Earlier BrowserRAD alpha.2 ZIP published; new bundle not yet validated | Native BrowserAI DUO artifact and coexistence verification |
+| Toolchain / packaging | Local BrowserAI DUO app signed, smoke-tested and installed; earlier BrowserRAD alpha.2 ZIP remains the only release | Clean source-mode build of final 0.2.60 checkpoint, release signing and packaging |
 
 ## November 2, 2026 — Give the experiment its own front door
 
@@ -270,3 +270,13 @@ The source now uses BrowserAI DUO for visible product names, native app/framewor
 Validation completed before native compilation: 1,333 native build-system tests passed (4 skipped); the claw-server unit and integration suites passed (1,010 library tests plus integration suites, 7 ignored); focused cockpit tests, typecheck and WXT build passed. One broad Rust run briefly exposed a nondeterministic captcha logging test; an independent full rerun passed. Python's first invocation used the wrong discovery root and caused package import errors; the corrected package-root run produced the results above. This is source validation only. The installed app remains BrowserRAD and the new site copy remains in a local worktree until the native bundle and remote branches are published.
 
 Next gates: commit the reviewed source checkpoint, restage the fork's bundled extension and server, rebuild Chromium and package the renamed app; inspect its executable, signature, profile reuse and MCP connection; activate it only after acceptance. Then publish the website changes and verify the live URLs. A new GitHub release is a separate packaging and provenance step and is not claimed here.
+
+## November 16, 2026 — Local BrowserAI DUO activation
+
+The source checkpoint `3937aaaaa` produced a native Apple Silicon BrowserAI DUO app and an isolated MCP smoke pass. Its Chromium bundle, framework and executable all bore the new name, but an existing BrowserRAD profile kept cockpit extension 0.2.59.0 because the bundled version had not advanced. A fresh tab therefore still displayed BrowserRAD. This was a real activation failure, not a cosmetic test artifact.
+
+Checkpoint `864ddb248` advances the cockpit package and lockfile to 0.2.60. The pinned Bun 1.4.2 WXT build and typecheck passed. Source-mode resource preparation generated a CRX and catalog both declaring 0.2.60.0. The incremental native build unexpectedly invalidated tens of thousands of Chromium actions; it was stopped without stopping any other browser or user process. The already compiled BrowserAI DUO bundle from the first checkpoint received only the new CRX and catalog, then passed ad-hoc deep/strict signature verification and the isolated MCP smoke suite. A clean native source-mode build at the final checkpoint remains a release gate.
+
+The corrected app is now at `/Applications/BrowserAI DUO.app`. The existing `BrowserRAD/Profile 1` installed extension 0.2.60.0, whose new tab title is BrowserAI DUO; the live browser process and MCP initialize response both report the new name. An explicit UI inspection reached the branded profile chooser; a rendered signed-in dashboard was not independently inspected. The old `/Applications/BrowserRAD.app` was moved to a private ignored rollback directory, with a ZIP backup retained. Stock Neo and its profile were not modified.
+
+Local Claude Desktop, Claude Code and Codex connector keys now use `browserai-duo` at the unchanged `127.0.0.1:9012/mcp` endpoint. Claude's global browser routing instruction was updated. After a Claude Desktop restart, its new log recorded a successful Streamable HTTP connection and a tool-list reply. Fresh Claude Code/Codex tool discovery and Claude account-level custom instructions still need direct acceptance checks. The website rename and redirects were separately published and verified; the previous BrowserRAD alpha.2 remains the only GitHub release. No performance or token improvement is inferred from this brand work.

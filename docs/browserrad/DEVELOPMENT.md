@@ -1,12 +1,12 @@
 # BrowserAI DUO development guide
 
-BrowserAI DUO is the renamed BrowserRAD fork based on BrowserOS Neo. The native product still uses `--product browserclaw` internally; the macOS app/executable is being changed to `BrowserAI DUO`. Keeping that build selector avoids a broad upstream refactor. The published alpha.2 and currently installed development app still carry the former name until the new native artifact is verified and activated.
+BrowserAI DUO is the renamed BrowserRAD fork based on BrowserOS Neo. The native product still uses `--product browserclaw` internally; the macOS app/executable is `BrowserAI DUO`. Keeping that build selector avoids a broad upstream refactor. The published alpha.2 still carries the former name. A local BrowserAI DUO preview is installed; it is not a new public release.
 
 ## Coexistence contract
 
 | Surface | Stock Neo | BrowserAI DUO |
 | --- | --- | --- |
-| App and executable | BrowserOS neo | BrowserAI DUO (source; build pending) |
+| App and executable | BrowserOS neo | BrowserAI DUO (local macOS preview installed) |
 | Cockpit extension ID | pjimfkbpehlcllblajnpfamdfjhhlgkc | efdbmkebmplcaefnjkgfnnbmgdjndifl |
 | Release bundle ID | com.browseros.BrowserClaw | com.techinsf.BrowserRAD |
 | macOS profile directory | BrowserClaw | BrowserRAD |

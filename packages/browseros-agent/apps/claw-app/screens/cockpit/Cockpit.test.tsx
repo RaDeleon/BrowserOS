@@ -260,7 +260,7 @@ describe('Cockpit', () => {
     expect(html).not.toContain('Your turn')
   })
 
-  it('shows savings right under the greeting once BrowserRAD has finished a task', () => {
+  it('shows savings right under the greeting once BrowserAI DUO has finished a task', () => {
     const measured = renderApp({ connections: 'installed', stats: 'measured' })
     expect(measured).toMatch(/<\/header><section aria-label="Savings"/)
     expect(measured).toContain('estimated tokens avoided')

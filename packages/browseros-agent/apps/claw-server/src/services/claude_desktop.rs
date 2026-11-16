@@ -133,7 +133,7 @@ impl ClaudeDesktop {
     pub async fn install(&self) -> AppResult<ClaudeDesktopInstallStatus> {
         if self.bundle.url.is_empty() {
             return Err(AppError::Internal(
-                "BrowserRAD Desktop bundle is not published. Use the manual MCP endpoint."
+                "BrowserAI DUO Desktop bundle is not published. Use the manual MCP endpoint."
                     .to_string(),
             ));
         }

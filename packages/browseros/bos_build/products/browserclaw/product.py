@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BrowserRAD — the browser for web agents."""
+"""BrowserAI DUO — the browser for web agents."""
 
 from pathlib import Path
 
@@ -14,28 +14,28 @@ from ..server_binaries import ServerBundle, SignSpec
 
 BROWSERCLAW_PRODUCT = ProductDescriptor.define(
     id="browserclaw",
-    display_name="BrowserRAD",
+    display_name="BrowserAI DUO",
     windows_installer_guid="{D31EA8BC-25D9-4A97-91A1-10E7A1BAA42B}",
     company="TechInSF",
     homepage_url="https://github.com/RaDeleon/BrowserOS",
     support_url="https://github.com/RaDeleon/BrowserOS/discussions",
     bugtracker_url="https://github.com/RaDeleon/BrowserOS/issues",
     summary="The open source browser for web agents",
-    description="BrowserRAD is a Chromium-based browser for agent workflows.",
+    description="BrowserAI DUO is a Chromium-based browser for agent workflows.",
     required_extensions=(
-        (BROWSERCLAW_EXTENSION_ID, "BrowserRAD app"),
+        (BROWSERCLAW_EXTENSION_ID, "BrowserAI DUO app"),
         (BROWSEROS_BUG_REPORTER_EXTENSION_ID, "BrowserOS bug reporter"),
     ),
     server_bundle_ids=("browserclaw-server",),
-    artifact_prefix="BrowserRAD",
+    artifact_prefix="BrowserAI-DUO",
     mac=MacProductIdentity(
         bundle_id="com.techinsf.BrowserRAD",
         dev_bundle_id="com.techinsf.dev.BrowserRAD",
         signing_identifier="com.techinsf.BrowserRAD",
         dev_signing_identifier="com.techinsf.dev.BrowserRAD",
-        framework_name="BrowserRAD Framework.framework",
-        dev_framework_name="BrowserRAD Dev Framework.framework",
-        dmg_volume_name="BrowserRAD",
+        framework_name="BrowserAI DUO Framework.framework",
+        dev_framework_name="BrowserAI DUO Dev Framework.framework",
+        dmg_volume_name="BrowserAI DUO",
     ),
     windows=WindowsProductIdentity(
         app_user_model_id="TechInSF.BrowserRAD",

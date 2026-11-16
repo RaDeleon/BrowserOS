@@ -61,7 +61,7 @@ browser (nothing here takes a page):
   browser.pages.list()-> [{ pageId, url, title, ownership, ownerLabel, ... }] for open tabs admitted by this task's target (every tab when unbound), including the user's and other agents'. `ownership` is "mine" | "user" | "other-agent"; "other-agent" tabs also carry ownerLabel. Act only on your own ("mine") tabs. Leave the others alone unless the user explicitly asks.
   browser.history({ maxResults }) / tabGroups(opts) / windows(opts)
   A handle stays valid only while that tab is open and still yours. Reuse one across steps and across calls while that holds. If a call fails instantly on a handle from an earlier turn, the tab is gone or was taken over - do not retry it. Re-derive from browser.pages.list() filtered to ownership === "mine", or open a fresh page. Carrying the URL between calls is safer than carrying the id.
-BrowserRAD optional helpers (disabled when BROWSERRAD_FAST_PATH=0):
+BrowserAI DUO optional helpers (disabled when BROWSERRAD_FAST_PATH=0):
   page.evidence({queries:[literalStrings],over:'snapshot'|'content',selector?,limit?}) - up to 8 questions, one fresh capture; returns compact matching lines and coverage.
   page.executePlan({origin,steps,expect}) - up to 8 steps; click/fill/selectOption use target:{role,name}, authorized:true, optional value/expect; read uses selector; wait uses expect. expect:{kind:'text'|'selector',value} is mandatory for the final result. Stops on ambiguity or uncertain writes, never retries. Independent task verification is still required.
   page.fetchRead({url,origin,authorized:true}) - opt-in same-origin GET, no cookie export; raw content, not JS-rendered.

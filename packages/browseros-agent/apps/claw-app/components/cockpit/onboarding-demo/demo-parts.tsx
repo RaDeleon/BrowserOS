@@ -196,7 +196,7 @@ export function DemoToolRows({
   )
 }
 
-/** The one sign of the connection in an app window: "BrowserRAD ✓". */
+/** The one sign of the connection in an app window: "BrowserAI DUO ✓". */
 export function NeoConnectedChip({ className }: { className?: string }) {
   return (
     <span
@@ -206,7 +206,7 @@ export function NeoConnectedChip({ className }: { className?: string }) {
       )}
     >
       <DemoNeoMark className="size-3.5 rounded-[4px]" />
-      BrowserRAD
+      BrowserAI DUO
       <Check aria-hidden className="size-[11px]" strokeWidth={2.5} />
     </span>
   )

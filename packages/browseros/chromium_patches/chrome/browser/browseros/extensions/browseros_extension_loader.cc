@@ -496,7 +496,7 @@ index 0000000000000000000000000000000000000000..c7fb41d2ca313acc489b49396a411665
 +}
 +
 +void BrowserOSExtensionLoader::CheckForUpdates() {
-+  // BrowserRAD previews use bundled extensions; no upstream replacement.
++  // BrowserAI DUO previews use bundled extensions; no upstream replacement.
 +  if (IsBrowserClawProduct()) return;
 +  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 +  if (!profile_ || !local_discovery_complete_ || remote_requested_ ||

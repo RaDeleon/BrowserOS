@@ -85,6 +85,11 @@ export function Cockpit() {
     ) : (
       <Page>
         <PromoSlot {...promo} />
+        <img
+          src="/brand/browserai-duo-banner.webp"
+          alt="BrowserAI DUO command center concept artwork"
+          className="w-full rounded-2xl border border-white/10 object-cover shadow-lg"
+        />
         <PageHeader
           title={`Good ${partOfDay(hour)}`}
           lede={homeLede(sessions, takeover.inControlSession)}

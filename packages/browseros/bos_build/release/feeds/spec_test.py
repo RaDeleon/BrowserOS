@@ -69,10 +69,10 @@ class FeedTableTest(unittest.TestCase):
         self.assertEqual(
             [feed.title for feed in claw_feeds],
             [
-                "BrowserRAD",
-                "BrowserRAD",
-                "BrowserRAD Windows Updates",
-                "BrowserRAD Windows Updates",
+                "BrowserAI DUO",
+                "BrowserAI DUO",
+                "BrowserAI DUO Windows Updates",
+                "BrowserAI DUO Windows Updates",
             ],
         )
         self.assertEqual(

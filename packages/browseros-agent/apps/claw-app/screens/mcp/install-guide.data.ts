@@ -16,7 +16,7 @@ export const MCPB_FILENAME = EXTENSION_DOWNLOAD_URL.slice(
 )
 
 export const COWORK_REQUIREMENT_LINE =
-  'To use BrowserRAD with Claude Cowork, you need to install this extension.'
+  'To use BrowserAI DUO with Claude Cowork, you need to install this extension.'
 
 /**
  * Screenshots live in the `browserclaw` R2 bucket rather than the extension
@@ -64,7 +64,7 @@ export const INSTALL_STEPS: readonly InstallStep[] = [
     id: 'download',
     title: 'Download',
     kind: 'download',
-    body: `Download the BrowserRAD extension. It saves to your Downloads folder as ${MCPB_FILENAME}.`,
+    body: `Download the BrowserAI DUO extension. It saves to your Downloads folder as ${MCPB_FILENAME}.`,
   },
   {
     id: 'install-extension',
@@ -87,10 +87,10 @@ export const INSTALL_STEPS: readonly InstallStep[] = [
   {
     id: 'confirm-install',
     title: 'Click Install',
-    body: 'Claude shows the BrowserRAD extension details. Click Install to finish — Claude can now drive BrowserRAD.',
+    body: 'Claude shows the BrowserAI DUO extension details. Click Install to finish — Claude can now drive BrowserAI DUO.',
     image: {
       src: `${IMAGE_BASE}/step-confirm-install.webp`,
-      alt: "Claude Desktop's BrowserRAD extension details sheet with the Install button in the top right",
+      alt: "Claude Desktop's BrowserAI DUO extension details sheet with the Install button in the top right",
     },
   },
 ]
@@ -107,7 +107,7 @@ export const INSTALL_STEPS: readonly InstallStep[] = [
 export const SKILLS_PACK = 'browseros-ai/browseros'
 
 /** The one skill in that pack meant for users, rather than for working on this repo. */
-export const SKILL_NAME = 'browserrad'
+export const SKILL_NAME = 'browserai-duo'
 
 /**
  * Scoped to the single skill on purpose. `npx skills add <pack>` with no
@@ -119,7 +119,7 @@ export const SKILL_NAME = 'browserrad'
 export const SKILL_INSTALL_COMMAND = `npx skills add ${SKILLS_PACK} --skill ${SKILL_NAME}`
 
 /** The name the MCP server should be given, matching what the skill looks for. */
-export const MCP_SERVER_NAME = 'browserrad'
+export const MCP_SERVER_NAME = 'browserai-duo'
 
 export const MANUAL_SETUP_DOCS_URL = 'https://docs.browseros.com/neo/mcp/manual'
 

@@ -116,7 +116,7 @@ async fn skill_crud_round_trips_and_writes_the_canonical_file() -> anyhow::Resul
         .join("SKILL.md");
     let content = std::fs::read_to_string(&skill_md)?;
     assert!(content.contains("name: rad-inbox-sweep"));
-    assert!(content.contains("tools: browserrad"));
+    assert!(content.contains("tools: browserai-duo"));
     assert!(content.contains("## Steps"));
     assert!(content.contains("Read the DOM snapshot, not screenshots"));
 
@@ -144,7 +144,7 @@ async fn skill_crud_round_trips_and_writes_the_canonical_file() -> anyhow::Resul
         "/api/v1/skills/rad-inbox-sweep",
         Some(json!({
             "description": "Updated description",
-            "body": "---\nname: rad-inbox-sweep\ndescription: Updated\ntools: browserrad\n---\n\n## Steps\n1. A brand new step\n"
+            "body": "---\nname: rad-inbox-sweep\ndescription: Updated\ntools: browserai-duo\n---\n\n## Steps\n1. A brand new step\n"
         })),
     )
     .await?;
@@ -283,7 +283,7 @@ async fn skill_update_rejects_ambiguous_field_combinations() -> anyhow::Result<(
         "PUT",
         "/api/v1/skills/rad-inbox-sweep",
         Some(json!({
-            "body": "---\nname: rad-inbox-sweep\ndescription: X\ntools: browserrad\n---\n",
+            "body": "---\nname: rad-inbox-sweep\ndescription: X\ntools: browserai-duo\n---\n",
             "steps": ["New step"],
             "learnedNotes": []
         })),

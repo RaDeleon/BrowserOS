@@ -1,4 +1,4 @@
-// BrowserRAD's deterministic helpers. Every primitive still crosses the guarded SDK.
+// BrowserAI DUO's deterministic helpers. Every primitive still crosses the guarded SDK.
 // No planner, provider, network service, cross-call page cache, or automatic write retry.
 ;(() => {
   const requireString = (v, name, max = 2048) => {
@@ -25,7 +25,7 @@
   }
   globalThis.__browserradMethods = (page) => {
     if (!globalThis.__browserosFeatures?.browserrad)
-      throw new Error('BrowserRAD fast path is disabled')
+      throw new Error('BrowserAI DUO fast path is disabled')
     return {
       // One fresh acquisition answers several questions. Refs are never reused across calls.
       async evidence({

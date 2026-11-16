@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2026 BrowserRAD contributors
+ * Copyright 2026 BrowserAI DUO contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 

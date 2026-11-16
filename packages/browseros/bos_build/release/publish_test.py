@@ -100,7 +100,7 @@ class PublishModuleIntegrityTest(unittest.TestCase):
             mock.ANY,
             "bucket",
             "installer.exe",
-            "download/BrowserRAD_installer.exe",
+            "download/BrowserAI-DUO_installer.exe",
         )
 
     def test_default_selection_validates_only_loaded_platforms(self):

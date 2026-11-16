@@ -28,7 +28,7 @@ pub struct Behavior {
     /// page cannot see or tamper with (`browseros_core::page_js`). Off runs every script in the
     /// page's own world, as before isolated worlds; it is the rollout's off switch.
     pub isolated_world: bool,
-    /// BrowserRAD: instant visual feedback without removing input validation.
+    /// BrowserAI DUO: instant visual feedback without removing input validation.
     pub instant_pointer: bool,
 }
 

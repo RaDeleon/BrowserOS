@@ -12,11 +12,11 @@ export default defineConfig({
   outDir: 'dist',
   modules: ['@wxt-dev/module-react'],
   manifest: {
-    name: 'BrowserRAD',
+    name: 'BrowserAI DUO',
     externally_connectable: { ids: [REPORTER_EXTENSION_ID] },
-    description: 'BrowserRAD — the browser for AI agents.',
+    description: 'BrowserAI DUO — the browser for AI agents.',
     key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoeT2B52zSiwufLFka/qzTaTKZvsgfdaiz3G0U1fhMKyy9YjdxW3AxgXUWMcgebJP7mzTvUQeVNywy+icAcU6fGG41caxNHUS05MUF6NCoGiix7A/T1GvztavU2/U/MeI8D9LX2pYbd/nqAosIBa4/pgBI394I02FOTapsYMBi+Yqa77r/DC6Cr8wqqYpvfC7w2htzZNW8vnnwaaugSJ1GepQB+gJtAUXWSmSIqgETwsHy7DFgSTvw+zGt0FbsHjT5pgntHEZmcfMeUJMYaq7sF2bpA+0dIApdraDzIc+MsrqYErT35AxX8JBwcH/8yU0AnoR1pyfhtcAPamJI3eCMwIDAQAB',
-    // BrowserRAD previews ship updates with the app, never from Neo's feed.
+    // BrowserAI DUO previews ship updates with the app, never from Neo's feed.
     // Keep shared permissions in sync with apps/app/wxt.config.ts; additions
     // re-prompt or disable existing installs on update.
     permissions: [
@@ -49,7 +49,7 @@ export default defineConfig({
         48: 'icon/48.png',
         128: 'icon/128.png',
       },
-      default_title: 'BrowserRAD',
+      default_title: 'BrowserAI DUO',
     },
   },
   vite: () => ({

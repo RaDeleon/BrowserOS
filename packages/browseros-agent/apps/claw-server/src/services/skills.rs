@@ -28,7 +28,7 @@ const DEFAULT_RUN_LIMIT: u64 = 25;
 const MAX_RUN_LIMIT: u64 = 100;
 
 /// Where the agent gets told to drive the browser from a skill's frontmatter.
-const SKILL_TOOLS: &str = "browserrad";
+const SKILL_TOOLS: &str = "browserai-duo";
 
 /// Skill creation surface, independent of transport. The MCP tool and the REST
 /// handler both build this.
@@ -705,7 +705,7 @@ fn render_skill_markdown(
     let mut out = format!(
         "---\nname: {name}\ndescription: {description}\ntools: {SKILL_TOOLS}\n---\n\n## Steps\n"
     );
-    // Every run marks itself so BrowserRAD records the run and its cost.
+    // Every run marks itself so BrowserAI DUO records the run and its cost.
     out.push_str(&format!(
         "1. Call the mark_skill_run tool with name: {name} so this run is recorded.\n"
     ));
@@ -784,7 +784,7 @@ mod tests {
         let notes = vec!["The grid fills late.".to_string()];
         assert_eq!(
             render_skill_markdown("rad-shop", "Add to cart", &steps, &notes),
-            "---\nname: rad-shop\ndescription: \"Add to cart\"\ntools: browserrad\n---\n\n## Steps\n1. Call the mark_skill_run tool with name: rad-shop so this run is recorded.\n2. Open the search.\n3. Add it.\n\n## Learned from past runs\n- The grid fills late.\n"
+            "---\nname: rad-shop\ndescription: \"Add to cart\"\ntools: browserai-duo\n---\n\n## Steps\n1. Call the mark_skill_run tool with name: rad-shop so this run is recorded.\n2. Open the search.\n3. Add it.\n\n## Learned from past runs\n- The grid fills late.\n"
         );
     }
 

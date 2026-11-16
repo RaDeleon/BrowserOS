@@ -1,4 +1,7 @@
-<p align="center"><img src="docs/images/browserrad/hero.svg" alt="BrowserRAD — Less waiting. More doing. A local browser for agents built on BrowserOS Neo." width="100%"></p>
+<p align="center"><img src="docs/images/browserai-duo/hero.png" alt="BrowserAI DUO cyberpunk command center concept: browser now, desktop in development" width="100%"></p>
+
+<h1 align="center">BrowserAI DUO</h1>
+<p align="center"><strong>One agent workspace for browser work today, with desktop control in development.</strong></p>
 
 <p align="center">
   <a href="docs/browserrad/PROJECT.md"><strong>Project diary</strong></a> ·
@@ -14,17 +17,17 @@
 
 ## A browser that respects the cost of every turn
 
-**BrowserRAD is an independent BrowserOS Neo fork for Claude, Codex, and other MCP clients.** Its goal is faster, independently verified tasks with the same or fewer main-agent tokens—and no hidden cost increase from passing the work to another model.
+**BrowserAI DUO is the new name for the BrowserRAD fork of BrowserOS Neo.** Browser automation works today through Claude, Codex, and other MCP clients. Desktop automation is the next development track and is not available in the published alpha. The goal is faster, independently verified tasks with the same or fewer main-agent tokens and no hidden cost increase from passing work to another model.
 
 We start close to the browser: remove avoidable animation waits, ask several questions of one fresh capture, execute bounded actions, and reuse procedures only while their targets and outcomes still hold.
 
-> **Experimental alpha.** An Apple Silicon macOS build is available. It is ad-hoc signed, without hardened runtime, and not notarized. Isolated headless launch and native MCP smoke checks passed; visible desktop onboarding and matched speed/token/cost measurements remain unverified.
+> **Brand transition in progress.** The published Apple Silicon alpha still installs as **BrowserRAD**. Its ad-hoc signature is not notarized. The BrowserAI DUO name and art are in source; a newly built, signed and validated BrowserAI DUO app is pending. The banner is concept art: desktop, vault, and remote features shown there are not release claims.
 
-[**Download BrowserRAD 0.0.1-alpha.2 for Apple Silicon macOS →**](https://github.com/RaDeleon/BrowserOS/releases/tag/v0.0.1-alpha.2) · [Release notes and remaining checks](docs/browserrad/release-notes/v0.0.1-alpha.2.md). Unzip the download to obtain `BrowserRAD.app`.
+[**Previous BrowserRAD 0.0.1-alpha.2 release for Apple Silicon macOS →**](https://github.com/RaDeleon/BrowserOS/releases/tag/v0.0.1-alpha.2) · [Release notes and remaining checks](docs/browserrad/release-notes/v0.0.1-alpha.2.md). Its ZIP contains `BrowserRAD.app`.
 
 ## What is taking shape
 
-| Technique | BrowserRAD approach | State |
+| Technique | BrowserAI DUO approach | State |
 | :--- | :--- | :--- |
 | Fast local input | Instant pointer feedback; native hit checks remain | Implemented in source |
 | Less response overhead | Retention cleanup leaves the journal response path; append remains awaited | Implemented in source |
@@ -34,7 +37,8 @@ We start close to the browser: remove avoidable animation waits, ask several que
 | Selective vision | DOM first; return unresolved evidence to the planner; no mandatory vision pass | No new provider dependency |
 | Direct retrieval | Opt-in same-origin GET in the existing browser context | Experimental; no cookie export |
 | Site-provided tools | Opt-in current WebMCP discovery/invocation with origin checks | Experimental; browser/site support required |
-| Separate installation | BrowserRAD app, bundle ID, profile, state, MCP names | Packaged alpha; isolated headless/MCP smoke checks passed |
+| Separate installation | Distinct from upstream Neo; legacy BrowserRAD profile and secrets remain compatible | BrowserAI DUO bundle pending build and validation |
+| Desktop control | Planned opt-in local desktop surface | Not in the published alpha |
 
 Implementation and rollout details live in the [development guide](docs/browserrad/DEVELOPMENT.md). A feature in source is not a claim that an installed build has passed live acceptance.
 
@@ -42,7 +46,7 @@ Implementation and rollout details live in the [development guide](docs/browserr
 
 ```mermaid
 flowchart LR
-  A[Claude / Codex] --> B[BrowserRAD MCP]
+  A[Claude / Codex] --> B[BrowserAI DUO MCP]
   B --> C[Fresh scoped evidence]
   C --> D[Bounded native actions]
   D --> E[Verify page conditions]
@@ -54,7 +58,7 @@ flowchart LR
 No extra planner is required for the deterministic path. When evidence is incomplete, the caller gets a clear stop instead of an optimistic success or an automatic repeat of a possibly completed write.
 
 ```js
-// BrowserRAD's run SDK: three questions, one fresh content read.
+// BrowserAI DUO's run SDK: three questions, one fresh content read.
 const page = await browser.open('https://example.com/catalog');
 return await page.evidence({
   over: 'content',
@@ -67,7 +71,7 @@ return await page.evidence({
 
 The first synthetic workload uses stock Neo **0.52.1.1**, in a background tab, with five warmed repetitions. Each performs a snapshot, scoped read, field fill, click, and verified readback.
 
-| Metric | Stock Neo baseline | BrowserRAD |
+| Metric | Stock Neo baseline | BrowserAI DUO |
 | :--- | ---: | :--- |
 | Successful fixture runs | 5 / 5 | Pending matched native run |
 | Median browser execution | 392 ms | Pending |
@@ -77,18 +81,18 @@ The first synthetic workload uses stock Neo **0.52.1.1**, in a background tab, w
 
 These are **browser-execution measurements**, not submission-to-completion agent latency. Five samples are not a reliable tail estimate. [Read the protocol and raw samples →](docs/browserrad/BENCHMARKS.md)
 
-A separate shared-evidence prototype reduced the median for three fixture queries from **11 ms to 3 ms** across ten paired warmed repetitions. It ran inside stock Neo, not a native BrowserRAD build; token savings remain unmeasured. [Experiment details](docs/browserrad/BENCHMARKS.md#shared-evidence-prototype--november-2-2026).
+A separate shared-evidence prototype reduced the median for three fixture queries from **11 ms to 3 ms** across ten paired warmed repetitions. It ran inside stock Neo, not a native BrowserAI DUO build; token savings remain unmeasured. [Experiment details](docs/browserrad/BENCHMARKS.md#shared-evidence-prototype--november-2-2026).
 
-## Work on BrowserRAD
+## Work on BrowserAI DUO
 
 Start with [AGENTS.md](AGENTS.md) for shared rules, [CLAUDE.md](CLAUDE.md) for Claude entry instructions, and the [development guide](docs/browserrad/DEVELOPMENT.md) for toolchain and build boundaries. The [project diary](docs/browserrad/PROJECT.md) records decisions, evidence, and the next gates.
 
-The repository keeps upstream internal package names and the `browserclaw` build selector to make future upstream merges easier. **BrowserRAD** is the fork's product identity. Pulling an upstream update and shipping it are separate decisions.
+The repository keeps upstream internal package names and the `browserclaw` build selector to make future upstream merges easier. **BrowserAI DUO** is the fork's product identity. Pulling an upstream update and shipping it are separate decisions.
 
 ## Standing on good work
 
 Built on [BrowserOS](https://github.com/browseros-ai/BrowserOS) and Chromium. The [original Neo README](README.Neo.md), [license](LICENSE), and upstream notices remain in the repository. This fork is independent and is not an official BrowserOS release.
 
-Technique research draws on [Stagehand](https://docs.stagehand.dev/v4/best-practices/speed-optimization), [Browser Use](https://docs.browser-use.com/open-source/customize/agent/all-parameters), [Skyvern](https://www.skyvern.com/docs/developers/browser-automation), [Browserless](https://docs.browserless.io/baas/best-practices), and [agent-browser](https://agent-browser.dev/snapshots). The [ten-product landscape review](docs/browserrad/BROWSER-AGENT-LANDSCAPE-2026-11-08.md) lists ideas for later evaluation; its published performance numbers are not BrowserRAD benchmarks. No competing agent stack is required.
+Technique research draws on [Stagehand](https://docs.stagehand.dev/v4/best-practices/speed-optimization), [Browser Use](https://docs.browser-use.com/open-source/customize/agent/all-parameters), [Skyvern](https://www.skyvern.com/docs/developers/browser-automation), [Browserless](https://docs.browserless.io/baas/best-practices), and [agent-browser](https://agent-browser.dev/snapshots). The [ten-product landscape review](docs/browserrad/BROWSER-AGENT-LANDSCAPE-2026-11-08.md) lists ideas for later evaluation; its published performance numbers are not BrowserAI DUO benchmarks. No competing agent stack is required.
 
-README composition was inspired by [Dify](https://github.com/langgenius/dify), [Browser Use](https://github.com/browser-use/browser-use), [Supabase](https://github.com/supabase/supabase), and [Ollama](https://github.com/ollama/ollama). The BrowserRAD artwork and wording are original.
+README composition was inspired by [Dify](https://github.com/langgenius/dify), [Browser Use](https://github.com/browser-use/browser-use), [Supabase](https://github.com/supabase/supabase), and [Ollama](https://github.com/ollama/ollama). The BrowserAI DUO artwork and wording are original.

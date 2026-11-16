@@ -22,7 +22,7 @@ const (
 	ProductBrowserClaw = "browserclaw"
 
 	BrowserOSBinaryPath   = "/Applications/BrowserOS.app/Contents/MacOS/BrowserOS"
-	BrowserClawBinaryPath = "/Applications/BrowserRAD.app/Contents/MacOS/BrowserRAD"
+	BrowserClawBinaryPath = "/Applications/BrowserAI DUO.app/Contents/MacOS/BrowserAI DUO"
 )
 
 type BinaryResolution struct {

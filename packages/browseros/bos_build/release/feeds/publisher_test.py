@@ -1198,7 +1198,7 @@ class PublisherTestCase(unittest.TestCase):
                 content = (updates / spec.key).read_text()
                 self.assertEqual(
                     extract_channel_metadata(content),
-                    (spec.title.replace("BrowserRAD", "BrowserOS neo"), spec.link),
+                    ("BrowserOS neo Windows Updates" if spec.platform == "win" else "BrowserOS neo", spec.link),
                 )
                 self.assertNotIn("<title>BrowserClaw", content)
 

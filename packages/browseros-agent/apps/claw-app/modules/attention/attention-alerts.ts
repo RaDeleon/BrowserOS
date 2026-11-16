@@ -119,7 +119,7 @@ export function createAttentionAlerts(): AttentionAlerts {
         await chrome.action.setTitle({
           title:
             count === 0
-              ? 'BrowserRAD'
+              ? 'BrowserAI DUO'
               : `${count} ${count === 1 ? 'agent needs' : 'agents need'} you`,
         })
       } catch {}

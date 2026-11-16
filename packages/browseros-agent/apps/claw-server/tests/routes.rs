@@ -451,7 +451,7 @@ async fn older_native_lists_and_teaches_no_profile_surface() -> anyhow::Result<(
             request_json_with_headers(&app.router, "POST", "/mcp", Some(initialize), &[]).await?;
         assert_eq!(status, StatusCode::OK, "{body:?}");
         let instructions = body["result"]["instructions"].as_str().unwrap_or_default();
-        assert!(instructions.starts_with("BrowserRAD — the browser for agents"));
+        assert!(instructions.starts_with("BrowserAI DUO — the browser for agents"));
         assert!(!instructions.contains("browser_profiles"), "{native}");
         assert!(!instructions.contains("browser_target"), "{native}");
         let session_id = headers
@@ -2323,11 +2323,11 @@ async fn initialize_mcp(app: &TestApp) -> anyhow::Result<String> {
     let (status, headers, body) =
         request_json_with_headers(&app.router, "POST", "/mcp", Some(initialize), &[]).await?;
     assert_eq!(status, StatusCode::OK, "initialize body: {body:?}");
-    assert_eq!(body["result"]["serverInfo"]["name"], "browserrad");
-    assert_eq!(body["result"]["serverInfo"]["title"], "BrowserRAD");
+    assert_eq!(body["result"]["serverInfo"]["name"], "browserai-duo");
+    assert_eq!(body["result"]["serverInfo"]["title"], "BrowserAI DUO");
     assert!(
         body["result"]["instructions"].as_str().is_some_and(
-            |instructions| instructions.starts_with("BrowserRAD — the browser for agents")
+            |instructions| instructions.starts_with("BrowserAI DUO — the browser for agents")
         )
     );
     let session_id = headers

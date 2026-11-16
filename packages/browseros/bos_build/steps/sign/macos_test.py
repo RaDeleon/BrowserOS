@@ -426,8 +426,8 @@ class MacOSKeychainSelectionTest(unittest.TestCase):
     def test_ad_hoc_app_does_not_require_an_apple_certificate_chain(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            app = root / "BrowserRAD.app"
-            _write_exec(app / "Contents" / "MacOS" / "BrowserRAD")
+            app = root / "BrowserAI DUO.app"
+            _write_exec(app / "Contents" / "MacOS" / "BrowserAI DUO")
             ctx = Context(product="browserclaw", build_type="release")
             for identity in ("-", "Developer ID"):
                 calls = []

@@ -1,8 +1,8 @@
-# BrowserRAD for Claude Code
+# BrowserAI DUO for Claude Code
 
 Read and follow [AGENTS.md](AGENTS.md), the shared source of project rules. Then read [the project diary](docs/browserrad/PROJECT.md) and [development guide](docs/browserrad/DEVELOPMENT.md) before making changes.
 
-This is the BrowserRAD fork, built on BrowserOS Neo. Its mission is faster independently verified tasks at equal or lower main-agent tokens and total cost. Keep the installed Neo intact for work and matched comparisons.
+This is BrowserAI DUO, the renamed BrowserRAD fork built on BrowserOS Neo. Browser automation is implemented; desktop automation is in development. Its mission is faster independently verified tasks at equal or lower main-agent tokens and total cost. Keep the installed Neo intact for work and matched comparisons. Existing BrowserRAD profile, bundle, Keychain and state identifiers are retained for continuity.
 
 The Chromium overlay/build lives in `packages/browseros`; the Rust server, MCP primitives, cockpit, and developer tools live in `packages/browseros-agent`. The new deterministic helpers live beside `crates/browseros-mcp/src/tools/run.rs` in `rad-runtime.js`. Internal package names are intentionally retained.
 

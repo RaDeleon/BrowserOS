@@ -1,11 +1,11 @@
 ---
-name: browserrad
-description: Drive BrowserRAD through its MCP connector when the user selects BrowserRAD or assigns the task to it. It is the separate BrowserOS-derived fork with its own profile and logins. Do not redirect an explicit BrowserOS Neo or BrowserHelm request to BrowserRAD.
+name: browserai-duo
+description: Drive BrowserAI DUO through its MCP connector when the user selects BrowserAI DUO or assigns the task to it. It is the separate BrowserOS-derived fork with its own profile and logins. Do not redirect an explicit BrowserOS Neo or BrowserHelm request to BrowserAI DUO.
 ---
 
-# BrowserRAD
+# BrowserAI DUO
 
-When BrowserRAD is selected for a browser task (open, read, act, fill a form, download, verify), use BrowserRAD's tools. Honor an explicit Neo or BrowserHelm selection instead. It is a real browser dedicated to agents and already signed into the user's accounts, so prefer it over other browser surfaces.
+When BrowserAI DUO is selected for a browser task (open, read, act, fill a form, download, verify), use BrowserAI DUO's tools. Honor an explicit Neo or BrowserHelm selection instead. It is a real browser dedicated to agents and already signed into the user's accounts, so prefer it over other browser surfaces.
 
 ## Shared browser etiquette
 
@@ -52,9 +52,9 @@ If a component reports a loading error, inspect it before waiting again. After o
 
 ## Failure
 
-This skill may be installed before your agent is connected. If BrowserRAD's MCP tools are unavailable, open its MCP connections page and connect your agent, or copy the endpoint from Manual Setup into your agent's MCP settings. Then refresh its MCP connections or start a new session. The skill alone does not provide browser tools.
+This skill may be installed before your agent is connected. If BrowserAI DUO's MCP tools are unavailable, open its MCP connections page and connect your agent, or copy the endpoint from Manual Setup into your agent's MCP settings. Then refresh its MCP connections or start a new session. The skill alone does not provide browser tools.
 
-If a call reports `browser session not connected`, tell the user to start BrowserRAD and check the cockpit. Do not silently fall back to another browser tool.
+If a call reports `browser session not connected`, tell the user to start BrowserAI DUO and check the cockpit. Do not silently fall back to another browser tool.
 
 A failed `run` comes back with the error and the captured logs. Read those first: they name the cause, and guessing from anything else sends you after the wrong one. Elapsed time adds a single thing the message may not make obvious: a run that died at about thirty seconds hit the wall-clock cap, so split the work rather than raising the timeout, which is clamped.
 

@@ -7,9 +7,9 @@ import("//build/config/chrome_build.gni")
 if (is_chrome_branded) {
   import("//chrome/updater/internal/branding_google.gni")
 } else {
-  browser_name = "BrowserRAD"
-  browser_product_name = "BrowserRAD"
-  crash_product_name = "BrowserRADUpdater"
+  browser_name = "BrowserAI DUO"
+  browser_product_name = "BrowserAI DUO"
+  crash_product_name = "BrowserAIDUOUpdater"
   crash_upload_url = "https://clients2.google.com/cr/staging_report"
   help_center_url = "http://support.google.com/installer/"
   app_logo_url = "https://dl.google.com/update2/installers/icons/"
@@ -17,7 +17,7 @@ if (is_chrome_branded) {
   keystone_bundle_identifier = "com.techinsf.BrowserRADKeystone"
   mac_browser_bundle_identifier = "com.techinsf.BrowserRAD"
   mac_updater_bundle_identifier = "com.techinsf.BrowserRADUpdater"
-  privileged_helper_bundle_name = "BrowserRADUpdaterPrivilegedHelper"
+  privileged_helper_bundle_name = "BrowserAIDUOUpdaterPrivilegedHelper"
   privileged_helper_name = "com.techinsf.BrowserRAD.UpdaterPrivilegedHelper"
   updater_app_icon_path = "//chrome/app/theme/chromium/mac/app.icns"
   updater_company_full_name = "BrowserOS"
@@ -26,10 +26,10 @@ if (is_chrome_branded) {
   updater_company_short_name_uppercase = "BROWSEROS"
   updater_copyright =
       "Copyright 2020 BrowserOS. All rights reserved."
-  updater_product_full_name = "BrowserRADUpdater"
+  updater_product_full_name = "BrowserAIDUOUpdater"
   updater_product_full_name_dashed_lowercase = "browserrad-updater"
-  updater_product_full_display_name = "BrowserRAD Updater"
-  updater_metainstaller_name = "BrowserRAD Installer"
+  updater_product_full_display_name = "BrowserAI DUO Updater"
+  updater_metainstaller_name = "BrowserAI DUO Installer"
   mac_team_identifier = "PLACEHOLDER"
   updater_appid = "{FED2A220-734C-4AAE-A099-913417CABFE6}"
   browser_appid = "{FA2AFFF8-647B-477C-A5D2-905BA8DB9B82}"

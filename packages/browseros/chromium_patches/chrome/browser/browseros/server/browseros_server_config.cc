@@ -35,7 +35,7 @@ index 0000000000000000000000000000000000000000..c383a4374cc5a7bd4c4408c4efbdeb7d
 +
 +constexpr ManagedServerDescriptor kBrowserClawServerDescriptor = {
 +    Product::kBrowserClaw,
-+    "BrowserRAD server",
++    "BrowserAI DUO server",
 +    FILE_PATH_LITERAL("BrowserClawServer"),
 +    FILE_PATH_LITERAL("browseros-claw-server"),
 +    FILE_PATH_LITERAL("config.json"),

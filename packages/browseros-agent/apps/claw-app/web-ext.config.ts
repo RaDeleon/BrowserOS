@@ -83,7 +83,7 @@ export default defineWebExtConfig({
   binaries: {
     chrome:
       env.BROWSEROS_BINARY ||
-      '/Applications/BrowserRAD.app/Contents/MacOS/BrowserRAD',
+      '/Applications/BrowserAI DUO.app/Contents/MacOS/BrowserAI DUO',
   },
   chromiumArgs,
   chromiumProfile: chromiumProfile(),

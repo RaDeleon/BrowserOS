@@ -1,25 +1,25 @@
-# BrowserRAD project diary
+# BrowserAI DUO project diary
 
 ## Mission
 
-Make browser work feel immediate without making it careless. BrowserRAD should complete independently verified tasks faster than stock Neo using the same or fewer main-agent tokens, while preserving accuracy and reporting every provider's cost.
+Make browser work feel immediate without making it careless. BrowserAI DUO should complete independently verified tasks faster than stock Neo using the same or fewer main-agent tokens, while preserving accuracy and reporting every provider's cost. Desktop control is the next planned surface.
 
-BrowserOS Neo remains the foundation and the comparison. BrowserRAD gets its own identity so the two can live side by side. BrowserHelm remains a related experiment, not a mandatory extra process in the native fast path.
+BrowserOS Neo remains the foundation and the comparison. BrowserAI DUO gets its own identity so the two can live side by side. BrowserHelm remains a related experiment, not a mandatory extra process in the native fast path.
 
 ## Current status
 
-**Alpha.2 is published for Apple Silicon macOS. A local alpha.3-dev app with cockpit 0.2.59 is installed; no later official Neo version has been integrated. Five paired scripted shakedowns and two recovery probes passed; model-driven matched benchmarks, client token usage and total cost remain open.** The fork's official Neo source cutoff is `e35f20e54679936fba79b3a649de34fb17032dd6`, the 0.52.1.1 maintenance promotion. Internal build selector `browserclaw` remains to limit merge churn. The installed comparison is Neo 0.52.1.1.
+**BrowserAI DUO rebrand is in source and artwork as of November 16, 2026. The installed app and published alpha.2 are still branded BrowserRAD until a new native build, migration check, and installation pass. Desktop control remains in development.** No later official Neo version has been integrated. Five paired scripted shakedowns and two recovery probes passed under the earlier BrowserRAD name; model-driven matched benchmarks, client token usage and total cost remain open. The fork's official Neo source cutoff is `e35f20e54679936fba79b3a649de34fb17032dd6`, the 0.52.1.1 maintenance promotion. Internal build selector `browserclaw` remains to limit merge churn.
 
 | Workstream | Status | Next evidence |
 | --- | --- | --- |
-| Separate BrowserRAD identity | Source implemented | Native bundle, profile and connection coexistence test |
+| Separate BrowserAI DUO identity | Name and art changed in source; legacy profile and bundle ID preserved | Native build, profile and connection coexistence test |
 | Pointer and journal latency | Relevant Rust tests pass; debug phase timings added | Visible/background matched trials |
 | Shared observation and bounded plans | 21 helper tests, 2 embedded-engine tests, live synthetic plan pass | Broader dynamic-page and matched native verification |
 | Local procedure reuse | Upstream saved-flow machinery retained | Stale route, partial write and learned-repeat trials |
 | Same-origin retrieval / WebMCP | Retrieval works on fixture; unsupported WebMCP reported honestly | Real supported-site invocation and cancellation |
-| README / Claude / Codex guidance | Original hero visually inspected; local links and SVG validated | Keep docs synchronized with build status |
+| README / Claude / Codex guidance | Rebrand in progress; new command-center art inspected | Verify links and client instructions after build |
 | Baseline | Five synthetic Neo runs recorded | Larger matched client-reported workload |
-| Toolchain / packaging | Alpha.2 ZIP published; signatures and native MCP smoke verified | Native app artifact and coexistence verification |
+| Toolchain / packaging | Earlier BrowserRAD alpha.2 ZIP published; new bundle not yet validated | Native BrowserAI DUO artifact and coexistence verification |
 
 ## November 2, 2026 — Give the experiment its own front door
 
@@ -35,9 +35,9 @@ Dependency installation and builds were explicitly authorized during this sessio
 
 ## Decision ledger
 
-- Product name: **BrowserRAD**. Repo URL remains `RaDeleon/BrowserOS` unless separately renamed.
+- Product name: **BrowserAI DUO** (renamed November 16, 2026). Repo URL remains `RaDeleon/BrowserOS` unless separately renamed.
 - macOS bundle ID: `com.techinsf.BrowserRAD`; dev ID: `com.techinsf.dev.BrowserRAD`.
-- Browser profile: `BrowserRAD`; server state: `.browserrad`; MCP/managed skill: `browserrad`; saved skills: `rad-*`.
+- Compatibility identity: browser profile `BrowserRAD`, server state `.browserrad`, macOS bundle ID and Keychain service remain from BrowserRAD; canonical MCP/managed skill is `browserai-duo`, with legacy `browserrad` aliases migrated conservatively. Saved skill prefix remains `rad-*` until separately migrated.
 - Preserve upstream internal package names. No copying competitor code or cloud service dependency.
 - No mandatory extra model/vision/reflection pass. No retry of an uncertain write.
 - No performance multiplier until matched, independently verified measurements justify it.
@@ -47,9 +47,9 @@ Dependency installation and builds were explicitly authorized during this sessio
 1. Pass relevant tests, type/lint checks and product/patch validation; resolve any failures.
 2. Build sidecar and cockpit, then a separately branded Chromium app from the pinned source.
 3. Inspect the actual bundle identity, profile/state paths, update behavior and code signature.
-4. Run stock Neo and BrowserRAD together using isolated test data; verify no connection/profile interference.
+4. Run stock Neo and BrowserAI DUO together using isolated test data; verify no connection/profile interference.
 5. Run matched benchmarks with client-reported tokens and cost accounting.
-6. Install or publish only when separately authorized, with accurate preview/signing/notarization status.
+6. Install and reconnect only after native validation; publish a new release only with reviewed packaging, signing and notarization status. Current owner request authorizes installing/reconnecting the rebrand, not publishing a release.
 
 ## How to continue the diary
 
@@ -260,3 +260,13 @@ Official Neo main reached `9e07439a919ded1acbd03c03d3c47b054ee8f05f` with 11 com
 GitHub's published [Neo v0.52.0 release](https://github.com/browseros-ai/BrowserOS/releases/tag/browserclaw/v0.52.0) has 0.52.1.1 maintenance downloads and checksums. The fork already starts from main commit `e35f20e`, which promoted those 0.52.1.1 browser updates. As of this check, no newer Neo browser, Claw server or Neo extension version is published from the 11 later commits. Therefore the effective BrowserRAD source returns to the 0.52.1.1 cutoff while its own fork commits and research report remain. The installed `/Applications/BrowserRAD.app`, user profile, Neo, Claude connection and published BrowserRAD alpha were not changed.
 
 For the next upstream sync, verify the published version, its source or maintenance promotion, and main ancestry first. Integrate only through that release boundary on an isolated branch, then resolve RAD identity conflicts and test. The reverted merge is still in Git history, so a future release integration must compare **effective source changes** instead of assuming an ordinary merge will replay them.
+
+## November 16, 2026 — BrowserAI DUO takes shape
+
+The owner chose **BrowserAI DUO** for the browser and future desktop product. The browser is implemented; desktop control is still planned. The new banner follows the supplied cyberpunk command-center composition, with black-and-grey tattoo illustration, cyan/red accents, the hooded operator, mechanical hands, and the new name. A matching hooded-operator icon is generated for the app and extension. README copy labels the desktop, vault and remote elements as concept art until those capabilities are built and verified.
+
+The source now uses BrowserAI DUO for visible product names, native app/framework filenames, cockpit copy, MCP display identity and the managed skill. Bundle ID, browser profile, Keychain and server state retain BrowserRAD compatibility identifiers so the user's existing logins and settings survive. The connection layer recognizes older `browserrad` and `BrowserRAD-preview` entries and migrates ownership conservatively. Legacy migration fixtures remain in tests; internal `browserclaw` identifiers remain for upstream mergeability.
+
+Validation completed before native compilation: 1,333 native build-system tests passed (4 skipped); the claw-server unit and integration suites passed (1,010 library tests plus integration suites, 7 ignored); focused cockpit tests, typecheck and WXT build passed. One broad Rust run briefly exposed a nondeterministic captcha logging test; an independent full rerun passed. Python's first invocation used the wrong discovery root and caused package import errors; the corrected package-root run produced the results above. This is source validation only. The installed app remains BrowserRAD and the new site copy remains in a local worktree until the native bundle and remote branches are published.
+
+Next gates: commit the reviewed source checkpoint, restage the fork's bundled extension and server, rebuild Chromium and package the renamed app; inspect its executable, signature, profile reuse and MCP connection; activate it only after acceptance. Then publish the website changes and verify the live URLs. A new GitHub release is a separate packaging and provenance step and is not claimed here.

@@ -1,8 +1,8 @@
-# BrowserRAD contributor instructions
+# BrowserAI DUO contributor instructions
 
 ## Objective
 
-Build a separately installable BrowserOS Neo fork called BrowserRAD. Optimize independently verified completion time while keeping main-agent token usage equal or lower, preserving accuracy and approvals, and tracking total provider cost. A prior 10× aspiration is a target, never a measured claim.
+Build a separately installable BrowserOS Neo fork called BrowserAI DUO. Browser automation exists; opt-in desktop control is planned and must not be described as shipped. Optimize independently verified completion time while keeping main-agent token usage equal or lower, preserving accuracy and approvals, and tracking total provider cost. A prior 10× aspiration is a target, never a measured claim.
 
 ## Start here
 
@@ -10,11 +10,11 @@ Read `docs/browserrad/PROJECT.md`, `docs/browserrad/DEVELOPMENT.md`, and `docs/b
 
 ## Boundaries
 
-- Keep BrowserRAD separate from the installed Neo: app name, bundle ID, profile, server state, MCP key, managed skills, saved skills, updater feeds, and launcher paths.
+- Keep BrowserAI DUO separate from the installed Neo: app name, bundle ID, profile, server state, MCP key, managed skills, saved skills, updater feeds, and launcher paths. Preserve the existing BrowserRAD profile, bundle ID, Keychain service, state directory and saved-skill prefix across this rename until a separately tested migration exists.
 - Never mutate or migrate Neo's profile, logins, settings, MCP connections, or legacy skill directories from the fork.
 - Internal `browserclaw`/`browseros-*` names are retained where they are compatibility or build identifiers. Do not mass-replace them.
 - Source/build authorization does not imply replacing an installed app or publishing a release. Use an isolated test profile and stop only processes owned by that test.
-- Upstream CDN feeds and release jobs belong to BrowserOS. Do not publish BrowserRAD through them; a separate release destination and signing review are required.
+- Upstream CDN feeds and release jobs belong to BrowserOS. Do not publish BrowserAI DUO through them; a separate release destination and signing review are required.
 - Never run broad `dev:stop`, `dev:cleanup:prod`, or profile reset commands during ordinary validation.
 - Keep secrets, real browser content, profiles, raw user telemetry, and private notes untracked. Publish only sanitized documentation and synthetic fixtures. `.local-analysis/` and `tools/browserrad/results/` are ignored.
 
@@ -30,6 +30,6 @@ Read `docs/browserrad/PROJECT.md`, `docs/browserrad/DEVELOPMENT.md`, and `docs/b
 
 ## Verification and handoff
 
-Run relevant unit, contract, lint/type, and build checks. Keep failures and unsupported cases in the results. Compare stock Neo and BrowserRAD on equivalent workloads/client settings; separate first, warm, and learned runs. Unknown token/cost fields stay null, not zero. Fixture speed and output bytes cannot prove main-agent token savings.
+Run relevant unit, contract, lint/type, and build checks. Keep failures and unsupported cases in the results. Compare stock Neo and BrowserAI DUO on equivalent workloads/client settings; separate first, warm, and learned runs. Unknown token/cost fields stay null, not zero. Fixture speed and output bytes cannot prove main-agent token savings.
 
 Update `docs/browserrad/PROJECT.md` after meaningful work: date, outcome, changed mechanisms, exact validation, remaining limitations, and next gate. Clearly distinguish proposed, implemented, tested, built, installed, and published. Never invent baseline data.

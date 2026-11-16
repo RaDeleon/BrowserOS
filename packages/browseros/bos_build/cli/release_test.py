@@ -538,7 +538,7 @@ class GithubCreateCliIntegrityTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0, plain_output(result))
         args = create.call_args.args
-        self.assertIn("## BrowserRAD v0.49.0", args[3])
+        self.assertIn("## BrowserAI DUO v0.49.0", args[3])
         self.assertEqual(args[0], "browserclaw/v0.49.0")
         self.assertEqual(args[5], target)
 
@@ -848,8 +848,8 @@ class PublishCliIntegrityTest(unittest.TestCase):
             self.assertEqual(
                 {call.args[3] for call in copy.call_args_list},
                 {
-                    "download/BrowserRAD-arm64.AppImage",
-                    "download/BrowserRAD-arm64.deb",
+                    "download/BrowserAI-DUO-arm64.AppImage",
+                    "download/BrowserAI-DUO-arm64.deb",
                 },
             )
 

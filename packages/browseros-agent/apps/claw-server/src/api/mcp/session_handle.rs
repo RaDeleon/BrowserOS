@@ -106,11 +106,11 @@ pub(super) fn attach(
         }
         let line = if replaced {
             format!(
-                "[browserrad session: {handle}. The handle you sent is no longer active, so this call continued in a new session. Pass this exact value as the `session` argument from now on, and stop sending the previous one.]"
+                "[browserai-duo session: {handle}. The handle you sent is no longer active, so this call continued in a new session. Pass this exact value as the `session` argument from now on, and stop sending the previous one.]"
             )
         } else {
             format!(
-                "[browserrad session: {handle}. Pass this exact value as the `session` argument on every following call to keep this browser session and its tab ownership.]"
+                "[browserai-duo session: {handle}. Pass this exact value as the `session` argument on every following call to keep this browser session and its tab ownership.]"
             )
         };
         call_result.content.push(ContentBlock::text(line));

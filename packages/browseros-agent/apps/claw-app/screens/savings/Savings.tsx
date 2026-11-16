@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2026 BrowserRAD contributors
+ * Copyright 2026 BrowserAI DUO contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
@@ -42,7 +42,7 @@ export function Savings() {
         back={{ to: '/', label: 'Home' }}
         eyebrow={
           <span className="rounded-full bg-bg-canvas px-3 py-1 font-semibold text-accent-ink text-xs">
-            BROWSERRAD · EVIDENCE & EFFICIENCY
+            BROWSERAI DUO · EVIDENCE & EFFICIENCY
           </span>
         }
         lede="See what your browser work costs in tool traffic, where it compares well, and what we still need to measure."
@@ -89,7 +89,7 @@ export function SavingsReport({ stats }: { stats: CockpitStats }) {
       schema: 1,
       exportedAt: new Date().toISOString(),
       period: periodKey,
-      source: 'BrowserRAD cockpit aggregates',
+      source: 'BrowserAI DUO cockpit aggregates',
       stats: period,
       derived: metrics,
       humanTime: human,
@@ -217,11 +217,11 @@ export function SavingsReport({ stats }: { stats: CockpitStats }) {
             Three ways to browse
           </h2>
           <p className="mt-2 mb-6 text-ink-2 text-sm">
-            Same units, different evidence. Only BrowserRAD tool traffic is
+            Same units, different evidence. Only BrowserAI DUO tool traffic is
             observed here.
           </p>
           <ComparisonBar
-            label="BrowserRAD"
+            label="BrowserAI DUO"
             value={metrics.used}
             maximum={Math.max(metrics.used ?? 0, metrics.baseline ?? 0)}
             note="Estimated from recorded tool payloads"
@@ -241,8 +241,8 @@ export function SavingsReport({ stats }: { stats: CockpitStats }) {
               <span className="text-ink-3 text-sm">Not calibrated</span>
             </div>
             <p className="mt-2 text-ink-2 text-sm">
-              We cannot infer what Neo would have used from BrowserRAD activity
-              alone. A screenshot baseline is not a Neo baseline.
+              We cannot infer what Neo would have used from BrowserAI DUO
+              activity alone. A screenshot baseline is not a Neo baseline.
             </p>
             <p className="mt-2 text-ink-3 text-xs">
               No Neo token, time, or cost saving is included in these totals.
@@ -352,8 +352,8 @@ export function SavingsReport({ stats }: { stats: CockpitStats }) {
           <p className="mt-3 text-ink-2 text-sm leading-6">
             The baseline keeps estimated tool input and substitutes 3,000 visual
             tokens per recorded call for tool output. The difference is the
-            modeled baseline minus BrowserRAD's estimated input and output. It
-            does not prove how many screenshots another agent would take.
+            modeled baseline minus BrowserAI DUO's estimated input and output.
+            It does not prove how many screenshots another agent would take.
             Negative savings are shown as extra tokens.
           </p>
         </details>
@@ -504,9 +504,9 @@ function HumanTimeLog({
         </p>
       ) : null}
       <p className="mt-3 text-ink-3 text-xs">
-        Stored locally in this BrowserRAD profile. No task names, sites or page
-        contents are saved. Agent runtime and browser work recorded are shown
-        separately.
+        Stored locally in this BrowserAI DUO profile. No task names, sites or
+        page contents are saved. Agent runtime and browser work recorded are
+        shown separately.
       </p>
       {tasks.length > 0 ? (
         <details className="mt-5 border-border-2 border-t pt-4">

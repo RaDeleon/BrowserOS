@@ -1,23 +1,23 @@
-# BrowserRAD development guide
+# BrowserAI DUO development guide
 
-BrowserRAD is a source preview based on BrowserOS Neo. The native product still uses `--product browserclaw` internally; the macOS app/executable becomes `BrowserRAD`. Keeping that build selector avoids a broad upstream refactor.
+BrowserAI DUO is the renamed BrowserRAD fork based on BrowserOS Neo. The native product still uses `--product browserclaw` internally; the macOS app/executable is being changed to `BrowserAI DUO`. Keeping that build selector avoids a broad upstream refactor. The published alpha.2 and currently installed development app still carry the former name until the new native artifact is verified and activated.
 
 ## Coexistence contract
 
-| Surface | Stock Neo | BrowserRAD |
+| Surface | Stock Neo | BrowserAI DUO |
 | --- | --- | --- |
-| App and executable | BrowserOS neo | BrowserRAD |
+| App and executable | BrowserOS neo | BrowserAI DUO (source; build pending) |
 | Cockpit extension ID | pjimfkbpehlcllblajnpfamdfjhhlgkc | efdbmkebmplcaefnjkgfnnbmgdjndifl |
 | Release bundle ID | com.browseros.BrowserClaw | com.techinsf.BrowserRAD |
 | macOS profile directory | BrowserClaw | BrowserRAD |
 | State directory | ~/.browserclaw | ~/.browserrad |
 | State override | BROWSERCLAW_DIR | BROWSERRAD_DIR |
-| MCP / managed skill | browseros-neo | browserrad |
+| MCP / managed skill | browseros-neo | browserai-duo (source; browserrad is a legacy alias) |
 | Saved skill prefix | neo- | rad- |
 | Keychain service | BrowserClaw Safe Storage | BrowserRAD Safe Storage |
 | Updater | Upstream feeds | Preview updates disabled |
 
-BrowserRAD must not migrate or disconnect stock Neo entries. The developer launcher fails at BrowserRAD's path when no fork is installed; it must not fall back to launching a stock app. The separate Claude Desktop `.mcpb` has not been published; the fork refuses to install Neo's bundle. Manual MCP setup is the preview route.
+BrowserAI DUO must not migrate or disconnect stock Neo entries. Preserve the existing BrowserRAD bundle ID, profile, state, Keychain identity and saved-skill prefix to retain user data. The developer launcher fails at the new app path when no fork is installed; it must not fall back to launching a stock app. A rebranded Claude Desktop `.mcpb` has not been published; manual MCP setup is the preview route.
 
 macOS is the initial packaging target. Linux and Windows installation coexistence remain unverified; do not publish installers for them from this preview. Internal server binary/resource directory names remain upstream-compatible.
 
@@ -41,7 +41,7 @@ uv sync --locked
 uv run browseros product doctor browserclaw
 ```
 
-The fork operating guide is `skills/browserrad/SKILL.md`; keep it aligned with the bundled `packages/browseros-agent/resources/skills/browserclaw/SKILL.md`. The upstream Neo manual guide remains available separately. An explicit Neo or BrowserHelm selection must never be redirected to BrowserRAD.
+The fork operating guide is `skills/browserai-duo/SKILL.md`; keep it aligned with the bundled `packages/browseros-agent/resources/skills/browserclaw/SKILL.md`. The upstream Neo manual guide remains available separately. An explicit Neo or BrowserHelm selection must never be redirected to BrowserAI DUO.
 
 Do not hand-edit generated API DTOs. New runtime helpers live in `crates/browseros-mcp/src/tools/rad-runtime.js`, injected by `run.rs`; they compose the existing guarded SDK rather than bypassing native input, ownership or cancellation.
 
@@ -91,7 +91,7 @@ uv run browseros build --preset release --product browserclaw --chromium-src /pa
 
 Source mode requires a clean tracked checkout so artifacts can be attributed to a commit. Create a local reviewed checkpoint before building; pushing is not required. The cockpit needs the fork's private extension signing key in `BROWSERRAD_EXTENSION_KEY`, supplied locally without logging it. Its public identity is recorded in `extension-identity.json` and the WXT manifest. Never use Neo's signing key, commit a private key, or regenerate the fork key casually: a different key changes the extension ID. `VITE_CLAW_POSTHOG_KEY` is optional for this fork, so a telemetry account is not a build prerequisite.
 
-Inspect the plan before running it. Source resource mode is essential: the default published mode would bundle upstream components instead of the edited fork. Debug naming is `BrowserRAD Dev`; release naming is `BrowserRAD`. Preview signing must not use upstream's Apple team or provisioning profiles. Native packaging, separate-profile launch, signature inspection, and matched benchmarks are required before calling the fork installable. Do not replace anything in `/Applications` as part of a test build.
+Inspect the plan before running it. Source resource mode is essential: the default published mode would bundle upstream components instead of the edited fork. Debug naming is `BrowserAI DUO Dev`; release naming is `BrowserAI DUO`. The existing profile, Keychain and bundle IDs intentionally retain BrowserRAD compatibility identifiers. Preview signing must not use upstream's Apple team or provisioning profiles. Native packaging, separate-profile launch, signature inspection, and matched benchmarks are required before calling the fork installable. Do not replace anything in `/Applications` as part of a test build. The owner has separately requested activating the renamed app after validation.
 
 ### Resume a configured native build
 
@@ -105,7 +105,10 @@ Use the same toolchain, environment, checkout and output directory as the origin
 
 On this macOS setup, native shader compilation also required Apple's Metal Toolchain component. `xcrun metal --version` verifies its availability; `xcodebuild -downloadComponent MetalToolchain` installed the missing component after dependency setup was authorized.
 
-## Alpha packaging
+## Historical BrowserRAD alpha packaging
+
+The commands below describe the published BrowserRAD alpha.2 packaging process. They are not a BrowserAI DUO release recipe; a new versioned packager and reviewed release destination are required before publishing the renamed app.
+
 
 `tools/browserrad/release.json` owns the fork's release version separately from inherited Chromium/BrowserOS engine versions. The requested “0.01 alpha” uses the `0.0.1-alpha.N` series. The current candidate is `0.0.1-alpha.2`; alpha.1 remains a superseded draft after packaging validation failures. Do not renumber Chromium's framework or change the pinned engine to label a BrowserRAD release.
 
@@ -135,6 +138,6 @@ Keep `origin` on the fork and `upstream` on BrowserOS. The current adopted offic
 
 ## Local installation and Spotlight
 
-After validating a BrowserRAD candidate and confirming no BrowserRAD task is active, install the tested app at `/Applications/BrowserRAD.app` and launch that path for normal use. Preserve the existing BrowserRAD profile, settings, and extension identity. Keep the Chromium checkout and `out/Default_browserclaw_arm64/BrowserRAD.app` for incremental builds; it is a build output, not the app to select in Spotlight. Generated candidates belong in ignored `tools/browserrad/results/` only until validation and installation; remove obsolete copies after the installed app is verified. Release ZIPs and checksums are separate artifacts, and a local install does not publish a GitHub release.
+After validating the BrowserAI DUO candidate and confirming no BrowserRAD/BrowserAI DUO task is active, install the tested app at `/Applications/BrowserAI DUO.app` and launch that path for normal use. Retire the old `/Applications/BrowserRAD.app` only after the new app and connection pass acceptance. Preserve the existing BrowserRAD profile, settings, and extension identity. Keep the Chromium checkout and `out/Default_browserclaw_arm64/BrowserAI DUO.app` for incremental builds; it is a build output, not the app to select in Spotlight. Generated candidates belong in ignored `tools/browserrad/results/` only until validation and installation; remove obsolete copies after the installed app is verified. Release ZIPs and checksums are separate artifacts, and a local install does not publish a GitHub release.
 
 Before signing and installing a candidate, verify that each bundled CRX manifest version agrees with its `bundled_extensions.json` `external_version` and the local provenance metadata. A newer CRX with an older catalog version will not upgrade an existing profile. Re-sign and verify after any package-resource correction, then confirm the active profile actually loaded the new extension version.

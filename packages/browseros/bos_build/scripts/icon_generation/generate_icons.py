@@ -123,7 +123,7 @@ def generate_ico(img: Image.Image, sizes: list[int], output_path: Path) -> bool:
 
 
 def generate_xpm(img: Image.Image, size: int, output_path: Path) -> bool:
-    """Generate XPM using ImageMagick."""
+    """Generate XPM with ImageMagick or Pillow when it is unavailable."""
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -145,8 +145,23 @@ def generate_xpm(img: Image.Image, size: int, output_path: Path) -> bool:
 
         return True
     except FileNotFoundError:
-        print("  ✗ ImageMagick not found. Install with: brew install imagemagick")
-        return False
+        temp_png.unlink(missing_ok=True)
+        # Pillow already supplies the palette and pixels needed for this small
+        # Linux icon. Avoid making a missing optional binary block the bundle.
+        palette = img.resize((size, size), Image.Resampling.LANCZOS).convert("RGB")
+        palette = palette.quantize(colors=64)
+        colors = palette.getpalette()
+        symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+        rows = [f'/* XPM */\nstatic char * icon[] = {{\n"{size} {size} 64 1",']
+        for index, symbol in enumerate(symbols):
+            r, g, b = colors[index * 3 : index * 3 + 3]
+            rows.append(f'"{symbol} c #{r:02x}{g:02x}{b:02x}",')
+        pixels = list(palette.get_flattened_data())
+        for y in range(size):
+            row = "".join(symbols[pixels[y * size + x]] for x in range(size))
+            rows.append(f'"{row}"' + ("," if y < size - 1 else ""))
+        output_path.write_text("\n".join(rows) + "\n};\n")
+        return True
     except Exception as e:
         print(f"  ✗ Failed to generate {output_path}: {e}")
         return False

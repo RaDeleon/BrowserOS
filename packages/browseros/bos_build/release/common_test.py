@@ -276,7 +276,7 @@ class ReleaseContractTest(unittest.TestCase):
             get_product_descriptor("browserclaw"),
         )
 
-        self.assertIn("## BrowserRAD v0.49.0", notes)
+        self.assertIn("## BrowserAI DUO v0.49.0", notes)
         self.assertNotIn("## BrowserOS v", notes)
 
 
@@ -301,18 +301,18 @@ BROWSEROS_DOWNLOAD_GOLDEN = {
 
 BROWSERCLAW_DOWNLOAD_GOLDEN = {
     "macos": {
-        "arm64": "download/BrowserRAD-arm64.dmg",
-        "x64": "download/BrowserRAD-x86_64.dmg",
-        "universal": "download/BrowserRAD.dmg",
+        "arm64": "download/BrowserAI-DUO-arm64.dmg",
+        "x64": "download/BrowserAI-DUO-x86_64.dmg",
+        "universal": "download/BrowserAI-DUO.dmg",
     },
     "win": {
-        "x64_installer": "download/BrowserRAD_installer.exe",
+        "x64_installer": "download/BrowserAI-DUO_installer.exe",
     },
     "linux": {
-        "x64_appimage": "download/BrowserRAD.AppImage",
-        "x64_deb": "download/BrowserRAD.deb",
-        "arm64_appimage": "download/BrowserRAD-arm64.AppImage",
-        "arm64_deb": "download/BrowserRAD-arm64.deb",
+        "x64_appimage": "download/BrowserAI-DUO.AppImage",
+        "x64_deb": "download/BrowserAI-DUO.deb",
+        "arm64_appimage": "download/BrowserAI-DUO-arm64.AppImage",
+        "arm64_deb": "download/BrowserAI-DUO-arm64.deb",
     },
 }
 
